@@ -1,9 +1,6 @@
 name: Tests
 
 on:
-  push:
-    branches:
-      - '**'
   pull_request:
     branches:
       - '**'
@@ -21,7 +18,7 @@ jobs:
     strategy:
       matrix:
         directory: [frontend, backend]
-        python-version: [3.10]
+        python-version: [3.10.11]
 
     steps:
       - name: Checkout repository
