@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -34,6 +35,19 @@ word = {
         
 }
 
-@app.get("/")
-async def root():
-    return "Hello world"
+
+async def serch_allergy(list):
+    allergu_search = {}
+    for i in word:
+        if(list[i] == word[i].key):
+            allergu_search.append(word[i].key)
+            
+    return allergu_search
+            
+
+@app.get("/get")
+async def get_recipi(recipi: str = "null", allergy: list[str] = None):
+    allergy_found = serch_allergy(allergy)
+    return 
+
+
