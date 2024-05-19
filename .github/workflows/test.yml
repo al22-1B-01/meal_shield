@@ -32,7 +32,7 @@ jobs:
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
-          echo "::add-path::$(poetry env info --path)/bin"
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
       - name: Install dependencies
         working-directory: ${{ matrix.directory }}
