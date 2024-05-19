@@ -1,15 +1,13 @@
-# Python-template
+# Meal Shield
 
 ## How to operate docker
 ### setup
-1. Install with : `git clone`
+1. Install with : `git clone https://github.com/al22-1B-01/meal_shield.git`
 ### docker configuration
 1. `docker compose up -d --build`
 ### Connect to and disconnect from docker
-1. connect : `docker compose exec <service name(ex:python-cpu)> bash`
+1. connect : `docker compose exec <frontend or backend> bash`
 2. disconect : `exit`
-### Using jupyterlab
-1. Access with a browser http://localhost:8888/lab
 ### Starting and Stopping Containers
 1. Starting : `docker stop <container name>`
 2. Stopping : `docker start <container name>`
@@ -22,32 +20,10 @@
 ├── .gitattributes
 ├── .github
 ├── .gitignore
-├── .pre-commit-config.yaml
-├── LICENSE
 ├── Makefile
 ├── README.md
+├── backend
 ├── compose.yaml
-├── config
-├── data
-│   ├── misc
-│   ├── outputs
-│   └── raw
-├── docker
-│   └── cpu
-├── docs
 ├── env.sample
-├── notebooks
-├── poetry.lock
-├── pyproject.toml
-├── scripts
-│   └── main.py
-├── src
-│   ├── __init__.py
-│   └── project
-│       ├── common
-│       ├── config
-│       ├── env.py
-│       └── main.py
-└── tests
-    └── project
+└── frontend
 ```
