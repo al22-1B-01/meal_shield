@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List
-from backend.src.api import FastAPI
+from backend.src.app import FastAPI
 
 app = FastAPI()
 
@@ -49,7 +49,13 @@ async def serch_allergy(allergy_list: List[str]) -> List[List[str]]:
 async def get_recipi(
     recipi: str = None, allergy: list[str] = None
 ) -> Dict[str, List[List[str]]]:  # クエリパラメータを使いたい
-    allergy_found = serch_allergy(allergy)
+    allergy_list = serch_allergy(allergy)
     if recipi == None:
         return ["error", None]
-    return
+
+    return scraping(recipi, allergy_list)
+
+
+# 沖井さんが実装終了したらその関数に飛ばせるようにする
+def scraping(recipi, allergy_list):
+    return [recipi, allergy_list]
