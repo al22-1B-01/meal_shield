@@ -1,5 +1,7 @@
-from selenium import webdriver
 import time
+
+from selenium import webdriver
+
 
 def main():
     print('start')
@@ -13,8 +15,7 @@ def main():
     options.add_argument('--window-size=1920,1080')
 
     driver = webdriver.Remote(
-        command_executor='http://selenium:4444/wd/hub',
-        options=options
+        command_executor='http://selenium:4444/wd/hub', options=options
     )
 
     driver.implicitly_wait(10)
@@ -26,6 +27,6 @@ def main():
     driver.save_screenshot('test.png')  # アクセスした先でスクリーンショットを取得
     driver.quit()
 
-if  __name__ == '__main__':
-    main()
 
+if __name__ == '__main__':
+    main()
