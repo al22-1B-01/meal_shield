@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List
-from backend.src.app import FastAPI
+from fastapi import FastAPI
 
 app = FastAPI()
 
@@ -37,11 +37,9 @@ WORDS = {
 
 async def serch_allergy(allergy_list: List[str]) -> List[List[str]]:
     allergu_search = []
-    index = 0
-    for item in WORDS:
-        if allergy_list[index] == item:
-            index += 1
-            allergu_search.append(WORDS.get(item))
+    for item in allergy_list:
+        if item in WORDS:
+            allergu_search.append(WORDS[item])
     return allergu_search
 
 
