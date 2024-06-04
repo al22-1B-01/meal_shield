@@ -1,31 +1,32 @@
 import re
-from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Pool, cpu_count
 
 import requests
 from bs4 import BeautifulSoup
 
+# 検索上限(page数)
+limit_page = 10
 
-def scraping_cookpad(recipe_name: str):
+
+def scraping_cookpad(recipe_name: str) -> list[dict]:
 
     # 検索結果ページのURLリストを取得
-    page_urls = make_url_list(recipe_name)
-    if page_urls is None:
+    page_url_list = make_url_list(recipe_name)
+    if page_url_list is None:
         return None
     # それぞれのページのURLからレシピのURLを並列処理で取得
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        recipe_url_lists = list(executor.map(scraping_recipe_url, page_urls))
+    num_cpu = cpu_count()
+    with Pool(num_cpu) as pool_1:
+        recipe_url_lists = pool_1.map(scraping_recipe_url, page_url_list)
     # URLのリストを結合
     recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
     # それぞれのレシピのURLからデータを並列処理で取得
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        recipe_data_list = list(executor.map(scraping_recipe_data, recipe_url_list))
+    with Pool(num_cpu) as pool_2:
+        recipe_data_list = pool_2.map(scraping_recipe_data, recipe_url_list)
     return recipe_data_list
 
 
-def make_url_list(recipe_name: str):
-
-    # 検索上限(page数)
-    limit_page = 10
+def make_url_list(recipe_name: str) -> list[str]:
 
     # 検索結果の最初のページのURL
     url = f'https://cookpad.com/search/{recipe_name}'
@@ -53,7 +54,7 @@ def make_url_list(recipe_name: str):
         return None
 
 
-def scraping_recipe_url(url: str):
+def scraping_recipe_url(url: str) -> list[str]:
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'lxml')
 
@@ -69,7 +70,8 @@ def scraping_recipe_url(url: str):
     return recipe_url_list
 
 
-def scraping_recipe_data(url: str):
+def scraping_recipe_data(url: str) -> list[dict]:
+    print(url)
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'lxml')
 
