@@ -19,8 +19,8 @@ services:
         target: /app
     ports:
       - "8080:8080"
-    # command:
-    #   poetry run streamlit run src/meal_shield/app.py --server.port 8080
+    command:
+      poetry run streamlit run src/meal_shield/app.py --server.port 8080
     environment:
         PYTHONPATH: "/app/src"
         PYTHONUNBUFFERED: 1
