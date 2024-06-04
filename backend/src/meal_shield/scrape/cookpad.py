@@ -71,7 +71,6 @@ def scraping_recipe_url(url: str) -> list[str]:
 
 
 def scraping_recipe_data(url: str) -> list[dict]:
-    print(url)
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'lxml')
 
