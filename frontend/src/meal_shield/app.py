@@ -1,6 +1,7 @@
 
 import streamlit as st
 import requests
+from PIL import Image
 
 def fetch_recipes(recipe_name, allergies):
     # APIエンドポイントとパラメータを設定します（仮のURLです）
@@ -25,17 +26,61 @@ def search_recipe_entrypoint():
 
     # アレルギー品目の選択肢
     allergies_list = [
-        "たまご", "牛乳", "小麦", "そば", "えび", "かに", "落花生", "アーモンド", 
-        "あわび", "いか", "いくら", "オレンジ", "カシューナッツ", "キウイフルーツ",
-        "牛肉", "くるみ", "ごま", "さけ", "さば", "大豆", "鶏肉", "バナナ", 
-        "豚肉", "まつたけ", "桃", "やまいも", "りんご", "ゼラチン"
+        {"name": "たまご", "file": "egg.png"},
+        {"name": "牛乳", "file": "milk.png"},
+        {"name": "小麦", "file": "mugi.png"},
+        {"name": "そば", "file": "soba.png"},
+        {"name": "えび", "file": "ebi.png"},
+        {"name": "かに", "file": "kani.png"},
+        {"name": "落花生", "file": "cashew.png"},
+        {"name": "アーモンド", "file": "almond.png"},
+        {"name": "あわび", "file": "awabi.png"},
+        {"name": "いか", "file": "ika.png"},
+        {"name": "いくら", "file": "ikura.png"},
+        {"name": "オレンジ", "file": "mikan.png"},
+        {"name": "カシューナッツ", "file": "cashew.png"},
+        {"name": "キウイフルーツ", "file": "kiwi.png"},
+        {"name": "牛肉", "file": "gyuniku.png"},
+        {"name": "くるみ", "file": "kurumi.png"},
+        {"name": "ごま", "file": "goma.png"},
+        {"name": "さけ", "file": "sake.png"},
+        {"name": "さば", "file": "saba.png"},
+        {"name": "大豆", "file": "daizu.png"},
+        {"name": "鶏肉", "file": "toriniku.png"},
+        {"name": "バナナ", "file": "banana.png"},
+        {"name": "豚肉", "file": "pig.png"},
+        {"name": "まつたけ", "file": "matsutake.png"},
+        {"name": "桃", "file": "momo.png"},
+        {"name": "やまいも", "file": "yamaimo.png"},
+        {"name": "りんご", "file": "ringo.png"},
+        {"name": "ゼラチン", "file": "gelatine.png"}
     ]
 
+
     st.subheader("除去したい品目を選択してください")
-    selected_allergies = st.multiselect("", allergies_list)
+    selected_allergies = []
     
     # 選択されたアレルギー品目の表示
     #st.write("選択されたアレルギー品目:", selected_allergies)
+#########################################
+    cols = st.columns(7)
+    for index, item in enumerate(allergies_list):
+        col = cols[index % 7]
+        image = Image.open(f"images/{item['file']}")
+        if col.button("", key=item['name']):
+            if item['name'] in st.session_state:
+                st.session_state.pop(item['name'])
+            else:
+                st.session_state[item['name']] = True
+        
+        if item['name'] in st.session_state:
+            col.image(image, caption=item['name'], use_column_width=True, output_format='PNG')
+            selected_allergies.append(item['name'])
+        else:
+            col.image(image, caption=item['name'], use_column_width=True, output_format='PNG')
+
+#########################################  
+
 
     st.subheader("レシピ検索")
     # ユーザーからレシピ名を入力として受け取ります
