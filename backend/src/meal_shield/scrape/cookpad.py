@@ -1,5 +1,6 @@
 import re
 from multiprocessing import Pool, cpu_count
+from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup
