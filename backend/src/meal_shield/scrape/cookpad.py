@@ -15,16 +15,10 @@ def scraping_cookpad(recipe_name: str):
     with ThreadPoolExecutor(max_workers=4) as executor:
         recipe_url_lists = list(executor.map(scraping_recipe_url, page_urls))
     # URLのリストを結合
-    recipe_url_list = [
-            item
-            for sublist in recipe_url_lists
-            for item in sublist
-            ]
+    recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
     # それぞれのレシピのURLからデータを並列処理で取得
     with ThreadPoolExecutor(max_workers=4) as executor:
-        recipe_data_list = list(
-                executor.map(scraping_recipe_data, recipe_url_list)
-                )
+        recipe_data_list = list(executor.map(scraping_recipe_data, recipe_url_list))
     return recipe_data_list
 
 
@@ -33,7 +27,7 @@ def make_url_list(recipe_name: str):
     # 検索上限(page数)
     limit_page = 10
 
-    #検索結果の最初のページのURL
+    # 検索結果の最初のページのURL
     url = f'https://cookpad.com/search/{recipe_name}'
     response = requests.get(url)
 
@@ -80,8 +74,7 @@ def scraping_recipe_data(url: str):
     soup = BeautifulSoup(response.content, 'lxml')
 
     # レシピのタイトルである<h1>タグのテキストを取得
-    recipe_title = soup.find('h1', class_='recipe-title') \
-    .get_text(strip=True)
+    recipe_title = soup.find('h1', class_='recipe-title').get_text(strip=True)
     # 全角スペースを半角スペースに置き換える
     recipe_title = recipe_title.replace('\u3000', ' ')
 
@@ -105,10 +98,9 @@ def scraping_recipe_data(url: str):
     recipe_img_url = img_tag.get('src')
 
     recipe_data = {
-            'recipe_title': recipe_title,
-            'ingredient_list': ingredient_list,
-            'recipe_url': url,
-            'recipe_img_url': recipe_img_url
-            }
+        'recipe_title': recipe_title,
+        'ingredient_list': ingredient_list,
+        'recipe_url': url,
+        'recipe_img_url': recipe_img_url,
+    }
     return recipe_data
-

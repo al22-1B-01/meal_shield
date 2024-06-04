@@ -9,7 +9,7 @@ def main():
     allergy_list = ['鶏', 'とり']
 
     recipe_data_list = scraping_and_excluding(allergy_list, recipe_name)
-    
+
     if recipe_data_list is not None:
         for recipe_data in recipe_data_list:
             print(f"{recipe_data['recipe_title']}")
@@ -50,10 +50,9 @@ def contains_any_in_list(strings: List[str], substrings: List[str]) -> bool:
 def excluding(allergy_list: List[str], recipe_data_list: List[dict]):
     # 材料にアレルギーを含む要素を除外
     excluded_recipe_data_list = [
-        recipe_data for recipe_data in recipe_data_list
-        if not contains_any_in_list(
-            recipe_data['ingredient_list'], allergy_list
-        )
+        recipe_data
+        for recipe_data in recipe_data_list
+        if not contains_any_in_list(recipe_data['ingredient_list'], allergy_list)
     ]
     return excluded_recipe_data_list
 
