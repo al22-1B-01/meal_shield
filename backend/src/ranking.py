@@ -1,27 +1,28 @@
 # ToDo: 内部設計書等を参照して関数名、変数名などを変更。コードの各位置を編集する（まとめる）
 
 
+import logging  # fix (0.2->0.3): loggingパッケージimportの修正
+from multiprocessing import Pool  # fix
 
-import logging                          # fix (0.2->0.3): loggingパッケージimportの修正
-from multiprocessing import Pool        # fix
-
-logging.basicConfig(level=logging.INFO) # fix
-logger = logging.getLogger(__name__)    # fix
+logging.basicConfig(level=logging.INFO)  # fix
+logger = logging.getLogger(__name__)  # fix
 
 
 ###################################################################################################
 # 指定されたアレルギー品目とレシピのリストを取得する関数
 ###################################################################################################
-from typing import Union        # fix (0.1->0.2): List, Dictはpython3.9以降だとtypingからimportせずに
-                                # 小文字でそのまま扱う
+from typing import Union  # fix (0.1->0.2): List, Dictはpython3.9以降だとtypingからimportせずに
+
+# 小文字でそのまま扱う
+
 
 def get_allergies_and_recipes(
     allergies_list: list[str],
-    excluded_recipes_list: list[dict[str, Union[str, list[str]]]]
+    excluded_recipes_list: list[dict[str, Union[str, list[str]]]],
 ) -> (list[str], list[dict[str, Union[str, list[str]]]]):
     """
     指定されたアレルギー品目とレシピのリストを取得する関数。
-    
+
     :param allergies_list: アレルギー品目のデータを持つリスト
     :param excluded_recipes_list: レシピのデータを持ったリスト
     :return: アレルギー品目リストとレシピデータリストのタプル
@@ -64,7 +65,6 @@ def get_allergies_and_recipes(
 ####################################################################################################
 
 
-
 ###################################################################################################
 # 各レシピに対してスコアリングを行う関数
 ###################################################################################################
@@ -76,14 +76,17 @@ def get_allergies_and_recipes(
 # ask: linter
 
 import os
+
 os.environ["OPENAI_API_KEY"] = "Your OpenAPI Key"
 
 from openai import OpenAI
+
 client = OpenAI()
 
+
 def get_embedding(text, model="text-embedding-3-small"):
-   text = text.replace("\n", " ")
-   return client.embeddings.create(input = [text], model=model).data[0].embedding
+    text = text.replace("\n", " ")
+    return client.embeddings.create(input=[text], model=model).data[0].embedding
 
 
 text = "porcine pals"
@@ -93,12 +96,14 @@ get_embedding(text)
 
 import numpy as np
 
+
 def cosine_similarity(vec1, vec2):
     dot_product = np.dot(vec1, vec2)
     norm_vec1 = np.linalg.norm(vec1)
     norm_vec2 = np.linalg.norm(vec2)
     similarity = dot_product / (norm_vec1 * norm_vec2)
     return similarity
+
 
 # 例として2つのベクトルを定義
 # vector1 = np.array(get_embedding("文章1"))
@@ -111,8 +116,7 @@ def cosine_similarity(vec1, vec2):
 
 
 # fix (0.1->0.2): 出力の型がない
-def score_allergens(recipes, allergens, model_name="text-embedding-3-small"
-) -> (float):
+def score_allergens(recipes, allergens, model_name="text-embedding-3-small") -> (float):
     allergen_embeddings = get_embeddings(allergens, model_name)
     scores = {}
 
@@ -123,7 +127,9 @@ def score_allergens(recipes, allergens, model_name="text-embedding-3-small"
         max_scores = []
 
         for allergen_embedding in allergen_embeddings:
-            similarity_scores = cosine_similarity(ingredient_embeddings, [allergen_embedding])
+            similarity_scores = cosine_similarity(
+                ingredient_embeddings, [allergen_embedding]
+            )
             max_score = np.max(similarity_scores)
             max_scores.append(max_score)
 
@@ -170,19 +176,22 @@ def score_allergens(recipes, allergens, model_name="text-embedding-3-small"
 ####################################################################################################
 
 
-
 ####################################################################################################
 # スコアリング結果に基づいてソートを行う関数
 ####################################################################################################
 # fix (0.1->0.2): 出力の型がない
-def sort_recipes_by_allergy_score(scores
+def sort_recipes_by_allergy_score(
+    scores,
 ) -> (list[str], list[dict[str, Union[str, list[str]]]]):
     # 各レシピのスコアを合計して、(レシピタイトル, 合計スコア)のリストを作成
-    total_scores = [(recipe_title, sum(allergen_scores)) for recipe_title, allergen_scores in scores.items()]
-    
+    total_scores = [
+        (recipe_title, sum(allergen_scores))
+        for recipe_title, allergen_scores in scores.items()
+    ]
+
     # 合計スコアでソート（スコアが高い順）
     sorted_recipes = sorted(total_scores, key=lambda x: x[1], reverse=True)
-    
+
     return sorted_recipes
 
 
@@ -203,11 +212,23 @@ def sort_recipes_by_allergy_score(scores
 ##################################################
 
 
-
 ####################################################################################################
 # メイン関数：上の各関数を呼び出す
 ####################################################################################################
-def ranking_recipe():
+def ranking_recipe(
+    allergies_list: list[str],
+    excluded_recipes_list: list[dict[str, Union[str, list[str]]]],
+) -> dict[str, Union[str, list[str]]]:
+    # スコアリング関数の呼び出し
+    scores = score_allergens(excluded_recipes_list, allergies_list)
+
+    # スコアリング結果のソート
+    sorted_recipes = sort_recipes_by_allergy_score(scores)
+
+    return sorted_recipes
+
+
+def main():
     # アレルギー品目とレシピデータの取得
     # 正式実装の際は、get_allergies_and_recipes関数内でC5から受け取る
     # allergies_list, excluded_recipes_list = get_allergies_and_recipes(allergies, recipes)
@@ -217,32 +238,31 @@ def ranking_recipe():
             "recipe_title": "レシピ1",
             "recipe_ingredients": ["ミルク", "卵", "小麦粉"],
             "recipe_url": "http://example.com/recipe1",
-            "recipe_image_url": "http://example.com/recipe1.jpg"
+            "recipe_image_url": "http://example.com/recipe1.jpg",
         },
         {
             "recipe_title": "レシピ2",
             "recipe_ingredients": ["ピーナッツ", "砂糖", "バター"],
             "recipe_url": "http://example.com/recipe2",
-            "recipe_image_url": "http://example.com/recipe2.jpg"
+            "recipe_image_url": "http://example.com/recipe2.jpg",
         },
         {
             "recipe_title": "レシピ3",
             "recipe_ingredients": ["大豆", "小麦", "鶏肉"],
             "recipe_url": "http://example.com/recipe3",
-            "recipe_image_url": "http://example.com/recipe3.jpg"
-        }
+            "recipe_image_url": "http://example.com/recipe3.jpg",
+        },
     ]
 
-    # スコアリング関数の呼び出し
-    scores = score_allergens(excluded_recipes_list, allergies_list)
-
-    # スコアリング結果のソート
-    sorted_recipes = sort_recipes_by_allergy_score(scores)
+    sorted_recipes = ranking_recipe(
+        allergies_list=allergies_list,
+        excluded_recipes_list=excluded_recipes_list,
+    )
 
     # ソート結果の表示
     for recipe_title, total_score in sorted_recipes:
         logger.info(f"レシピ名: {recipe_title}, アレルギースコア合計: {total_score}")
 
+
 if __name__ == "__main__":
     ranking_recipe()
-
