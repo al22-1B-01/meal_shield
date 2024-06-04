@@ -5,29 +5,29 @@ import requests
 from bs4 import BeautifulSoup
 
 # 検索上限(page数)
-limit_page = 10
+LIMIT_PAGE = 10
 
 
-def scraping_cookpad(recipe_name: str) -> list[dict]:
-
+def scraping_cookpad(
+    recipe_name: str,
+) -> Optional[list[dict[str, list[str], str, str]]]:
     # 検索結果ページのURLリストを取得
     page_url_list = make_url_list(recipe_name)
     if page_url_list is None:
         return None
     # それぞれのページのURLからレシピのURLを並列処理で取得
     num_cpu = cpu_count()
-    with Pool(num_cpu) as pool_1:
-        recipe_url_lists = pool_1.map(scraping_recipe_url, page_url_list)
+    with Pool(num_cpu) as pool:
+        recipe_url_lists = pool.map(scraping_recipe_url, page_url_list)
     # URLのリストを結合
     recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
     # それぞれのレシピのURLからデータを並列処理で取得
-    with Pool(num_cpu) as pool_2:
-        recipe_data_list = pool_2.map(scraping_recipe_data, recipe_url_list)
+    with Pool(num_cpu) as pool:
+        recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
     return recipe_data_list
 
 
-def make_url_list(recipe_name: str) -> list[str]:
-
+def make_url_list(recipe_name: str) -> Optional[list[str]]:
     # 検索結果の最初のページのURL
     url = f'https://cookpad.com/search/{recipe_name}'
     response = requests.get(url)
@@ -41,8 +41,8 @@ def make_url_list(recipe_name: str) -> list[str]:
         sum_of_pages = int(page_parts[1].replace(",", ""))
 
         # 検索上限を設定
-        if sum_of_pages > limit_page:
-            sum_of_pages = limit_page
+        if sum_of_pages > LIMIT_PAGE:
+            sum_of_pages = LIMIT_PAGE
 
         url_list = []
         # ページ数分だけURLを作成
@@ -70,7 +70,7 @@ def scraping_recipe_url(url: str) -> list[str]:
     return recipe_url_list
 
 
-def scraping_recipe_data(url: str) -> list[dict]:
+def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'lxml')
 
