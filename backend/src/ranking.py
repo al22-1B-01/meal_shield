@@ -1,5 +1,12 @@
-from logging import getLogger       # add (0.1->0.2): loggingパッケージのimport
-logger = getLogger(__name__)        # add (0.1->0.2):
+# ToDo: 内部設計書等を参照して関数名、変数名などを変更。コードの各位置を編集する（まとめる）
+
+
+
+import logging                          # fix (0.2->0.3): loggingパッケージimportの修正
+from multiprocessing import Pool        # fix
+
+logging.basicConfig(level=logging.INFO) # fix
+logger = logging.getLogger(__name__)    # fix
 
 
 ###################################################################################################
@@ -62,6 +69,12 @@ def get_allergies_and_recipes(
 # 各レシピに対してスコアリングを行う関数
 ###################################################################################################
 # fix (0.1->0.2): https://weel.co.jp/media/tech/text-embedding-3/ を参考にして作り直し
+
+# ask: https://weel.co.jp/media/tech/text-embedding-3/ どこまでの処理が行えるのか
+# ask: 上記に記載されている関数はなにをやっているのか
+# ask: 大豆→醤油 のように、アレルギー品目を原材料とする加工品の弾き方
+# ask: linter
+
 import os
 os.environ["OPENAI_API_KEY"] = "Your OpenAPI Key"
 
@@ -194,7 +207,7 @@ def sort_recipes_by_allergy_score(scores
 ####################################################################################################
 # メイン関数：上の各関数を呼び出す
 ####################################################################################################
-def main():
+def ranking_recipe():
     # アレルギー品目とレシピデータの取得
     # 正式実装の際は、get_allergies_and_recipes関数内でC5から受け取る
     # allergies_list, excluded_recipes_list = get_allergies_and_recipes(allergies, recipes)
@@ -231,5 +244,5 @@ def main():
         logger.info(f"レシピ名: {recipe_title}, アレルギースコア合計: {total_score}")
 
 if __name__ == "__main__":
-    main()
+    ranking_recipe()
 
