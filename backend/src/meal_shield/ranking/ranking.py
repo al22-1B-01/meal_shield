@@ -13,13 +13,6 @@ def get_allergies_and_recipes(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str]]]],
 ) -> (list[str], list[dict[str, Union[str, list[str]]]]):
-    '''
-    指定されたアレルギー品目とレシピのリストを取得する関数。
-
-    :param allergies_list: アレルギー品目のデータを持つリスト
-    :param excluded_recipes_list: レシピのデータを持ったリスト
-    :return: アレルギー品目リストとレシピデータリストのタプル
-    '''
 
     # ここでC5から指定されたアレルギー品目とレシピのリストを受け取る
 
@@ -27,17 +20,10 @@ def get_allergies_and_recipes(
 
 
 def sort_recipes_by_allergy_score(
-    scores,
+    scores: dict[str, float],
 ) -> (list[str], list[dict[str, Union[str, list[str]]]]):
-    # 各レシピのスコアを合計して、(レシピタイトル, 合計スコア)のリストを作成
-    total_scores = [
-        (recipe_title, sum(allergen_scores))
-        for recipe_title, allergen_scores in scores.items()
-    ]
-
-    # 合計スコアでソート（スコアが高い順）
-    sorted_recipes = sorted(total_scores, key=lambda x: x[1], reverse=True)
-
+    # スコアが低い順にソートする
+    sorted_recipes = dict(sorted(scores.items(), key=lambda item: item[1]))
     return sorted_recipes
 
 
@@ -64,37 +50,38 @@ def main():
     # アレルギー品目とレシピデータの取得
     # 正式実装の際は、get_allergies_and_recipes関数内でC5から受け取る
     # allergies_list, excluded_recipes_list = get_allergies_and_recipes(allergies, recipes)
-    allergies_list = ['ミルク', 'ピーナッツ', '大豆']
+    allergies_list = ['かに', '乳', '大豆']
     excluded_recipes_list = [
         {
             'recipe_title': 'レシピ1',
-            'recipe_ingredients': ['ミルク', '卵', '小麦粉'],
+            'recipe_ingredients': ['カニ', '卵', '小麦粉'],
             'recipe_url': 'http://example.com/recipe1',
             'recipe_image_url': 'http://example.com/recipe1.jpg',
         },
         {
             'recipe_title': 'レシピ2',
-            'recipe_ingredients': ['ピーナッツ', '砂糖', 'バター'],
+            'recipe_ingredients': ['かに', 'チーズ', '砂糖'],
             'recipe_url': 'http://example.com/recipe2',
             'recipe_image_url': 'http://example.com/recipe2.jpg',
         },
         {
             'recipe_title': 'レシピ3',
-            'recipe_ingredients': ['大豆', '小麦', '鶏肉'],
+            'recipe_ingredients': ['大豆', 'ヨーグルト', '蟹'],
             'recipe_url': 'http://example.com/recipe3',
             'recipe_image_url': 'http://example.com/recipe3.jpg',
         },
     ]
 
+    # スコアリング関数の呼び出し
     sorted_recipes = ranking_recipe(
         allergies_list=allergies_list,
         excluded_recipes_list=excluded_recipes_list,
     )
 
     # ソート結果の表示
-    for recipe_title, total_score in sorted_recipes:
+    for recipe_title, total_score in sorted_recipes.items():
         logger.info(f'レシピ名: {recipe_title}, アレルギースコア合計: {total_score}')
 
 
 if __name__ == '__main__':
-    ranking_recipe()
+    main()
