@@ -39,7 +39,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
         # 1 / 1,000のような現在のページを表す文字列を取得
         number_of_pages = soup.find(class_='number_of_pages').text
         page_parts = number_of_pages.split(' / ')
-        sum_of_pages = int(page_parts[1].replace(",", ""))
+        sum_of_pages = int(page_parts[1].replace(',', ''))
 
         # 検索上限を設定
         if sum_of_pages > LIMIT_PAGE:
