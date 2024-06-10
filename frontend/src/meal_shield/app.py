@@ -1,19 +1,20 @@
+from pathlib import Path
 
-import streamlit as st
 import requests
+import streamlit as st
 from PIL import Image
 
+from meal_shield.env import PACKAGE_DIR
+
+
 def fetch_recipes(recipe_name, allergies):
-    # APIエンドポイントとパラメータを設定します（仮のURLです）
+    # APIエンドポイントとパラメータを設定（仮のURLです）
     api_url = "https://api.example.com/recipes"
-    params = {
-        "name": recipe_name,
-        "allergies": ",".join(allergies)
-    }
-    
-    # APIリクエストを送信します
+    params = {"name": recipe_name, "allergies": ",".join(allergies)}
+
+    # APIリクエストを送信
     response = requests.get(api_url, params=params)
-    
+
     # レスポンスをJSON形式で解析します
     if response.status_code == 200:
         return response.json()
@@ -21,8 +22,9 @@ def fetch_recipes(recipe_name, allergies):
         st.error(f"Error: {response.status_code}")
         return []
 
+
 def search_recipe_entrypoint():
-    st.title("レシピ検索アプリ")
+    # st.title("レシピ検索アプリ")
 
     # アレルギー品目の選択肢
     allergies_list = [
@@ -53,34 +55,41 @@ def search_recipe_entrypoint():
         {"name": "桃", "file": "momo.png"},
         {"name": "やまいも", "file": "yamaimo.png"},
         {"name": "りんご", "file": "ringo.png"},
-        {"name": "ゼラチン", "file": "gelatine.png"}
+        {"name": "ゼラチン", "file": "gelatine.png"},
     ]
-
 
     st.subheader("除去したい品目を選択してください")
     selected_allergies = []
-    
-    # 選択されたアレルギー品目の表示
-    #st.write("選択されたアレルギー品目:", selected_allergies)
-#########################################
+
+    if "selected_allergies" not in st.session_state:
+        st.session_state.selected_allergies = []
+
     cols = st.columns(7)
     for index, item in enumerate(allergies_list):
         col = cols[index % 7]
-        image = Image.open(f"images/{item['file']}")
-        if col.button("", key=item['name']):
-            if item['name'] in st.session_state:
-                st.session_state.pop(item['name'])
+        image = Image.open(PACKAGE_DIR / f"data/images/{item['file']}")
+
+        if col.button(f"{item['name']}"):
+            if item['name'] in st.session_state.selected_allergies:
+                st.session_state.selected_allergies.remove(item['name'])
             else:
-                st.session_state[item['name']] = True
-        
-        if item['name'] in st.session_state:
-            col.image(image, caption=item['name'], use_column_width=True, output_format='PNG')
-            selected_allergies.append(item['name'])
+                st.session_state.selected_allergies.append(item['name'])
+
+        if item['name'] in st.session_state.selected_allergies:
+            col.image(
+                image, caption=item['name'], use_column_width=True, output_format='PNG'
+            )
         else:
-            col.image(image, caption=item['name'], use_column_width=True, output_format='PNG')
+            col.image(
+                image, caption=item['name'], use_column_width=True, output_format='PNG'
+            )
 
-#########################################  
-
+    st.subheader("選択されたアレルギー品目")
+    for allergy in st.session_state.selected_allergies:
+        st.markdown(
+            f'<span style="background-color: black; padding: 5px;">{allergy}</span>',
+            unsafe_allow_html=True,
+        )
 
     st.subheader("レシピ検索")
     # ユーザーからレシピ名を入力として受け取ります
@@ -88,10 +97,10 @@ def search_recipe_entrypoint():
 
     if st.button("検索"):
         recipes = fetch_recipes(recipe_name, selected_allergies)
-        
+
         if recipes:
             st.success(f"検索結果: {len(recipes)}件のレシピが見つかりました")
-            
+
             for recipe in recipes:
                 with st.expander(recipe['name']):
                     st.write(f"名前: {recipe['name']}")
@@ -100,10 +109,11 @@ def search_recipe_entrypoint():
         else:
             st.warning("レシピが見つかりませんでした")
 
+
 def display_recipe():
     recipes = st.session_state.get('recipes', [])
     st.title("レシピ検索結果")
-    
+
     if recipes:
         for recipe in recipes:
             with st.expander(recipe['name']):
@@ -113,12 +123,13 @@ def display_recipe():
     else:
         st.warning("検索結果が見つかりませんでした")
 
+
 def display_recipe_detail(recipe_name):
     st.title("レシピ詳細")
-    
+
     recipes = st.session_state.get('recipes', [])
     recipe = next((r for r in recipes if r['name'] == recipe_name), None)
-    
+
     if recipe:
         st.write(f"名前: {recipe['name']}")
         st.write(f"材料: {recipe['ingredients']}")
@@ -127,6 +138,7 @@ def display_recipe_detail(recipe_name):
         st.markdown(f"[クックパッドのページ]({recipe['url']})")
     else:
         st.warning("レシピが見つかりませんでした")
+
 
 def main():
     st.sidebar.title("メニュー")
@@ -140,6 +152,7 @@ def main():
         recipe_name = st.sidebar.text_input("レシピ名を入力してください")
         if recipe_name:
             display_recipe_detail(recipe_name)
+
 
 if __name__ == "__main__":
     main()
