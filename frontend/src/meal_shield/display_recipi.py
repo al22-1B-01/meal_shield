@@ -8,7 +8,7 @@ def display_recipi(
     selected_allergies: list[str],
     recipi_name: str,
     result: list[dict[str, Union[str, list[str]]]],
-):
+) -> None:
     st.title('選択されたアレルギー品目')
     allergy_list = ', '.join(selected_allergies)
 
@@ -19,7 +19,7 @@ def display_recipi(
     """
 
     st.markdown(box_style.format(content=allergy_list), unsafe_allow_html=True)
-    st.title("料理名")
+    st.title('料理名')
     st.markdown(box_style.format(content=recipi_name), unsafe_allow_html=True)
 
     button_css = f"""
@@ -33,7 +33,7 @@ def display_recipi(
     """
 
     for idex, item in enumerate(result):
-        st.write(f"{idex + 1}位")
+        st.write(f'{idex + 1}位')
         st.markdown(button_css, unsafe_allow_html=True)
         st.image(item['image'], width=300)
 
