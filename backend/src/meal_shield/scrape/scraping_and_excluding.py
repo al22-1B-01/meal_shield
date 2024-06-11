@@ -1,12 +1,11 @@
 import logging
 
-from meal_shield.scrape.cookpad import scraping_cookpad
+from cookpad import scraping_cookpad
 
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 # テスト用main関数
 def main():
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
     recipe_name = 'ココナッツカレー'
     allergy_list = ['鶏', 'とり']
     recipe_data_list = scraping_and_excluding(allergy_list, recipe_name)
