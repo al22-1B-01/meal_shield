@@ -4,8 +4,10 @@ from typing import Union
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# TODO: Make rule base count score func
-ALLERGIES = {
+# NOTE: デバッグ用info
+logger.info('ranking_count is running!')
+
+WORDS = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],
     '小麦': ['小麦', '醤油', 'しょうゆ'],
@@ -38,28 +40,33 @@ ALLERGIES = {
 
 
 def extract_allergy_words(
-    words_dict: dict[str, list[str]], allergies_list: list[str]
-) -> list[str]:
-    result = []
-    for key in allergies_list:
-        result.extend(words_dict[key])
-    return result
-
-
-def score_allergens(
-    excluded_recipes_list: list[dict[str, Union[str, list[str]]]],
+    words: dict[str, list[str]],
     allergies_list: list[str],
-) -> dict[str, float]:
-    extracted_allergies_list = extract_allergy_words(ALLERGIES, allergies_list)
-    result = {}
+) -> list[str]:
+    # 指定されたアレルギー品目を基に比較用の文字列をWORDSから取り出す
+    extracted_allergies_list = []
+    for key in allergies_list:
+        extracted_allergies_list.extend(words[key])
+
+    return extracted_allergies_list
+
+
+def scoring_count(
+    allergies_list: list[str],
+    excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
+) -> list[dict[str, Union[str, list[str], float]]]:
+    # カウントベースで各レシピのスコアを算出する
+    extracted_allergies_list = extract_allergy_words(WORDS, allergies_list)
+    scored_recipes_list = [{}]
 
     for recipe in excluded_recipes_list:
         allergen_counts = 0
-        recipe_title = recipe["recipe_title"]
-        ingredients = recipe["recipe_ingredients"]
+        recipe_title = recipe['recipe_title']
+        ingredients = recipe['recipe_ingredients']
+
         for allergen in extracted_allergies_list:
             allergen_counts += ingredients.count(allergen)
 
-        result[recipe_title] = allergen_counts
+        recipe['recipe_score'] = allergen_counts
 
-    return result
+    return excluded_recipes_list
