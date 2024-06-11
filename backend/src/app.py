@@ -2,7 +2,8 @@ from typing import Optional, Union
 
 from fastapi import FastAPI
 
-from meal_shiled.backend.src import ranking, scraping_and_excluding
+from meal_shield.backend.src import ranking
+from meal_shield.scrape.scraping_and_excluding import scraping_and_exclude
 
 app = FastAPI()
 
