@@ -12,17 +12,17 @@ def display_recipi(
     st.title('選択されたアレルギー品目')
     allergy_list = ', '.join(selected_allergies)
 
-    box_style = """
-    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
+    box_style = '''
+    <div style='border: 1px solid #ddd; padding: 10px; border-radius: 5px; background-color: #f9f9f9;'>
     {content}
     </div>
-    """
+    '''
 
     st.markdown(box_style.format(content=allergy_list), unsafe_allow_html=True)
     st.title('料理名')
     st.markdown(box_style.format(content=recipi_name), unsafe_allow_html=True)
 
-    button_css = f"""
+    button_css = f'''
     <style>
     dic.stButton > button:first-child  {{
         front.weight : bold;
@@ -30,7 +30,7 @@ def display_recipi(
         height : 50px;
     }}
     </style>
-    """
+    '''
 
     for idex, item in enumerate(result):
         st.write(f'{idex + 1}位')
