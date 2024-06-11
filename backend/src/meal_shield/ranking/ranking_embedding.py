@@ -8,6 +8,8 @@ from openai import OpenAI
 
 from meal_shield.env import OPENAI_API_KEY
 
+from sklearn.metrics.pairwise import cosine_similarity
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -17,46 +19,37 @@ logger = logging.getLogger(__name__)
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 client = OpenAI()
 
-
+# 埋め込みを取得する関数
 def get_embedding(text, model='text-embedding-3-small') -> Any:
-    text = text.replace('\n', ' ')
-    return client.embeddings.create(input=[text], model=model).data[0].embedding
+    response = openai.Embedding.create(
+        model=model,
+        input=[text]
+    )
+    return response['data'][0]['embedding']
 
+# レシピごとにアレルギーのスコアを計算する関数
+def calculate_allergen_score(recipe, allergens):
+    ingredient_embeddings = [get_embedding(ingredient) for ingredient in recipe['ingredients']]
+    allergen_embeddings = [get_embedding(allergen) for allergen in allergens]
 
-def cosine_similarity(vec1, vec2) -> float:
-    '''
-    例として2つのベクトルを定義
+    # 材料のアレルギーへの類似度の平均を計算
+    scores = []
+    for ingredient_embedding in ingredient_embeddings:
+        similarities = cosine_similarity([ingredient_embedding], allergen_embeddings)
+        scores.append(np.mean(similarities))
 
-    Usage:
-    vector1 = np.array(get_embedding('文章1'))
-    vector2 = np.array(get_embedding('文章2'))
+    return np.mean(scores)
 
-    コサイン類似度の計算
-    similarity = cosine_similarity(vector1, vector2)
-    print(f'コサイン類似度: {similarity}')
-    '''
-    dot_product = np.dot(vec1, vec2)
-    norm_vec1 = np.linalg.norm(vec1)
-    norm_vec2 = np.linalg.norm(vec2)
-    similarity = dot_product / (norm_vec1 * norm_vec2)
-    return similarity
-
-
-# fix (0.1->0.2): 出力の型がない
 def score_allergens_by_embedding(
     recipes, allergens, model_name='text-embedding-3-small'
 ) -> dict[str, list[float]]:
-    scores = {}
-
-    allergen_embedding = get_embedding(', '.join(allergens))
+    # 各レシピにアレルギースコアを追加
     for recipe in recipes:
-        recipe_ingredients_embedding = get_embedding(
-            ', '.join(recipe['recipe_ingredients'])
-        )
-        sim_score = cosine_similarity(allergen_embedding, recipe_ingredients_embedding)
-        # TODO: update return data
-        # max_score = np.max(similarity_scores)
-        # max_scores.append(max_score)
-        # scores[recipe_title] = max_scores
+        recipe['allergen_score'] = calculate_allergen_score(recipe, allergens)
 
-    return scores
+    # TODO: update return data
+    # max_score = np.max(similarity_scores)
+    # max_scores.append(max_score)
+    # scores[recipe_title] = max_scores
+
+    return recipe
