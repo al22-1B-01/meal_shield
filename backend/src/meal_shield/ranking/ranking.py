@@ -3,8 +3,7 @@ from typing import Optional, Union
 
 # from meal_shield.ranking.ranking_chatgpt import scoring_chatgpt
 from meal_shield.ranking.ranking_count import scoring_count
-
-# from meal_shield.ranking.ranking_embedding import scoring_embedding
+from meal_shield.ranking.ranking_embedding import scoring_embedding
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ def sort_recipes_by_allergy_score(
 def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
-    ranking_method: Optional[str] = 'default',
+    ranking_method: Optional[str] = 'embedding',
 ) -> list[dict[str, Union[str, list[str]]]]:
     '''
     scored_recipes_list: list[dict[str, Union[str, list[str], float]]]

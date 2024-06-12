@@ -1,16 +1,16 @@
 import logging
 import os
 from typing import Any
+from typing import Union
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
-import numpy as np
 from openai import OpenAI
+from sklearn.metrics.pairwise import cosine_similarity
 
 from meal_shield.env import OPENAI_API_KEY
-
-from sklearn.metrics.pairwise import cosine_similarity
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,8 +23,8 @@ logger.info('ranking_embedding is running!')
 
 
 def get_embedding(
-    model_name='text-embedding-3-small',
     text: str,
+    model_name='text-embedding-3-small',
 ) -> Any:
     # 次元埋め込みを取得する関数
     embedding_response = client.embeddings.create(
@@ -39,7 +39,13 @@ def calc_allergens_include_score(
     allergies_list: list[str],
     recipe: dict[str, Union[str, list[str], float]],
 ) -> float:
-    pass
+    ingredient_embeddings = get_embedding(''.join(recipe['recipe_ingredients']))
+    allergen_embeddings = get_embedding(''.join(allergies_list))
+
+    # 指定されたアレルギー品目に対する材料の類似度を計算
+    recipe_score = cosine_similarity(ingredient_embeddings, allergen_embeddings)
+
+    return recipe_score
 
 
 def scoring_embedding(
