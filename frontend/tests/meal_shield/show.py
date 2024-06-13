@@ -1,4 +1,5 @@
 import streamlit as st
+
 from meal_shield.detail import show_details
 from meal_shield.display_recipi import display_recipi
 
