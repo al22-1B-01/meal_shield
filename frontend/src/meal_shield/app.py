@@ -27,7 +27,7 @@ def search_recipe_entrypoint():
     # st.title("レシピ検索アプリ")
 
     # アレルギー品目の選択肢
-    allergies_list = [
+    allergy_option = [
         {"name": "たまご", "file": "egg.png"},
         {"name": "牛乳", "file": "milk.png"},
         {"name": "小麦", "file": "mugi.png"},
@@ -59,23 +59,23 @@ def search_recipe_entrypoint():
     ]
 
     st.subheader("除去したい品目を選択してください")
-    selected_allergies = []
+    allergy_list = []
 
-    if "selected_allergies" not in st.session_state:
-        st.session_state.selected_allergies = []
+    if "allergy_list" not in st.session_state:
+        st.session_state.allergy_list= []
 
     cols = st.columns(7)
-    for index, item in enumerate(allergies_list):
+    for index, item in enumerate(allergy_option):
         col = cols[index % 7]
         image = Image.open(PACKAGE_DIR / f"data/images/{item['file']}")
 
         if col.button(f"{item['name']}"):
-            if item['name'] in st.session_state.selected_allergies:
-                st.session_state.selected_allergies.remove(item['name'])
+            if item['name'] in st.session_state.allergy_list:
+                st.session_state.allergy_list.remove(item['name'])
             else:
-                st.session_state.selected_allergies.append(item['name'])
+                st.session_state.allergy_list.append(item['name'])
 
-        if item['name'] in st.session_state.selected_allergies:
+        if item['name'] in st.session_state.allergy_list:
             col.image(
                 image, caption=item['name'], use_column_width=True, output_format='PNG'
             )
@@ -85,7 +85,7 @@ def search_recipe_entrypoint():
             )
 
     st.subheader("選択されたアレルギー品目")
-    for allergy in st.session_state.selected_allergies:
+    for allergy in st.session_state.allergy_list:
         st.markdown(
             f'<span style="background-color: black; padding: 5px;">{allergy}</span>',
             unsafe_allow_html=True,
@@ -96,7 +96,7 @@ def search_recipe_entrypoint():
     recipe_name = st.text_input("レシピ名を入力してください")
 
     if st.button("検索"):
-        recipes = fetch_recipes(recipe_name, selected_allergies)
+        recipes = fetch_recipes(recipe_name, allergy_list)
 
         if recipes:
             st.success(f"検索結果: {len(recipes)}件のレシピが見つかりました")
