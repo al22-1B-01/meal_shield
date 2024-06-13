@@ -5,7 +5,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # NOTE: デバッグ用info
-logger.info('ranking_count is running!')
+logger.info('ranking_count.py was imported!')
 
 WORDS = {
     'えび': ['えび', 'エビ', '海老'],
