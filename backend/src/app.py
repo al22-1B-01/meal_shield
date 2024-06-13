@@ -1,8 +1,9 @@
 from typing import Optional, Union
 
 from fastapi import FastAPI
-from meal_shield.backend.src import ranking
 from meal_shield.scrape.scraping_and_excluding import scraping_and_exclude
+
+from meal_shield.backend.src import ranking
 
 app = FastAPI()
 
