@@ -57,11 +57,9 @@ def scoring_count(
 ) -> list[dict[str, Union[str, list[str], float]]]:
     # カウントベースで各レシピのスコアを算出する
     extracted_allergies_list = extract_allergy_words(WORDS, allergies_list)
-    scored_recipes_list = [{}]
 
     for recipe in excluded_recipes_list:
         allergen_counts = 0
-        recipe_title = recipe['recipe_title']
         ingredients = recipe['recipe_ingredients']
 
         for allergen in extracted_allergies_list:

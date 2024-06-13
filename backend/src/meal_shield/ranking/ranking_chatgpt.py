@@ -3,6 +3,7 @@ import os
 from typing import Union
 
 from openai import OpenAI
+from tqdm import tqdm
 
 from meal_shield.env import OPENAI_API_KEY
 
@@ -16,7 +17,7 @@ client = OpenAI()
 logger.info('ranking_chatgpt.py was imported!')
 
 
-def calc_allergens_include_score(
+def calc_allergens_include_score_by_chatgpt(
     allergies_list: list[str],
     ingredient: list[str],
 ) -> float:
@@ -41,8 +42,8 @@ def scoring_chatgpt(
     model_name='text-embedding-3-small',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     # ChatGPTを用いて各レシピのスコアを算出する
-    for recipe in excluded_recipes_list:
-        score: float = calc_allergens_include_score(
+    for recipe in tqdm(excluded_recipes_list):
+        score: float = calc_allergens_include_score_by_chatgpt(
             allergies_list, recipe['recipe_ingredients']
         )
         recipe['recipe_score'] = score
