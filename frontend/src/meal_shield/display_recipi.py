@@ -1,7 +1,6 @@
 from typing import Union
 
 import streamlit as st
-from PIL import Image
 
 
 def display_recipi(
@@ -13,7 +12,8 @@ def display_recipi(
     allergy_list = ', '.join(selected_allergies)
 
     box_style = '''
-    <div style='border: 1px solid #ddd; padding: 10px; border-radius: 5px; background-color: #f9f9f9;'>
+    <div style='border: 1px solid #ddd; padding:
+    10px; border-radius: 5px; background-color: #f9f9f9;'>
     {content}
     </div>
     '''
@@ -22,7 +22,7 @@ def display_recipi(
     st.title('料理名')
     st.markdown(box_style.format(content=recipi_name), unsafe_allow_html=True)
 
-    button_css = f'''
+    button_css = '''
     <style>
     dic.stButton > button:first-child  {{
         front.weight : bold;
