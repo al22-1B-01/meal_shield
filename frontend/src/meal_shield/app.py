@@ -62,7 +62,7 @@ def search_recipe_entrypoint():
     allergy_list = []
 
     if "allergy_list" not in st.session_state:
-        st.session_state.allergy_list= []
+        st.session_state.allergy_list = []
 
     cols = st.columns(7)
     for index, item in enumerate(allergy_option):
