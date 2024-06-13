@@ -1,9 +1,9 @@
-from typing import Optional, Union
+from typing import Union
 
 from fastapi import FastAPI
-from meal_shield.scrape.scraping_and_excluding import scraping_and_exclude
 
 from meal_shield.backend.src import ranking
+from meal_shield.scrape.scraping_and_excluding import scraping_and_exclude
 
 app = FastAPI()
 
@@ -56,7 +56,7 @@ async def get_recipi(
     if recipi is None:
         return [{'status': 'error', 'message': 'No recipi', 'data': []}]
 
-    allergy_remove = scraping_and_excluding.scraping_and_exclude(recipi, allergy_found)
+    allergy_remove = scraping_and_exclude(recipi, allergy_found)
     rank_recipi = ranking.ranking_recipi(allergy_found, allergy_remove)
 
     return rank_recipi
