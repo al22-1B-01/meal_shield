@@ -33,11 +33,11 @@ def display_recipi(
     '''
 
     for idex, item in enumerate(result):
-        st.write(f'{idex + 1}位')
+        st.write(f"{idex + 1}位  {item['title']}")
         st.markdown(button_css, unsafe_allow_html=True)
         st.image(item['image'], width=300)
 
-        if st.button(f"{item['title']}の詳細を見る"):
+        if st.button(f"{item['title']}"):
             st.session_state.page = 'details'
             st.session_state.selected_item = item
             st.experimental_rerun()  # ページをリロードして変更を反映
