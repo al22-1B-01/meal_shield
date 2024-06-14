@@ -105,8 +105,3 @@ def search_recipe_entrypoint():
             st.session_state.recipes = recipes
             st.session_state.page = '検索結果'
 
-
-
-
-if __name__ == '__main__':
-    search_recipe_entrypoint()
