@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List,Dict,Any
+from typing import Any, Dict, List
 
 import requests
 import streamlit as st
@@ -10,7 +10,7 @@ from meal_shield.env import PACKAGE_DIR
 api_url = 'https://api.example.com/recipes'
 
 
-def fetch_recipes(recipe_name, allergies:List[str])  -> List[Dict[str, Any]]:
+def fetch_recipes(recipe_name, allergies: List[str]) -> List[Dict[str, Any]]:
     # APIエンドポイントとパラメータを設定（仮のURLです）
     params = {'name': recipe_name, 'allergies': allergies}
 
@@ -22,7 +22,7 @@ def fetch_recipes(recipe_name, allergies:List[str])  -> List[Dict[str, Any]]:
         return response.json()
     else:
         st.error(f'Error: {response.status_code}')
-        #return []
+        # return []
 
 
 def search_recipe_entrypoint():
@@ -104,8 +104,6 @@ def search_recipe_entrypoint():
 
             st.session_state.recipes = recipes
             st.session_state.page = '検索結果'
-
-
 
 
 if __name__ == '__main__':
