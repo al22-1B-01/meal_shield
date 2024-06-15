@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Any, Optional, Union
 
+import numpy as np
 from dotenv import load_dotenv
 from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
@@ -24,9 +25,21 @@ def get_embedding(
     model_name: Optional[str] = 'text-embedding-3-small',
 ) -> Any:
     # 次元埋め込みを取得する関数
-    embedding_response = client.embeddings.create(model=model_name, input=text)
+    embedding_response = client.embeddings.create(
+        model=model_name,
+        input=text,
+        # dimensions = 2
+    )
 
     return embedding_response.data[0].embedding
+
+
+def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
+    dot_product = np.dot(vec1, vec2)
+    norm_vec1 = np.linalg.norm(vec1)
+    norm_vec2 = np.linalg.norm(vec2)
+    similarity = dot_product / (norm_vec1 * norm_vec2)
+    return similarity
 
 
 def calc_allergens_include_score_by_embedding(

@@ -23,7 +23,7 @@ def sort_recipes_by_allergy_score(
 def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
-    ranking_method: Optional[str] = 'embedding',
+    ranking_method: Optional[str] = 'chatgpt',
 ) -> list[dict[str, Union[str, list[str]]]]:
     '''
     scored_recipes_list: list[dict[str, Union[str, list[str], float]]]
@@ -69,7 +69,7 @@ def main():
         },
         {
             'recipe_title': 'レシピ3',
-            'recipe_ingredients': ['大豆', 'ヨーグルト', '蟹'],
+            'recipe_ingredients': ['大豆', 'ヨーグルト', 'かに'],
             'recipe_url': 'http://example.com/recipe3',
             'recipe_image_url': 'http://example.com/recipe3.jpg',
             'recipe_score': 0.0,

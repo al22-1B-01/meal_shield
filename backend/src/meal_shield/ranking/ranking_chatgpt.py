@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from typing import Union
 
 from openai import OpenAI
@@ -22,16 +23,20 @@ def calc_allergens_include_score_by_chatgpt(
     ingredient: list[str],
 ) -> float:
     # ChatGPTへのプロンプトを作成
-    # TODO: プロンプトでの結果、具体的な数字になるよう数字の幅、出力形式を決める
-    prompt = ''
+    # TODO: より精度の高いプロンプトの考案
+    prompt = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
+    organized_prompt = prompt.format(allergies_list, ingredient)
 
     response = client.chat.completions.create(
-        model='gpt-3.5-turbo',
-        messages=prompt,
+        model='gpt-3.5-turbo', messages=[{'role': 'user', 'content': organized_prompt}]
     )
-    # res.choices[0].message.content で答えが返る
-    # TODO: 出力の数字部分を正規表現で抽出する
-    score = res.choice[0].message.content  # 仮置き
+    # response.choices[0].message.content で答えが返る
+    res = response.choices[0].message.content
+    # NOTE: デバッグ用info
+    logger.info(res)
+
+    m = re.match(r'score=(\d+)', res)
+    score = m.group(1)
 
     return float(score)
 
