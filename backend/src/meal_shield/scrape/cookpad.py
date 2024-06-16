@@ -12,51 +12,51 @@ LIMIT_PAGE = 10
 def scraping_cookpad(
     recipe_name: str,
 ) -> Optional[list[dict[str, list[str], str, str]]]:
-    # 検索結果ページのURLリストを取得
-    page_url_list = make_url_list(recipe_name)
-    if page_url_list is None:
-        return None
-    # それぞれのページのURLからレシピのURLを並列処理で取得
-    num_cpu = cpu_count()
-    with Pool(num_cpu) as pool:
-        recipe_url_lists = pool.map(scraping_recipe_url, page_url_list)
-    # URLのリストを結合
-    recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
-    # それぞれのレシピのURLからデータを並列処理で取得
-    with Pool(num_cpu) as pool:
-        recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
-    return recipe_data_list
+    try:
+        # 検索結果ページのURLリストを取得
+        page_url_list = make_url_list(recipe_name)
+        if page_url_list is None:
+            return None
+        # それぞれのページのURLからレシピのURLを並列処理で取得
+        num_cpu = cpu_count()
+        with Pool(num_cpu) as pool:
+            recipe_url_lists = pool.map(scraping_recipe_url, page_url_list)
+        # URLのリストを結合
+        recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
+        # それぞれのレシピのURLからデータを並列処理で取得
+        with Pool(num_cpu) as pool:
+            recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
+        return recipe_data_list
+    except Exception as e:
+        raise
 
 
-def make_url_list(recipe_name: str) -> Optional[list[str]]:
+def make_url_list(recipe_name: str) -> list[str]:
     # 検索結果の最初のページのURL
     url = f'https://cookpad.com/search/{recipe_name}'
     response = requests.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.content, 'lxml')
+    # 1 / 1,000のような現在のページを表す文字列を取得
+    number_of_pages = soup.find(class_='number_of_pages').text
+    page_parts = number_of_pages.split(' / ')
+    sum_of_pages = int(page_parts[1].replace(',', ''))
 
-    # 検索結果が存在するとき
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'lxml')
-        # 1 / 1,000のような現在のページを表す文字列を取得
-        number_of_pages = soup.find(class_='number_of_pages').text
-        page_parts = number_of_pages.split(' / ')
-        sum_of_pages = int(page_parts[1].replace(',', ''))
+    # 検索上限を設定
+    if sum_of_pages > LIMIT_PAGE:
+        sum_of_pages = LIMIT_PAGE
 
-        # 検索上限を設定
-        if sum_of_pages > LIMIT_PAGE:
-            sum_of_pages = LIMIT_PAGE
-
-        url_list = []
-        # ページ数分だけURLを作成
-        for page_num in range(1, sum_of_pages + 1):
-            new_url = f'{url}?page={page_num}'
-            url_list.append(new_url)
-        return url_list
-    else:
-        return None
+    url_list = []
+    # ページ数分だけURLを作成
+    for page_num in range(1, sum_of_pages + 1):
+        new_url = f'{url}?page={page_num}'
+        url_list.append(new_url)
+    return url_list
 
 
 def scraping_recipe_url(url: str) -> list[str]:
     response = requests.get(url)
+    response.raise_for_status()
     soup = BeautifulSoup(response.content, 'lxml')
 
     recipe_url_list = []
@@ -73,6 +73,7 @@ def scraping_recipe_url(url: str) -> list[str]:
 
 def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
     response = requests.get(url)
+    response.raise_for_status()
     soup = BeautifulSoup(response.content, 'lxml')
 
     # レシピのタイトルである<h1>タグのテキストを取得
@@ -90,7 +91,7 @@ def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
             ingredient_name = span.text
         else:
             ingredient_name = a_tag.text
-        ingredient_list.append(ingredient_name)
+    ingredient_list.append(ingredient_name)
 
     # レシピ画像のURLを属性に持つ<img>タグを含む<section>タグを取得
     section_tag = soup.find('section', id='main-photo')

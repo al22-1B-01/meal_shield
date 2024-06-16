@@ -1,4 +1,5 @@
 import logging
+import requests
 
 from cookpad import scraping_cookpad
 
@@ -6,10 +7,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 # テスト用main関数
 def main():
-    recipe_name = 'ココナッツカレー'
+    recipe_name = 'aaaaaaaaaaaaaaaaaaaasdfsfewsfsfe'
     allergy_list = ['鶏', 'とり']
-    recipe_data_list = scraping_and_excluding(allergy_list, recipe_name)
-    if recipe_data_list is not None:
+    try:
+        recipe_data_list = scraping_and_excluding(allergy_list, recipe_name)
         for index, recipe_data in enumerate(recipe_data_list):
             logger.info(index + 1)
             logger.info(recipe_data['recipe_title'])
@@ -19,18 +20,25 @@ def main():
         logger.info(f'検索結果{len(recipe_data_list)}件')
         logger.info(f'検索レシピ名:{recipe_name}')
         logger.info(f'除外品目:{allergy_list}')
-    else:
-        logger.info(recipe_data_list)
-        logger.info('検索結果が見つかりませんでした')
+
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTPエラーが発生しました (main): {e}")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"ネットワーク接続エラーが発生しました (main): {e}")
+    except Exception as e:
+        logger.error(f"予期しないエラーが発生しました (main): {e}")
 
 
 def scraping_and_excluding(allergy_list, recipe_name: str) -> list[dict]:
-    recipe_data_list = scraping_cookpad(recipe_name)
-    if recipe_data_list is not None:
-        excluded_recipe_data_list = excluding(allergy_list, recipe_data_list)
-    else:
-        return recipe_data_list
-    return excluded_recipe_data_list
+    try:
+        recipe_data_list = scraping_cookpad(recipe_name)
+        if recipe_data_list is not None:
+            excluded_recipe_data_list = excluding(allergy_list, recipe_data_list)
+        else:
+            return recipe_data_list
+        return excluded_recipe_data_list
+    except Exception as e:
+        raise
 
 
 # 文字列がリストに含まれる文字列を含むか判別
