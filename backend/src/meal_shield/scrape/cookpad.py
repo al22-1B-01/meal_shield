@@ -32,78 +32,88 @@ def scraping_cookpad(
 
 
 def make_url_list(recipe_name: str) -> list[str]:
-    # 検索結果の最初のページのURL
-    url = f'https://cookpad.com/search/{recipe_name}'
-    response = requests.get(url)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.content, 'lxml')
-    # 1 / 1,000のような現在のページを表す文字列を取得
-    number_of_pages = soup.find(class_='number_of_pages').text
-    page_parts = number_of_pages.split(' / ')
-    sum_of_pages = int(page_parts[1].replace(',', ''))
+    try:
+        # 検索結果の最初のページのURL
+        url = f'https://cookpad.com/search/{recipe_name}'
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'lxml')
+        # 1 / 1,000のような現在のページを表す文字列を取得
+        number_of_pages = soup.find(class_='number_of_pages').text
+        page_parts = number_of_pages.split(' / ')
+        sum_of_pages = int(page_parts[1].replace(',', ''))
 
-    # 検索上限を設定
-    if sum_of_pages > LIMIT_PAGE:
-        sum_of_pages = LIMIT_PAGE
+        # 検索上限を設定
+        if sum_of_pages > LIMIT_PAGE:
+            sum_of_pages = LIMIT_PAGE
 
-    url_list = []
-    # ページ数分だけURLを作成
-    for page_num in range(1, sum_of_pages + 1):
-        new_url = f'{url}?page={page_num}'
-        url_list.append(new_url)
-    return url_list
+        url_list = []
+        # ページ数分だけURLを作成
+        for page_num in range(1, sum_of_pages + 1):
+            new_url = f'{url}?page={page_num}'
+            url_list.append(new_url)
+        return url_list
+    except Exception as e:
+        raise
 
 
 def scraping_recipe_url(url: str) -> list[str]:
-    response = requests.get(url)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.content, 'lxml')
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'lxml')
 
-    recipe_url_list = []
-    # レシピのURLを属性に持つ<a>タグをすべて取得
-    a_tags = soup.find_all('a', class_='recipe-title')
-    for a_tag in a_tags:
-        # 各<a>タグのhref属性(URL)を取得
-        href = a_tag.get('href')
-        # 会員登録が必要なレシピを除外
-        if 'dining' not in href:
-            recipe_url_list.append(f'https://cookpad.com{href}')
-    return recipe_url_list
+        recipe_url_list = []
+        # レシピのURLを属性に持つ<a>タグをすべて取得
+        a_tags = soup.find_all('a', class_='recipe-title')
+        for a_tag in a_tags:
+            # 各<a>タグのhref属性(URL)を取得
+            href = a_tag.get('href')
+            # 会員登録が必要なレシピを除外
+            if 'dining' not in href:
+                recipe_url_list.append(f'https://cookpad.com{href}')
+        return recipe_url_list
+    except Exception as e:
+        raise
 
 
 def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
-    response = requests.get(url)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.content, 'lxml')
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
 
-    # レシピのタイトルである<h1>タグのテキストを取得
-    recipe_title = soup.find('h1', class_='recipe-title').get_text(strip=True)
-    # 全角スペースを半角スペースに置き換える
-    recipe_title = recipe_title.replace('\u3000', ' ')
+        soup = BeautifulSoup(response.content, 'lxml')
 
-    ingredient_list = []
-    # 材料のデータを含む<span>タグの要素をすべて取得
-    spans = soup.find_all('span', class_='name')
-    for span in spans:
-        # 材料は<span>タグかその中の<a>タグにあるので場合分け
-        a_tag = span.find('a')
-        if a_tag is None:
-            ingredient_name = span.text
-        else:
-            ingredient_name = a_tag.text
-    ingredient_list.append(ingredient_name)
+        # レシピのタイトルである<h1>タグのテキストを取得
+        recipe_title = soup.find('h1', class_='recipe-title').get_text(strip=True)
+        # 全角スペースを半角スペースに置き換える
+        recipe_title = recipe_title.replace('\u3000', ' ')
 
-    # レシピ画像のURLを属性に持つ<img>タグを含む<section>タグを取得
-    section_tag = soup.find('section', id='main-photo')
-    # レシピ画像のURLを属性に持つ<img>タグを取得
-    img_tag = section_tag.find('img')
-    # <img>タグのsrc属性(レシピ画像のURL)を取得
-    recipe_img_url = img_tag.get('src')
+        ingredient_list = []
+        # 材料のデータを含む<span>タグの要素をすべて取得
+        spans = soup.find_all('span', class_='name')
+        for span in spans:
+            # 材料は<span>タグかその中の<a>タグにあるので場合分け
+            a_tag = span.find('a')
+            if a_tag is None:
+                ingredient_name = span.text
+            else:
+                ingredient_name = a_tag.text
+            ingredient_list.append(ingredient_name)
 
-    recipe_data = {
-        'recipe_title': recipe_title,
-        'ingredient_list': ingredient_list,
-        'recipe_url': url,
-        'recipe_img_url': recipe_img_url,
-    }
-    return recipe_data
+        # レシピ画像のURLを属性に持つ<img>タグを含む<section>タグを取得
+        section_tag = soup.find('section', id='main-photo')
+        # レシピ画像のURLを属性に持つ<img>タグを取得
+        img_tag = section_tag.find('img')
+        # <img>タグのsrc属性(レシピ画像のURL)を取得
+        recipe_img_url = img_tag.get('src')
+
+        recipe_data = {
+            'recipe_title': recipe_title,
+            'ingredient_list': ingredient_list,
+            'recipe_url': url,
+            'recipe_img_url': recipe_img_url,
+        }
+        return recipe_data
+    except Exception as e:
+        raise

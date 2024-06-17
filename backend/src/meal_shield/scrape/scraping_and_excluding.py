@@ -1,13 +1,13 @@
 import logging
 import requests
 
-from cookpad import scraping_cookpad
+from .cookpad import scraping_cookpad
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 # テスト用main関数
 def main():
-    recipe_name = 'aaaaaaaaaaaaaaaaaaaasdfsfewsfsfe'
+    recipe_name = 'ココナッツカレー'
     allergy_list = ['鶏', 'とり']
     try:
         recipe_data_list = scraping_and_excluding(allergy_list, recipe_name)
