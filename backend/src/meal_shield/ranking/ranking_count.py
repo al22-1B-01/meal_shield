@@ -4,8 +4,8 @@ from typing import Union
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# NOTE: デバッグ用info
-logger.info('ranking_count.py was imported!')
+# NOTE: デバッグ用
+logger.debug('ranking_count.py was imported!')
 
 WORDS = {
     'えび': ['えび', 'エビ', '海老'],

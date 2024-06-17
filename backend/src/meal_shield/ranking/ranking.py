@@ -23,7 +23,7 @@ def sort_recipes_by_allergy_score(
 def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
-    ranking_method: Optional[str] = 'chatgpt',
+    ranking_method: Optional[str] = 'embedding',
 ) -> list[dict[str, Union[str, list[str]]]]:
     '''
     scored_recipes_list: list[dict[str, Union[str, list[str], float]]]

@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 client = OpenAI()
 
-# NOTE: デバッグ用info
-logger.info('ranking_embedding.py was imported!')
+# NOTE: デバッグ用
+logger.debug('ranking_embedding.py was imported!')
 
 
 def get_embedding(
@@ -28,7 +28,6 @@ def get_embedding(
     embedding_response = client.embeddings.create(
         model=model_name,
         input=text,
-        # dimensions = 2
     )
 
     return embedding_response.data[0].embedding
@@ -46,8 +45,8 @@ def calc_allergens_include_score_by_embedding(
     allergies_list: list[str],
     recipe: dict[str, Union[str, list[str], float]],
 ) -> float:
-    ingredient_embedding = get_embedding(''.join(recipe['recipe_ingredients']))
-    allergen_embedding = get_embedding(''.join(allergies_list))
+    ingredient_embedding = get_embedding(','.join(recipe['recipe_ingredients']))
+    allergen_embedding = get_embedding(','.join(allergies_list))
 
     # 指定されたアレルギー品目に対する材料の類似度を計算
     recipe_score = cosine_similarity(ingredient_embedding, allergen_embedding)

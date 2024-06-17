@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 client = OpenAI()
 
-# NOTE: デバッグ用info
-logger.info('ranking_chatgpt.py was imported!')
+# NOTE: デバッグ用
+logger.debug('ranking_chatgpt.py was imported!')
+
+PATTERN = r'score=(\d+)'
 
 
 def calc_allergens_include_score_by_chatgpt(
@@ -25,20 +27,23 @@ def calc_allergens_include_score_by_chatgpt(
     # ChatGPTへのプロンプトを作成
     # TODO: より精度の高いプロンプトの考案
     prompt = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
-    organized_prompt = prompt.format(allergies_list, ingredient)
+    organized_prompt = prompt.format(','.join(allergies_list), ','.join(ingredient))
 
     response = client.chat.completions.create(
         model='gpt-3.5-turbo', messages=[{'role': 'user', 'content': organized_prompt}]
     )
     # response.choices[0].message.content で答えが返る
     res = response.choices[0].message.content
-    # NOTE: デバッグ用info
-    logger.info(res)
+    # NOTE: デバッグ用
+    logger.debug(res)
 
-    m = re.match(r'score=(\d+)', res)
-    score = m.group(1)
+    try:
+        m = re.match(PATTERN, res)
+        score = m.group(1)
 
-    return float(score)
+        return float(score)
+    except Exception as e:
+        logger.info(e)
 
 
 def scoring_chatgpt(
