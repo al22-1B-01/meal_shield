@@ -1,14 +1,13 @@
-import requests
+from unittest.mock import Mock, patch
 
 import pytest
-from unittest.mock import patch, Mock
+import requests
 from bs4 import BeautifulSoup
 
 from src.meal_shield.scrape.scraping_and_excluding import (
     excluding,
     scraping_and_excluding,
 )
-
 
 # モックHTMLデータ
 mock_response_1 = Mock()
