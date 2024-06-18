@@ -1,13 +1,13 @@
 import logging
-from typing import Union
+from multiprocessing import Pool, cpu_count
+from typing import Final, Union
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# NOTE: デバッグ用
 logger.debug('ranking_count.py was imported!')
 
-WORDS = {
+WORDS: Final[dict[str, list[str]]] = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],
     '小麦': ['小麦', '醤油', 'しょうゆ', '小麦粉'],
@@ -43,7 +43,6 @@ def extract_allergy_words(
     words: dict[str, list[str]],
     allergies_list: list[str],
 ) -> list[str]:
-    # 指定されたアレルギー品目を基に比較用の文字列をWORDSから取り出す
     extracted_allergies_list = []
     for key in allergies_list:
         extracted_allergies_list.extend(words[key])
@@ -51,20 +50,29 @@ def extract_allergy_words(
     return extracted_allergies_list
 
 
+def score_recipe(
+    recipe: dict[str, Union[str, list[str], float]], extracted_allergies_list: list[str]
+) -> dict[str, Union[str, list[str], float]]:
+    allergen_counts = 0
+    ingredients = recipe['recipe_ingredients']
+
+    for allergen in extracted_allergies_list:
+        allergen_counts += ingredients.count(allergen)
+
+    recipe['recipe_score'] = allergen_counts
+    return recipe
+
+
 def scoring_count(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
 ) -> list[dict[str, Union[str, list[str], float]]]:
-    # カウントベースで各レシピのスコアを算出する
     extracted_allergies_list = extract_allergy_words(WORDS, allergies_list)
 
-    for recipe in excluded_recipes_list:
-        allergen_counts = 0
-        ingredients = recipe['recipe_ingredients']
+    with Pool(cpu_count()) as pool:
+        results = pool.starmap(
+            score_recipe,
+            [(recipe, extracted_allergies_list) for recipe in excluded_recipes_list],
+        )
 
-        for allergen in extracted_allergies_list:
-            allergen_counts += ingredients.count(allergen)
-
-        recipe['recipe_score'] = allergen_counts
-
-    return excluded_recipes_list
+    return results
