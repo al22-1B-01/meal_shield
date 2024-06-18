@@ -1,14 +1,16 @@
 import re
 from multiprocessing import Pool, cpu_count
-from typing import Optional
+from typing import Optional, Union
 
 import requests
 from bs4 import BeautifulSoup
+from tenacity import retry
 
 # 検索上限(page数)
 LIMIT_PAGE = 10
 
 
+@retry(tries=5, delay=1, backoff=1.5)
 def scraping_cookpad(
     recipe_name: str,
 ) -> Optional[list[dict[str, list[str], str, str]]]:
@@ -28,10 +30,11 @@ def scraping_cookpad(
             recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
         return recipe_data_list
     except Exception as e:
-        raise
+        return None
 
 
-def make_url_list(recipe_name: str) -> list[str]:
+@retry(tries=5, delay=1, backoff=1.5)
+def make_url_list(recipe_name: str) -> Optional[list[str]]:
     try:
         # 検索結果の最初のページのURL
         url = f'https://cookpad.com/search/{recipe_name}'
@@ -54,10 +57,11 @@ def make_url_list(recipe_name: str) -> list[str]:
             url_list.append(new_url)
         return url_list
     except Exception as e:
-        raise
+        return None
 
 
-def scraping_recipe_url(url: str) -> list[str]:
+@retry(tries=5, delay=1, backoff=1.5)
+def scraping_recipe_url(url: str) -> Optional[list[str]]:
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -74,10 +78,11 @@ def scraping_recipe_url(url: str) -> list[str]:
                 recipe_url_list.append(f'https://cookpad.com{href}')
         return recipe_url_list
     except Exception as e:
-        raise
+        return None
 
 
-def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
+@retry(tries=5, delay=1, backoff=1.5)
+def scraping_recipe_data(url: str) -> Optional[list[dict[str, Union[str, list[str]]]]]:
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -116,4 +121,4 @@ def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
         }
         return recipe_data
     except Exception as e:
-        raise
+        return None
