@@ -1,6 +1,7 @@
-def main():
-    print('Hello, World!')
+from search import search_recipe_entrypoint
+
 
 
 if __name__ == '__main__':
-    main()
+    search_recipe_entrypoint()
+
