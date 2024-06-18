@@ -1,6 +1,4 @@
-import streamlit as st
-from search import search_recipe_entrypoint, show_search_results
-from detail import show_details
+from search import search_recipe_entrypoint
 
 def main():
     if 'page' not in st.session_state:

@@ -56,7 +56,7 @@ def search_recipe_entrypoint() -> None:
     ]
 
     st.subheader('除去したい品目を選択してください')
-    allergy_list = []
+    #allergy_list = []
 
     if 'allergy_list' not in st.session_state:
         st.session_state.allergy_list = []
@@ -86,10 +86,11 @@ def search_recipe_entrypoint() -> None:
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
-        recipes = fetch_recipes(recipe_name, st.allergy_list)
+        recipes = fetch_recipes(recipe_name, st.session_state.allergy_list)
 
         if recipes:
-            st.success(f'検索結果: {len(recipes)}件のレシピが見つかりました')
-
             st.session_state.recipes = recipes
             st.session_state.page = '検索結果'
+       
+
+
