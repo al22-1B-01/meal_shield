@@ -10,6 +10,3 @@ load_dotenv(PACKAGE_DIR / '.env')
 VERSION = "0.1.0"
 =======
 VERSION = '0.1.0'
-
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
->>>>>>> develop
