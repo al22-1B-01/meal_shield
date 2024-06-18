@@ -1,12 +1,8 @@
-import logging
 from typing import Optional, Union
 
 from meal_shield.ranking.ranking_chatgpt import scoring_chatgpt
 from meal_shield.ranking.ranking_count import scoring_count
 from meal_shield.ranking.ranking_embedding import scoring_embedding
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def calc_normalized_score(
@@ -38,28 +34,11 @@ def calc_hybrid_score(
     return scored_recipes_list
 
 
-def sort_recipes_by_allergy_score(
-    scored_recipes_list: list[dict[str, Union[str, list[str], float]]],
-) -> list[dict[str, Union[str, list[str], float]]]:
-    # スコアが低い順にソートする
-    sorted_excluded_recipes_list = sorted(
-        scored_recipes_list, key=lambda x: x['recipe_score']
-    )
-
-    return sorted_excluded_recipes_list
-
-
 def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     ranking_method: Optional[str] = 'hybrid',
 ) -> list[dict[str, Union[str, list[str]]]]:
-    '''
-    scored_recipes_list: list[dict[str, Union[str, list[str], float]]]
-        スコアリング済みのレシピデータをもつリスト
-    '''
-    # スコアリング関数の呼び出し
-    score_columns = None
     if ranking_method == 'default':
         scored_recipes_list = scoring_count(allergies_list, excluded_recipes_list)
     elif ranking_method == 'embedding':
@@ -85,7 +64,8 @@ def ranking_recipe(
         score_columns = ['chatgpt_score', 'embedding_score', 'count_score']
         scored_recipes_list = calc_hybrid_score(scored_recipes_list, score_columns)
 
-    # スコアに基づいたソートを行う
-    sorted_excluded_recipes_list = sort_recipes_by_allergy_score(scored_recipes_list)
+    sorted_excluded_recipes_list = sorted(
+        scored_recipes_list, key=lambda x: x['recipe_score']
+    )
 
     return sorted_excluded_recipes_list
