@@ -6,21 +6,19 @@ from PIL import Image
 
 from meal_shield.env import PACKAGE_DIR
 
-API_URL = "https://api.example.com/recipes"
+API_URL = 'https://api.example.com/recipes'
 
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list[dict[str, any]]:
-    # APIエンドポイントとパラメータを設定（仮のURLです）
+    
     params = {'name': recipe_name, 'allergies': allergies}
 
-    # APIリクエストを送信
     response = requests.post(API_URL, json=params)
 
-    # レスポンスをJSON形式で解析します
     if response.status_code == 200:
         return response.json()
     else:
-        st.error(f'Error: {response.status_code}')
+        return None
 
 
 def search_recipe_entrypoint() -> None:
