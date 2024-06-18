@@ -4,10 +4,7 @@ import pytest
 import requests
 from bs4 import BeautifulSoup
 
-from src.meal_shield.scrape.scraping_and_excluding import (
-    excluding,
-    scraping_and_excluding,
-)
+from meal_shield.scrape.scraping_and_excluding import excluding, scraping_and_excluding
 
 # モックHTMLデータ
 mock_response_1 = Mock()
@@ -122,7 +119,7 @@ def test_scraping_and_excluding_エラーがない場合正しくデータを取
     recipe_img_url_2 = 'https://img.cpcdn.com/recipes/7850799/894x1461s/5ad2fb50779e89741675024c20c02586?u=58558241&p=1717844234'
     allergy_list = ['いか']
     with patch('requests.get', side_effect=mock_side_effect):
-        with patch('src.meal_shield.scrape.cookpad.Pool') as mock_pool:
+        with patch('meal_shield.scrape.cookpad.Pool') as mock_pool:
             mock_pool.return_value.__enter__.return_value.map.side_effect = (
                 lambda func, urls: [func(url) for url in urls]
             )
@@ -146,8 +143,7 @@ def test_scraping_and_excluding_ネットワーク接続エラーを補足する
 
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        with pytest.raises(requests.exceptions.ConnectionError):
-            scraping_and_excluding(allergy_list, recipe_name)
+        assert scraping_and_excluding(allergy_list, recipe_name) is None
 
 
 def test_scraping_and_excluding_HTTPErrorを補足するか確認():
@@ -162,5 +158,4 @@ def test_scraping_and_excluding_HTTPErrorを補足するか確認():
         )
         mock_get.return_value = mock_response
 
-        with pytest.raises(requests.exceptions.HTTPError):
-            scraping_and_excluding(allergy_list, recipe_name)
+        assert scraping_and_excluding(allergy_list, recipe_name) is None

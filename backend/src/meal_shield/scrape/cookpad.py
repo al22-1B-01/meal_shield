@@ -4,36 +4,39 @@ from typing import Optional, Union
 
 import requests
 from bs4 import BeautifulSoup
-from tenacity import retry
+from tenacity import retry, stop_after_attempt
 
 # 検索上限(page数)
 LIMIT_PAGE = 10
 
 
-@retry(tries=5, delay=1, backoff=1.5)
+@retry(stop=stop_after_attempt(3))
 def scraping_cookpad(
     recipe_name: str,
-) -> Optional[list[dict[str, list[str], str, str]]]:
-    try:
-        # 検索結果ページのURLリストを取得
-        page_url_list = make_url_list(recipe_name)
-        if page_url_list is None:
-            return None
-        # それぞれのページのURLからレシピのURLを並列処理で取得
-        num_cpu = cpu_count()
-        with Pool(num_cpu) as pool:
-            recipe_url_lists = pool.map(scraping_recipe_url, page_url_list)
-        # URLのリストを結合
-        recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
-        # それぞれのレシピのURLからデータを並列処理で取得
-        with Pool(num_cpu) as pool:
-            recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
-        return recipe_data_list
-    except Exception as e:
+) -> Optional[list[dict[str, Union[str, list[str]]]]]:
+    # 検索結果ページのURLリストを取得
+    page_url_list = make_url_list(recipe_name)
+    if page_url_list is None:
+        return None
+    # それぞれのページのURLからレシピのURLを並列処理で取得
+    num_cpu = cpu_count()
+    with Pool(num_cpu) as pool:
+        recipe_url_lists = pool.map(scraping_recipe_url, page_url_list)
+    if recipe_url_lists is None:
         return None
 
+    # URLのリストを結合
+    recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
+    # それぞれのレシピのURLからデータを並列処理で取得
+    with Pool(num_cpu) as pool:
+        recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
+    if recipe_data_list is None:
+        return None
+    else:
+        return recipe_data_list
 
-@retry(tries=5, delay=1, backoff=1.5)
+
+@retry(stop=stop_after_attempt(3))
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
     try:
         # 検索結果の最初のページのURL
@@ -60,7 +63,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
         return None
 
 
-@retry(tries=5, delay=1, backoff=1.5)
+@retry(stop=stop_after_attempt(3))
 def scraping_recipe_url(url: str) -> Optional[list[str]]:
     try:
         response = requests.get(url)
@@ -81,7 +84,7 @@ def scraping_recipe_url(url: str) -> Optional[list[str]]:
         return None
 
 
-@retry(tries=5, delay=1, backoff=1.5)
+@retry(stop=stop_after_attempt(3))
 def scraping_recipe_data(url: str) -> Optional[list[dict[str, Union[str, list[str]]]]]:
     try:
         response = requests.get(url)

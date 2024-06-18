@@ -4,7 +4,7 @@ import pytest
 import requests
 from bs4 import BeautifulSoup
 
-from src.meal_shield.scrape.cookpad import (
+from meal_shield.scrape.cookpad import (
     make_url_list,
     scraping_cookpad,
     scraping_recipe_data,
@@ -116,8 +116,7 @@ def test_make_url_list_HTTPErrorを捕捉するか確認():
         )
         mock_get.return_value = mock_response
 
-        with pytest.raises(requests.exceptions.HTTPError):
-            assert make_url_list(recipe_name) is None
+        assert make_url_list(recipe_name) is None
 
 
 def test_scraping_recipe_url_エラーがない場合正しくデータを取得しているか確認():
@@ -179,7 +178,7 @@ def test_scraping_recipe_data_HTTPErrorを補足するか確認():
         )
         mock_get.return_value = mock_response
 
-            assert scraping_recipe_data(url) is None
+        assert scraping_recipe_data(url) is None
 
 
 def test_scraping_cookpad_エラーがない場合正しくデータを取得しているか確認():
@@ -189,7 +188,7 @@ def test_scraping_cookpad_エラーがない場合正しくデータを取得し
     recipe_img_url_1 = 'https://img.cpcdn.com/recipes/7836445/894x1461s/3f302487515646e913b639f8c12a210d?u=58079855&p=1716460548'
     recipe_img_url_2 = 'https://img.cpcdn.com/recipes/7850799/894x1461s/5ad2fb50779e89741675024c20c02586?u=58558241&p=1717844234'
     with patch('requests.get', side_effect=mock_side_effect):
-        with patch('src.meal_shield.scrape.cookpad.Pool') as mock_pool:
+        with patch('meal_shield.scrape.cookpad.Pool') as mock_pool:
             mock_pool.return_value.__enter__.return_value.map.side_effect = (
                 lambda func, urls: [func(url) for url in urls]
             )

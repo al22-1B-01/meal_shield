@@ -12,7 +12,7 @@ def main():
     recipe_name = 'ココナッツカレー'
     allergy_list = ['鶏', 'とり']
     recipe_data_list = scraping_and_excluding(allergy_list, recipe_name)
-    if recipe_data_list is None:
+    if recipe_data_list is not None:
         for index, recipe_data in enumerate(recipe_data_list):
             logger.info(index + 1)
             logger.info(recipe_data['recipe_title'])
