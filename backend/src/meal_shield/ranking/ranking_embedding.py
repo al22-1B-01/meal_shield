@@ -79,7 +79,7 @@ async def scoring_embedding_async(
         )
 
         for i, recipe in enumerate(excluded_recipes_list):
-            recipe['recipe_score'] = recipe_scores[i]
+            recipe[score_column] = recipe_scores[i]
 
     return excluded_recipes_list
 
