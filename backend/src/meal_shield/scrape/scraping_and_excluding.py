@@ -1,6 +1,6 @@
 import logging
 
-from cookpad import scraping_cookpad
+from meal_shield.scrape.cookpad import scraping_cookpad
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
