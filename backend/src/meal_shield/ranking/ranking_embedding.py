@@ -3,9 +3,7 @@ import os
 from typing import Any, Optional, Union
 
 import numpy as np
-from dotenv import load_dotenv
 from openai import OpenAI
-from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 
 from meal_shield.env import OPENAI_API_KEY
