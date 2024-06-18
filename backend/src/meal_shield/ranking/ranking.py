@@ -41,7 +41,6 @@ def calc_hybrid_score(
 def sort_recipes_by_allergy_score(
     scored_recipes_list: list[dict[str, Union[str, list[str], float]]],
 ) -> list[dict[str, Union[str, list[str], float]]]:
-    # スコアが低い順にソートする
     sorted_excluded_recipes_list = sorted(
         scored_recipes_list, key=lambda x: x['recipe_score']
     )
@@ -54,12 +53,6 @@ def ranking_recipe(
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     ranking_method: Optional[str] = 'hybrid',
 ) -> list[dict[str, Union[str, list[str]]]]:
-    '''
-    scored_recipes_list: list[dict[str, Union[str, list[str], float]]]
-        スコアリング済みのレシピデータをもつリスト
-    '''
-    # スコアリング関数の呼び出し
-    score_columns = None
     if ranking_method == 'default':
         scored_recipes_list = scoring_count(allergies_list, excluded_recipes_list)
     elif ranking_method == 'embedding':

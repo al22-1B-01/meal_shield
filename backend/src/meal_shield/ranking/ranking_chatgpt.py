@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import re
-from typing import Optional, Union
+from typing import Final, Optional, Union
 
 import aiohttp
 from tenacity import retry, stop_after_attempt, wait_fixed
@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 # NOTE: デバッグ用
 logger.debug('ranking_chatgpt.py was imported!')
 
-PATTERN = re.compile(r'score=(\d+)')
+CHATGPT_SCORE: Final[str] = r'score=(\d+)'
+CHATGPT_SCORE_PATTERN: Final[re.Pattern] = re.compile(CHATGPT_SCORE)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
@@ -25,9 +26,10 @@ async def fetch_score(
     ingredient: list[str],
     model_name: Optional[str] = 'gpt-3.5-turbo',
 ) -> float:
-    # ChatGPTへのプロンプトを作成
-    prompt = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
-    organized_prompt = prompt.format(','.join(allergies_list), ','.join(ingredient))
+    prompt_template = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
+    organized_prompt = prompt_template.format(
+        ','.join(allergies_list), ','.join(ingredient)
+    )
 
     async with session.post(
         'https://api.openai.com/v1/chat/completions',
@@ -42,8 +44,8 @@ async def fetch_score(
         logger.debug(res)
 
         try:
-            m = re.match(PATTERN, res)
-            score = float(m.group(1))
+            match = re.match(CHATGPT_SCORE_PATTERN, res)
+            score = float(match.group(1))
             return score
         except Exception as e:
             logger.error(f"Failed to parse score: {e}")
