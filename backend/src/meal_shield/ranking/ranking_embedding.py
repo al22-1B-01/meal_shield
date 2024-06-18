@@ -1,34 +1,35 @@
+import asyncio
 import logging
-import os
 from typing import Any, Optional, Union
 
+import aiohttp
 import numpy as np
-from openai import OpenAI
-from tqdm import tqdm
+from tqdm.asyncio import tqdm
 
 from meal_shield.env import OPENAI_API_KEY
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
-client = OpenAI()
-
 # NOTE: デバッグ用
 logger.debug('ranking_embedding.py was imported!')
 
 
-def get_embedding(
+async def get_embedding(
+    session: aiohttp.ClientSession,
     text: str,
     model_name: Optional[str] = 'text-embedding-3-small',
 ) -> Any:
-    # 次元埋め込みを取得する関数
-    embedding_response = client.embeddings.create(
-        model=model_name,
-        input=text,
-    )
-
-    return embedding_response.data[0].embedding
+    # 非同期で次元埋め込みを取得する関数
+    url = f"https://api.openai.com/v1/embeddings"
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    data = {"model": model_name, "input": text}
+    async with session.post(url, json=data, headers=headers) as response:
+        response_json = await response.json()
+        return response_json['data'][0]['embedding']
 
 
 def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
@@ -39,12 +40,18 @@ def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     return similarity
 
 
-def calc_allergens_include_score_by_embedding(
+async def calc_allergens_include_score_by_embedding(
+    session: aiohttp.ClientSession,
     allergies_list: list[str],
     recipe: dict[str, Union[str, list[str], float]],
+    model_name: Optional[str] = 'text-embedding-3-small',
 ) -> float:
-    ingredient_embedding = get_embedding(','.join(recipe['recipe_ingredients']))
-    allergen_embedding = get_embedding(','.join(allergies_list))
+    ingredient_embedding = await get_embedding(
+        session, ','.join(recipe['recipe_ingredients']), model_name
+    )
+    allergen_embedding = await get_embedding(
+        session, ','.join(allergies_list), model_name
+    )
 
     # 指定されたアレルギー品目に対する材料の類似度を計算
     recipe_score = cosine_similarity(ingredient_embedding, allergen_embedding)
@@ -52,15 +59,35 @@ def calc_allergens_include_score_by_embedding(
     return recipe_score
 
 
-def scoring_embedding(
+async def scoring_embedding_async(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     model_name: Optional[str] = 'text-embedding-3-small',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     # 次元埋め込みを用いて各レシピのスコアを算出する
-    for recipe in tqdm(excluded_recipes_list):
-        recipe['recipe_score'] = calc_allergens_include_score_by_embedding(
-            allergies_list, recipe
-        )
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for recipe in excluded_recipes_list:
+            task = calc_allergens_include_score_by_embedding(
+                session, allergies_list, recipe, model_name
+            )
+            tasks.append(task)
+
+        recipe_scores = await tqdm.gather(*tasks)
+
+        for i, recipe in enumerate(excluded_recipes_list):
+            recipe['recipe_score'] = recipe_scores[i]
 
     return excluded_recipes_list
+
+
+def scoring_embedding(
+    allergies_list: list[str],
+    excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
+    model_name: Optional[str] = 'text-embedding-3-small',
+) -> list[dict[str, Union[str, list[str], float]]]:
+    # 非同期関数を同期的に呼び出す
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(
+        scoring_embedding_async(allergies_list, excluded_recipes_list, model_name)
+    )
