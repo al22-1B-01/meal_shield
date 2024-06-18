@@ -7,7 +7,8 @@
 ### APIキーの設定
 1. APIキーの取得：`https://platform.openai.com/settings/profile?tab=api-keys`へアクセスしAPIキーを取得
     - 参考：https://nicecamera.kidsplates.jp/help/6648/
-2. APIキーの設定：`cp `
+2. APIキーの設定：`cp backend/env.sample backend/.env`
+3. `backend/.env`へのAPIキーの記載
 ### dockerコンテナの起動
 1. `docker compose up -d --build`
 ### コンテナの起動、停止
