@@ -41,4 +41,3 @@ def ranking_recipe(
     sorted_excluded_recipes_list = sort_recipes_by_allergy_score(scored_recipes_list)
 
     return sorted_excluded_recipes_list
-
