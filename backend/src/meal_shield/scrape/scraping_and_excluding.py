@@ -17,12 +17,7 @@ def contains_any(string: str, substrings: list[str]) -> bool:
 
 # 文字列リストにリストの文字列が含まれるか判別
 def contains_any_in_list(strings: list[str], substrings: list[str]) -> bool:
-    # リストの要素の判別結果をboolリストに格納
-    results = [contains_any(string, substrings) for string in strings]
-    for result in results:
-        if result:
-            return True
-    return False
+    return any(contains_any(string, substrings) for string in strings)
 
 
 def excluding(allergy_list: list[str], recipe_data_list: list[dict]) -> list[dict]:
