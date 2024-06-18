@@ -9,6 +9,35 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def calc_normalized_score(
+    recipes_list: list[dict[str, Union[str, list[str], float]]],
+    score_column: Optional[str] = 'recipe_score',
+) -> list[dict[str, Union[str, list[str], float]]]:
+    max_score = max([recipe[score_column] for recipe in recipes_list])
+
+    for recipe in recipes_list:
+        recipe[score_column] = recipe[score_column] / max_score
+
+    return recipes_list
+
+
+def calc_hybrid_score(
+    scored_recipes_list: list[dict[str, Union[str, list[str], float]]],
+    score_columns: list[str],
+) -> list[dict[str, Union[str, list[str], float]]]:
+    for score_column in score_columns:
+        scored_recipes_list = calc_normalized_score(scored_recipes_list, score_column)
+    for scored_recipe in scored_recipes_list:
+        scored_recipe['recipe_score'] = sum(
+            [scored_recipe[score_column] for score_column in score_columns]
+        )
+    for score_column in score_columns:
+        for scored_recipe in scored_recipes_list:
+            del scored_recipe[score_column]
+
+    return scored_recipes_list
+
+
 def sort_recipes_by_allergy_score(
     scored_recipes_list: list[dict[str, Union[str, list[str], float]]],
 ) -> list[dict[str, Union[str, list[str], float]]]:
@@ -30,6 +59,7 @@ def ranking_recipe(
         スコアリング済みのレシピデータをもつリスト
     '''
     # スコアリング関数の呼び出し
+    score_columns = None
     if ranking_method == 'default':
         scored_recipes_list = scoring_count(allergies_list, excluded_recipes_list)
     elif ranking_method == 'embedding':
@@ -52,6 +82,8 @@ def ranking_recipe(
         scored_recipes_list = scoring_count(
             allergies_list, excluded_recipes_list, score_column='count_score'
         )
+        score_columns = ['chatgpt_score', 'embedding_score', 'count_score']
+        scored_recipes_list = calc_hybrid_score(scored_recipes_list, score_columns)
 
     # スコアに基づいたソートを行う
     sorted_excluded_recipes_list = sort_recipes_by_allergy_score(scored_recipes_list)
