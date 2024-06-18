@@ -33,7 +33,7 @@ jobs:
       - name: Setup docker
         shell: bash
         run: |
-          docker compose build --progress=plain
-          docker compose up -d
+          docker compose -f compose.yml build --progress=plain
+          docker compose -f compose.yml up -d
       - name: Test
         run: docker compose exec ${{ matrix.directory }} poetry run tox
