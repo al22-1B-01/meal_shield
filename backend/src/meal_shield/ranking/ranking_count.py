@@ -1,13 +1,7 @@
-import logging
 from multiprocessing import Pool, cpu_count
 from typing import Final, Optional, Union
 
 from tqdm.auto import tqdm
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-logger.debug('ranking_count.py was imported!')
 
 WORDS: Final[dict[str, list[str]]] = {
     'えび': ['えび', 'エビ', '海老'],

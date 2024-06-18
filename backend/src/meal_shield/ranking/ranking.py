@@ -1,12 +1,8 @@
-import logging
 from typing import Optional, Union
 
 from meal_shield.ranking.ranking_chatgpt import scoring_chatgpt
 from meal_shield.ranking.ranking_count import scoring_count
 from meal_shield.ranking.ranking_embedding import scoring_embedding
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def calc_normalized_score(

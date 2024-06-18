@@ -12,8 +12,6 @@ from meal_shield.env import OPENAI_API_KEY
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# NOTE: デバッグ用
-logger.debug('ranking_chatgpt.py was imported!')
 
 CHATGPT_SCORE: Final[str] = r'score=(\d+)'
 CHATGPT_SCORE_PATTERN: Final[re.Pattern] = re.compile(CHATGPT_SCORE)
