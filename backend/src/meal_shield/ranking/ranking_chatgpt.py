@@ -16,7 +16,10 @@ logger = logging.getLogger(__name__)
 CHATGPT_SCORE: Final[str] = r'score=(\d+)'
 CHATGPT_SCORE_PATTERN: Final[re.Pattern] = re.compile(CHATGPT_SCORE)
 CHATGPT_URL: Final[str] = 'https://api.openai.com/v1/chat/completions'
-PROMPT_TEMPLATE: Final[str] = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
+PROMPT_TEMPLATE: Final[
+    str
+] = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
+
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 async def fetch_score(

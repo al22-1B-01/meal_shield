@@ -34,8 +34,6 @@ def calc_hybrid_score(
     return scored_recipes_list
 
 
-
-
 def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],

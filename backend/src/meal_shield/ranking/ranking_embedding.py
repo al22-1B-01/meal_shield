@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Optional, Union, Final
+from typing import Any, Final, Optional, Union
 
 import aiohttp
 import numpy as np
@@ -7,8 +7,8 @@ from tqdm.asyncio import tqdm
 
 from meal_shield.env import OPENAI_API_KEY
 
-
 OPENAI_EMBEDDING_URL: Final[str] = "https://api.openai.com/v1/embeddings"
+
 
 async def get_embedding(
     session: aiohttp.ClientSession,
@@ -20,7 +20,9 @@ async def get_embedding(
         "Content-Type": "application/json",
     }
     data = {"model": model_name, "input": text}
-    async with session.post(OPENAI_EMBEDDING_URL, json=data, headers=headers) as response:
+    async with session.post(
+        OPENAI_EMBEDDING_URL, json=data, headers=headers
+    ) as response:
         response_json = await response.json()
         return response_json['data'][0]['embedding']
 
