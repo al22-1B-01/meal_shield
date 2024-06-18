@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        directory: [frontend, backend]
+        service: [frontend, backend]
 
     steps:
       - uses: actions/checkout@v3
@@ -36,4 +36,4 @@ jobs:
           docker compose -f compose.yml build --progress=plain
           docker compose -f compose.yml up -d
       - name: Test
-        run: docker compose exec ${{ matrix.directory }} poetry run tox
+        run: docker compose exec ${{ matrix.service }} poetry run tox
