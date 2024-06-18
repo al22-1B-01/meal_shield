@@ -17,7 +17,7 @@ client = OpenAI()
 # NOTE: デバッグ用
 logger.debug('ranking_chatgpt.py was imported!')
 
-PATTERN = r'score=(\d+)'
+PATTERN = re.compile(r'score=(\d+)')
 
 
 def calc_allergens_include_score_by_chatgpt(
@@ -43,7 +43,8 @@ def calc_allergens_include_score_by_chatgpt(
 
         return float(score)
     except Exception as e:
-        logger.info(e)
+        # スコアの最低値を返す
+        return 101.0
 
 
 def scoring_chatgpt(
