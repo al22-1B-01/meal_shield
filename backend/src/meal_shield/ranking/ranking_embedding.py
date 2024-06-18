@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from typing import Any, Optional, Union
 
 import aiohttp
@@ -7,12 +6,6 @@ import numpy as np
 from tqdm.asyncio import tqdm
 
 from meal_shield.env import OPENAI_API_KEY
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# NOTE: デバッグ用
-logger.debug('ranking_embedding.py was imported!')
 
 
 async def get_embedding(
