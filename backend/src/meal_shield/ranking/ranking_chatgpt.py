@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 CHATGPT_SCORE: Final[str] = r'score=(\d+)'
 CHATGPT_SCORE_PATTERN: Final[re.Pattern] = re.compile(CHATGPT_SCORE)
-
+CHATGPT_URL: Final[str] = 'https://api.openai.com/v1/chat/completions'
+PROMPT_TEMPLATE: Final[str] = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 async def fetch_score(
@@ -24,13 +25,12 @@ async def fetch_score(
     ingredient: list[str],
     model_name: Optional[str] = 'gpt-3.5-turbo',
 ) -> float:
-    prompt_template = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
-    organized_prompt = prompt_template.format(
+    organized_prompt = PROMPT_TEMPLATE.format(
         ','.join(allergies_list), ','.join(ingredient)
     )
 
     async with session.post(
-        'https://api.openai.com/v1/chat/completions',
+        CHATGPT_URL,
         json={
             'model': model_name,
             'messages': [{'role': 'user', 'content': organized_prompt}],

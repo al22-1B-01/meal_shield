@@ -34,14 +34,6 @@ def calc_hybrid_score(
     return scored_recipes_list
 
 
-def sort_recipes_by_allergy_score(
-    scored_recipes_list: list[dict[str, Union[str, list[str], float]]],
-) -> list[dict[str, Union[str, list[str], float]]]:
-    sorted_excluded_recipes_list = sorted(
-        scored_recipes_list, key=lambda x: x['recipe_score']
-    )
-
-    return sorted_excluded_recipes_list
 
 
 def ranking_recipe(
@@ -74,7 +66,8 @@ def ranking_recipe(
         score_columns = ['chatgpt_score', 'embedding_score', 'count_score']
         scored_recipes_list = calc_hybrid_score(scored_recipes_list, score_columns)
 
-    # スコアに基づいたソートを行う
-    sorted_excluded_recipes_list = sort_recipes_by_allergy_score(scored_recipes_list)
+    sorted_excluded_recipes_list = sorted(
+        scored_recipes_list, key=lambda x: x['recipe_score']
+    )
 
     return sorted_excluded_recipes_list
