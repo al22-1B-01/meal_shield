@@ -3,7 +3,6 @@ from typing import Final, Optional, Union
 
 from tqdm.auto import tqdm
 
-
 WORDS: Final[dict[str, list[str]]] = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],

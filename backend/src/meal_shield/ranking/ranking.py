@@ -5,7 +5,6 @@ from meal_shield.ranking.ranking_count import scoring_count
 from meal_shield.ranking.ranking_embedding import scoring_embedding
 
 
-
 def calc_normalized_score(
     recipes_list: list[dict[str, Union[str, list[str], float]]],
     score_column: Optional[str] = 'recipe_score',
