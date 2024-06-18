@@ -45,7 +45,7 @@ def main():
     sorted_excluded_recipes_list = ranking_recipe(
         allergies_list=allergies_list,
         excluded_recipes_list=excluded_recipes_list,
-        ranking_method='embedding',  # 'chatgpt' or 'default' or 'embedding'
+        ranking_method='hybrid',  # 'chatgpt' or 'default' or 'embedding' or 'hybrid'
     )
     logger.info(f'処理時間: {time.time() - start_time}秒')
 

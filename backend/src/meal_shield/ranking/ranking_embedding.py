@@ -63,6 +63,7 @@ async def scoring_embedding_async(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     model_name: Optional[str] = 'text-embedding-3-small',
+    score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     # 次元埋め込みを用いて各レシピのスコアを算出する
     async with aiohttp.ClientSession() as session:
@@ -73,10 +74,12 @@ async def scoring_embedding_async(
             )
             tasks.append(task)
 
-        recipe_scores = await tqdm.gather(*tasks)
+        recipe_scores = await tqdm.gather(
+            *tasks, desc="Processing recipes by embedding"
+        )
 
         for i, recipe in enumerate(excluded_recipes_list):
-            recipe['recipe_score'] = recipe_scores[i]
+            recipe[score_column] = recipe_scores[i]
 
     return excluded_recipes_list
 
@@ -85,9 +88,15 @@ def scoring_embedding(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     model_name: Optional[str] = 'text-embedding-3-small',
+    score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     # 非同期関数を同期的に呼び出す
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(
-        scoring_embedding_async(allergies_list, excluded_recipes_list, model_name)
+        scoring_embedding_async(
+            allergies_list=allergies_list,
+            excluded_recipes_list=excluded_recipes_list,
+            model_name=model_name,
+            score_column=score_column,
+        )
     )

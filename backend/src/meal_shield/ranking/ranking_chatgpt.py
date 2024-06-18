@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import re
-from typing import Union
+from typing import Optional, Union
 
 import aiohttp
 from tenacity import retry, stop_after_attempt, wait_fixed
@@ -20,7 +20,10 @@ PATTERN = re.compile(r'score=(\d+)')
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 async def fetch_score(
-    session: aiohttp.ClientSession, allergies_list: list[str], ingredient: list[str]
+    session: aiohttp.ClientSession,
+    allergies_list: list[str],
+    ingredient: list[str],
+    model_name: Optional[str] = 'gpt-3.5-turbo',
 ) -> float:
     # ChatGPTへのプロンプトを作成
     prompt = '{}にアレルギーがあります。\n{}を使った料理を作ります。\nこの料理の材料に含まれるアレルギー品目の割合を教えてください。回答は以下のフォーマットで答えてください：\n\nscore=XX%'
@@ -29,7 +32,7 @@ async def fetch_score(
     async with session.post(
         'https://api.openai.com/v1/chat/completions',
         json={
-            'model': 'gpt-3.5-turbo',
+            'model': model_name,
             'messages': [{'role': 'user', 'content': organized_prompt}],
         },
         headers={'Authorization': f'Bearer {OPENAI_API_KEY}'},
@@ -50,16 +53,20 @@ async def fetch_score(
 async def calc_allergens_include_score_by_chatgpt(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
+    model_name: Optional[str] = 'gpt-3.5-turbo',
+    score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     async with aiohttp.ClientSession() as session:
         tasks = [
-            fetch_score(session, allergies_list, recipe['recipe_ingredients'])
+            fetch_score(
+                session, allergies_list, recipe['recipe_ingredients'], model_name
+            )
             for recipe in excluded_recipes_list
         ]
-        scores = await tqdm_asyncio.gather(*tasks, desc="Processing recipes")
+        scores = await tqdm_asyncio.gather(*tasks, desc="Processing recipes by ChatGPT")
 
         for recipe, score in zip(excluded_recipes_list, scores):
-            recipe['recipe_score'] = score
+            recipe[score_column] = score
 
     return excluded_recipes_list
 
@@ -67,9 +74,15 @@ async def calc_allergens_include_score_by_chatgpt(
 def scoring_chatgpt(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
-    model_name='gpt-3.5-turbo',
+    model_name: Optional[str] = 'gpt-3.5-turbo',
+    score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(
-        calc_allergens_include_score_by_chatgpt(allergies_list, excluded_recipes_list)
+        calc_allergens_include_score_by_chatgpt(
+            allergies_list=allergies_list,
+            excluded_recipes_list=excluded_recipes_list,
+            model_name=model_name,
+            score_column=score_column,
+        )
     )
