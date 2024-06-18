@@ -102,8 +102,7 @@ def test_make_url_list_ネットワーク接続エラーを捕捉するか確認
 
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        with pytest.raises(requests.exceptions.ConnectionError):
-            make_url_list(recipe_name)
+        assert make_url_list(recipe_name) is None
 
 
 def test_make_url_list_HTTPErrorを捕捉するか確認():
@@ -118,7 +117,7 @@ def test_make_url_list_HTTPErrorを捕捉するか確認():
         mock_get.return_value = mock_response
 
         with pytest.raises(requests.exceptions.HTTPError):
-            make_url_list(recipe_name)
+            assert make_url_list(recipe_name) is None
 
 
 def test_scraping_recipe_url_エラーがない場合正しくデータを取得しているか確認():
@@ -132,8 +131,7 @@ def test_scraping_recipe_url_ネットワーク接続エラーを捕捉するか
     url = 'https://cookpad.com/search/ココナッツカレー?page=1'
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        with pytest.raises(requests.exceptions.ConnectionError):
-            scraping_recipe_url(url)
+        assert scraping_recipe_url(url) is None
 
 
 def test_scraping_recipe_url_HTTPErrorを捕捉するか確認():
@@ -146,8 +144,7 @@ def test_scraping_recipe_url_HTTPErrorを捕捉するか確認():
         )
         mock_get.return_value = mock_response
 
-        with pytest.raises(requests.exceptions.HTTPError):
-            scraping_recipe_url(url)
+        assert scraping_recipe_url(url) is None
 
 
 def test_scraping_recipe_data_エラーがない場合正しくデータを取得しているか確認():
@@ -168,8 +165,7 @@ def test_scraping_recipe_data_ネットワーク接続エラーを補足する�
 
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        with pytest.raises(requests.exceptions.ConnectionError):
-            scraping_recipe_data(url)
+        assert scraping_recipe_data(url) is None
 
 
 def test_scraping_recipe_data_HTTPErrorを補足するか確認():
@@ -183,8 +179,7 @@ def test_scraping_recipe_data_HTTPErrorを補足するか確認():
         )
         mock_get.return_value = mock_response
 
-        with pytest.raises(requests.exceptions.HTTPError):
-            scraping_recipe_data(url)
+            assert scraping_recipe_data(url) is None
 
 
 def test_scraping_cookpad_エラーがない場合正しくデータを取得しているか確認():
@@ -221,8 +216,7 @@ def test_scraping_cookpad_ネットワーク接続エラーを補足するか確
 
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        with pytest.raises(requests.exceptions.ConnectionError):
-            scraping_cookpad(recipe_name)
+        assert scraping_cookpad(recipe_name) is None
 
 
 def test_scraping_cookpad_HTTPErrorを補足するか確認():
@@ -236,5 +230,4 @@ def test_scraping_cookpad_HTTPErrorを補足するか確認():
         )
         mock_get.return_value = mock_response
 
-        with pytest.raises(requests.exceptions.HTTPError):
-            scraping_cookpad(recipe_name)
+        assert scraping_cookpad(recipe_name) is None
