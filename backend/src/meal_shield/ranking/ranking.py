@@ -23,7 +23,7 @@ def sort_recipes_by_allergy_score(
 def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
-    ranking_method: Optional[str] = 'embedding',
+    ranking_method: Optional[str] = 'hybrid',
 ) -> list[dict[str, Union[str, list[str]]]]:
     '''
     scored_recipes_list: list[dict[str, Union[str, list[str], float]]]
@@ -36,6 +36,22 @@ def ranking_recipe(
         scored_recipes_list = scoring_embedding(allergies_list, excluded_recipes_list)
     elif ranking_method == 'chatgpt':
         scored_recipes_list = scoring_chatgpt(allergies_list, excluded_recipes_list)
+    elif ranking_method == 'hybrid':
+        scored_recipes_list = scoring_chatgpt(
+            allergies_list,
+            excluded_recipes_list,
+            model_name='gpt-3.5-turbo',
+            score_column='chatgpt_score',
+        )
+        scored_recipes_list = scoring_embedding(
+            allergies_list,
+            excluded_recipes_list,
+            model_name='text-embedding-3-small',
+            score_column='embedding_score',
+        )
+        scored_recipes_list = scoring_count(
+            allergies_list, excluded_recipes_list, score_column='count_score'
+        )
 
     # スコアに基づいたソートを行う
     sorted_excluded_recipes_list = sort_recipes_by_allergy_score(scored_recipes_list)

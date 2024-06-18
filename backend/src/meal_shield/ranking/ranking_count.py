@@ -1,6 +1,8 @@
 import logging
 from multiprocessing import Pool, cpu_count
-from typing import Final, Union
+from typing import Final, Optional, Union
+
+from tqdm.auto import tqdm
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,7 +53,9 @@ def extract_allergy_words(
 
 
 def score_recipe(
-    recipe: dict[str, Union[str, list[str], float]], extracted_allergies_list: list[str]
+    recipe: dict[str, Union[str, list[str], float]],
+    extracted_allergies_list: list[str],
+    score_column: Optional[str] = 'recipe_score',
 ) -> dict[str, Union[str, list[str], float]]:
     allergen_counts = 0
     ingredients = recipe['recipe_ingredients']
@@ -59,20 +63,30 @@ def score_recipe(
     for allergen in extracted_allergies_list:
         allergen_counts += ingredients.count(allergen)
 
-    recipe['recipe_score'] = allergen_counts
+    recipe[score_column] = allergen_counts
     return recipe
 
 
 def scoring_count(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
+    score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     extracted_allergies_list = extract_allergy_words(WORDS, allergies_list)
 
     with Pool(cpu_count()) as pool:
-        results = pool.starmap(
-            score_recipe,
-            [(recipe, extracted_allergies_list) for recipe in excluded_recipes_list],
+        results = list(
+            tqdm(
+                pool.starmap(
+                    score_recipe,
+                    [
+                        (recipe, extracted_allergies_list, score_column)
+                        for recipe in excluded_recipes_list
+                    ],
+                ),
+                total=len(excluded_recipes_list),
+                desc="Processing recipes by counting",
+            )
         )
 
     return results
