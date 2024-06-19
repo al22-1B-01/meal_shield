@@ -1,14 +1,15 @@
 import streamlit as st
 from search import search_recipe_entrypoint
 from detail import show_details
+from display_recipi import display_recipi
 
 def main():
     if 'page' not in st.session_state:
         search_recipe_entrypoint()
     
     
-    #elif st.session_state.page == '検索':
-        #display_recipi()
+    elif st.session_state.page == '検索':
+        display_recipi()
 
 
 

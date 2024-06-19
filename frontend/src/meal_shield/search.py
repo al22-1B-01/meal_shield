@@ -89,12 +89,14 @@ def search_recipe_entrypoint() -> None:
 
     if st.button('検索'):
         recipes = fetch_recipes(recipe_name, st.session_state.allergy_list)
-        display_recipi(st.session_state.allergy_list, recipe_name, recipes)
+        st.session_state.recipes = recipes
+        st.session_state.page = '検索結果'
+        #display_recipi(st.session_state.allergy_list, recipe_name, recipes)
 
-        if recipes:
-            st.session_state.recipes = recipes
-            st.session_state.page = '検索結果'
-            display_recipi(st.session_state.allergy_list, recipe_name, recipes)
+        #if recipes:
+            #st.session_state.recipes = recipes
+            #st.session_state.page = '検索結果'
+            #display_recipi(st.session_state.allergy_list, recipe_name, recipes)
 
        
 
