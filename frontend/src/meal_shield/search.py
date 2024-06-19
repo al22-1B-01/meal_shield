@@ -7,11 +7,7 @@ from PIL import Image
 
 from meal_shield.env import PACKAGE_DIR
 
-<<<<<<< HEAD
 API_URL = 'https://api.cookpad.com/search/recipes'
-=======
-API_URL = ''
->>>>>>> d130d1e (修正)
 
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list[dict[str, any]]:
