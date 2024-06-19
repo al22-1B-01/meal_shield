@@ -1,4 +1,5 @@
 from pathlib import Path
+from display_recipi import display_recipi
 
 import requests
 import streamlit as st
@@ -6,7 +7,11 @@ from PIL import Image
 
 from meal_shield.env import PACKAGE_DIR
 
+<<<<<<< HEAD
 API_URL = 'https://api.cookpad.com/search/recipes'
+=======
+API_URL = ''
+>>>>>>> d130d1e (修正)
 
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list[dict[str, any]]:
@@ -18,6 +23,7 @@ def fetch_recipes(recipe_name, allergies: list[str]) -> list[dict[str, any]]:
     if response.status_code == 200:
         return response.json()
     else:
+        st.error(f"エラーが発生しました: {response.status_code}")
         return None
 
 
@@ -87,10 +93,13 @@ def search_recipe_entrypoint() -> None:
 
     if st.button('検索'):
         recipes = fetch_recipes(recipe_name, st.session_state.allergy_list)
+        display_recipi(st.session_state.allergy_list, recipe_name, recipes)
 
         if recipes:
             st.session_state.recipes = recipes
             st.session_state.page = '検索結果'
+            display_recipi(st.session_state.allergy_list, recipe_name, recipes)
+
        
 
 
