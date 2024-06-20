@@ -3,6 +3,7 @@ from typing import Union
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from meal_shield.env import OPENAI_API_KEY
 
 from meal_shield.ranking import ranking
 from meal_shield.scrape.scraping_and_excluding import scraping_and_exclude
