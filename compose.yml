@@ -9,8 +9,8 @@ services:
       context: .
       dockerfile: frontend/docker/cpu/Dockerfile
       target: dev
-      # secrets:
-      #   - github_token
+        secrets:
+          - github_token
       args:
         progress: plain
     volumes:
