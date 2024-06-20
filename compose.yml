@@ -9,8 +9,8 @@ services:
       context: .
       dockerfile: frontend/docker/cpu/Dockerfile
       target: dev
-        secrets:
-          - github_token
+      #  secrets:
+      #    - github_token
       args:
         progress: plain
     volumes:
@@ -34,8 +34,8 @@ services:
       context: .
       dockerfile: backend/docker/cpu/Dockerfile
       target: dev
-      # secrets:
-      #   - github_token
+       # secrets:
+       #   - github_token
       args:
         progress: plain
     volumes:
@@ -44,8 +44,8 @@ services:
         target: /app
     ports:
       - "127.0.0.1:8000:8000"
-    # command:
-    #   poetry run uvicorn src.meal_shield.app:app --reload --host 0.0.0.0 --port 8000
+      command:
+        poetry run uvicorn src.meal_shield.app:app --reload --host 0.0.0.0 --port 8000
     environment:
         PYTHONPATH: "/app/src"
         PYTHONUNBUFFERED: 1
