@@ -1,17 +1,17 @@
 from pathlib import Path
-from display_recipi import display_recipi
 
 import requests
 import streamlit as st
 from PIL import Image
 
+from display_recipi import display_recipi
 from meal_shield.env import PACKAGE_DIR
 
 API_URL = 'https://api.cookpad.com/search/recipes'
 
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list[dict[str, any]]:
-    
+
     params = {'name': recipe_name, 'allergies': allergies}
 
     response = requests.post(API_URL, json=params)
@@ -58,7 +58,6 @@ def search_recipe_entrypoint() -> None:
     ]
 
     st.subheader('除去したい品目を選択してください')
-    #allergy_list = []
 
     if 'allergy_list' not in st.session_state:
         st.session_state.allergy_list = []
@@ -84,20 +83,12 @@ def search_recipe_entrypoint() -> None:
         )
 
     st.subheader('レシピ検索')
-    # ユーザーからレシピ名を入力として受け取ります
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
         recipes = fetch_recipes(recipe_name, st.session_state.allergy_list)
         st.session_state.recipes = recipes
         st.session_state.page = '検索結果'
-        #display_recipi(st.session_state.allergy_list, recipe_name, recipes)
-
-        #if recipes:
-            #st.session_state.recipes = recipes
-            #st.session_state.page = '検索結果'
-            #display_recipi(st.session_state.allergy_list, recipe_name, recipes)
-
-       
-
-
+        st.session_state.recipe_name = recipe_name
+        st.experimental_rerun()
+        return st.session_state.allergy_list, recipe_name, recipes
