@@ -10,7 +10,7 @@ if project_root not in sys.path:
 from streamlit.testing.v1 import AppTest
 import streamlit as st
 from typing import Union
-from frontend.src.meal_shield.display_recipi import display_recipi
+from meal_shield.display_recipi import display_recipi
 
 
 def test_display_recipi():
