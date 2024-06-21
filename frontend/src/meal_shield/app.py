@@ -1,8 +1,7 @@
 import streamlit as st
 from detail import show_details
-from search import search_recipe_entrypoint
-
 from display_recipi import display_recipi
+from search import search_recipe_entrypoint
 
 
 def main():
