@@ -16,11 +16,11 @@ def main():
                 st.session_state.recipes,
             )
         else:
-            st.write("レシピが見つかりませんでした。")
+            st.write('レシピが見つかりませんでした。')
 
     elif st.session_state.page == 'details':
         show_details()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
