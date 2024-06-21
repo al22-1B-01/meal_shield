@@ -1,3 +1,12 @@
+import logging
+import time
+
+from meal_shield.ranking.ranking import ranking_recipe
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 def main():
     '''
     allergies_list: list[str], 指定されたアレルギー品目のデータをもつリスト
@@ -32,10 +41,13 @@ def main():
     ]
 
     # 各レシピに対してスコアリングを行い、スコアに基づいたソートを行う
+    start_time = time.time()
     sorted_excluded_recipes_list = ranking_recipe(
         allergies_list=allergies_list,
         excluded_recipes_list=excluded_recipes_list,
+        ranking_method='hybrid',  # 'chatgpt' or 'default' or 'embedding' or 'hybrid'
     )
+    logger.info(f'処理時間: {time.time() - start_time}秒')
 
     # ソート結果の表示
     # TODO: 正式実装の際は、ranking_recipe関数内でC3に結果を渡す
