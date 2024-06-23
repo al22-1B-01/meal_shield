@@ -1,14 +1,13 @@
-import requests
-import streamlit as st
+from typing import Union
 
-# from typing import Union
+import streamlit as st
 
 
 def display_recipi(
     selected_allergies: list[str],
     recipi_name: str,
-    # result: list[dict[str, Union[str, list[str]]]],
-    backend_url: str = "http://localhost:8000",
+    result: list[dict[str, Union[str, list[str]]]],
+    # backend_url: str = "http://localhost:8000",
 ) -> None:
     st.title('選択されたアレルギー品目')
     allergy_list = ', '.join(selected_allergies)
@@ -23,16 +22,6 @@ def display_recipi(
     st.markdown(box_style.format(content=allergy_list), unsafe_allow_html=True)
     st.title('料理名')
     st.markdown(box_style.format(content=recipi_name), unsafe_allow_html=True)
-
-    response = requests.get(
-        backend_url, params={'recipi': recipi_name, 'allergy_list': selected_allergies}
-    )
-
-    if response.status_code == 200:
-        result = response.json().get('data', [])
-    else:
-        st.error('データの取得に失敗しました')
-        return
 
     button_css = '''
     <style>
