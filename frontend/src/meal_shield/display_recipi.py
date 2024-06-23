@@ -25,8 +25,7 @@ def display_recipi(
     st.markdown(box_style.format(content=recipi_name), unsafe_allow_html=True)
 
     response = requests.get(
-        backend_url,
-        params={'recipi': recipi_name, 'allergy_list': selected_allergies}
+        backend_url, params={'recipi': recipi_name, 'allergy_list': selected_allergies}
     )
 
     if response.status_code == 200:
