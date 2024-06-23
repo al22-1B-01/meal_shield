@@ -64,7 +64,7 @@ async def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
     return allergu_search
 
 
-@app.get("/get")
+@app.get("/")
 async def get_recipi(
     recipi: str = None, allergy_list: list[str] = None
 ) -> list[dict[str, Union[str, list[str]]]]:
