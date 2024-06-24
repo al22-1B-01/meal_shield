@@ -10,8 +10,6 @@ params = {
     "recipi": recipi,
     # allergy_list をリストとして送る場合、同じパラメータ名を複数回使用する必要がある
     "allergy_list": allergy_list,
-    "allergy_list": allergy_list,
-    "allergy_list": allergy_list,
 }
 
 

@@ -1,25 +1,11 @@
 import os
-from typing import Union
+from typing import Union, List
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 
 from meal_shield.env import OPENAI_API_KEY
 from meal_shield.ranking.ranking import ranking_recipe
 from meal_shield.scrape.scraping_and_excluding import scraping_and_excluding
-
-load_dotenv()
-
-# 環境変数からAPIキーを取得
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
-# APIキーが設定されていることを確認
-if OPENAI_API_KEY is None:
-    raise ValueError("OPENAI_API_KEY is not set")
-
-# 環境変数を設定
-os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
-
 
 app = FastAPI()
 
@@ -76,12 +62,13 @@ async def get_recipi(
             allergy_list = []
 
         allergy_found = await serch_allergy(allergy_list)
-        allergy_remove = scraping_and_excluding(recipi, allergy_found)
+        allergy_remove = await scraping_and_excluding(allergy_found , recipi )
+        rank_recipi = await ranking_recipe(allergy_found, allergy_remove)
 
-        if not isinstance(allergy_remove, list):
+        if not isinstance(rank_recipi, list):
             raise HTTPException(status_code=500, detail="Unexpected response format")
         
-        return allergy_remove
+        return rank_recipi
 
     except Exception as e:
         print("Error:", str(e))  # エラー内容のログ
