@@ -7,6 +7,7 @@ def display_recipi(
     selected_allergies: list[str],
     recipi_name: str,
     result: list[dict[str, Union[str, list[str]]]],
+    # backend_url: str = "http://localhost:8000",
 ) -> None:
     st.title('選択されたアレルギー品目')
     allergy_list = ', '.join(selected_allergies)
