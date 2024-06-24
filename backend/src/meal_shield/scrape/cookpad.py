@@ -1,5 +1,5 @@
 from multiprocessing import Pool, cpu_count
-from typing import Optional
+from typing import Optional, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -10,7 +10,7 @@ LIMIT_PAGE = 100
 
 def scraping_cookpad(
     recipe_name: str,
-) -> Optional[list[dict[str, list[str], str, str]]]:
+) -> Optional[list[dict[str, Union[str, list[str]]]]]:
     # 検索結果ページのURLリストを取得
     page_url_list = make_url_list(recipe_name)
     if page_url_list is None:
@@ -23,8 +23,8 @@ def scraping_cookpad(
     recipe_url_list = [item for sublist in recipe_url_lists for item in sublist]
     # それぞれのレシピのURLからデータを並列処理で取得
     with Pool(num_cpu) as pool:
-        recipe_data_list = pool.map(scraping_recipe_data, recipe_url_list)
-    return recipe_data_list
+        recipes_list = pool.map(scraping_recipe_data, recipe_url_list)
+    return recipes_list
 
 
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
@@ -70,7 +70,7 @@ def scraping_recipe_url(url: str) -> list[str]:
     return recipe_url_list
 
 
-def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
+def scraping_recipe_data(url: str) -> list[dict[str, Union[str, list[str]]]]:
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'lxml')
 
@@ -79,7 +79,7 @@ def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
     # 全角スペースを半角スペースに置き換える
     recipe_title = recipe_title.replace('\u3000', ' ')
 
-    ingredient_list = []
+    recipe_ingredients = []
     # 材料のデータを含む<span>タグの要素をすべて取得
     spans = soup.find_all('span', class_='name')
     for span in spans:
@@ -89,19 +89,19 @@ def scraping_recipe_data(url: str) -> list[dict[str, list[str], str, str]]:
             ingredient_name = span.text
         else:
             ingredient_name = a_tag.text
-        ingredient_list.append(ingredient_name)
+        recipe_ingredients.append(ingredient_name)
 
     # レシピ画像のURLを属性に持つ<img>タグを含む<section>タグを取得
     section_tag = soup.find('section', id='main-photo')
     # レシピ画像のURLを属性に持つ<img>タグを取得
     img_tag = section_tag.find('img')
     # <img>タグのsrc属性(レシピ画像のURL)を取得
-    recipe_img_url = img_tag.get('src')
+    recipe_image_url = img_tag.get('src')
 
     recipe_data = {
         'recipe_title': recipe_title,
-        'ingredient_list': ingredient_list,
+        'recipe_ingredients': recipe_ingredients,
         'recipe_url': url,
-        'recipe_img_url': recipe_img_url,
+        'recipe_image_url': recipe_image_url,
     }
     return recipe_data
