@@ -3,10 +3,6 @@ from typing import Union
 from meal_shield.scrape.cookpad import scraping_cookpad
 
 
-def main():
-    print(scraping_and_excluding(['玉ねぎ', '鶏肉'], 'ココナッツカレー'))
-
-
 def scraping_and_excluding(
     allergy_list, recipe_name: str
 ) -> list[dict[str, Union[str, list[str]]]]:
@@ -36,7 +32,3 @@ def excluding_recipe(allergy_list: list[str], recipes_list: list[dict]) -> list[
         if not contains_any_in_list(recipe_data['recipe_ingredients'], allergy_list)
     ]
     return excluded_recipes_list
-
-
-if __name__ == "__main__":
-    main()
