@@ -74,7 +74,7 @@ async def calc_allergens_include_score_by_chatgpt(
     return excluded_recipes_list
 
 
-def scoring_chatgpt(
+async def scoring_chatgpt(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     model_name: Optional[str] = 'gpt-3.5-turbo',

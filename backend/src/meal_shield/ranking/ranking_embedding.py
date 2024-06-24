@@ -76,7 +76,7 @@ async def scoring_embedding_async(
     return excluded_recipes_list
 
 
-def scoring_embedding(
+async def scoring_embedding(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     model_name: Optional[str] = 'text-embedding-3-small',
