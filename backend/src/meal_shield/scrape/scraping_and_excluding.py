@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import logging
 from typing import Optional, Union
 
@@ -25,9 +24,6 @@ def main():
         logger.info(f'除外品目:{allergy_list}')
     else:
         logger.error('エラーが起きました')
-=======
-from meal_shield.scrape.cookpad import scraping_cookpad
->>>>>>> develop
 
 
 def scraping_and_excluding(

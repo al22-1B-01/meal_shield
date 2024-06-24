@@ -210,15 +210,16 @@ def test_scraping_cookpad_エラーがない場合正しくデータを取得し
             ]
 
 
-def test_scraping_cookpad_ネットワーク接続エラーを補足するか確認():
+#ネットワーク接続エラーを補足するか確認
+def test_scraping_cookpad_conection_error():
     recipe_name = 'ココナッツカレー'
 
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
         assert scraping_cookpad(recipe_name) is None
 
-
-def test_scraping_cookpad_HTTPErrorを補足するか確認():
+#HTTPErrorを補足するか確認
+def test_scraping_cookpad_HTTPError():
     recipe_name = 'ココナッツカレー'
 
     # requests.get をモック化し、HTTPError を発生させる

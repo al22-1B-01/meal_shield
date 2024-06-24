@@ -9,7 +9,7 @@ from tenacity import retry, stop_after_attempt
 LIMIT_PAGE = 100
 
 
-@retry(stop=stop_after_attempt(3))
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 def scraping_cookpad(
     recipe_name: str,
 ) -> Optional[list[dict[str, Union[str, list[str]]]]]:
@@ -35,7 +35,7 @@ def scraping_cookpad(
         return recipe_data_list
 
 
-@retry(stop=stop_after_attempt(3))
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
     try:
         # 検索結果の最初のページのURL
@@ -62,7 +62,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
         return None
 
 
-@retry(stop=stop_after_attempt(3))
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 def scraping_recipe_url(url: str) -> Optional[list[str]]:
     try:
         response = requests.get(url)
@@ -83,7 +83,7 @@ def scraping_recipe_url(url: str) -> Optional[list[str]]:
         return None
 
 
-@retry(stop=stop_after_attempt(3))
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 def scraping_recipe_data(url: str) -> Optional[list[dict[str, Union[str, list[str]]]]]:
     try:
         response = requests.get(url)
