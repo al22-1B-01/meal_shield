@@ -12,8 +12,10 @@ def calc_normalized_score(
     max_score = max([recipe[score_column] for recipe in recipes_list])
 
     for recipe in recipes_list:
-        recipe[score_column] = recipe[score_column] / max_score
-
+        try:
+            recipe[score_column] = recipe[score_column] / max_score
+        except:
+            recipe[score_column] = 0
     return recipes_list
 
 
