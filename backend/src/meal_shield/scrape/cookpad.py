@@ -1,4 +1,3 @@
-import re
 from multiprocessing import Pool, cpu_count
 from typing import Optional, Union
 
@@ -7,7 +6,7 @@ from bs4 import BeautifulSoup
 from tenacity import retry, stop_after_attempt
 
 # 検索上限(page数)
-LIMIT_PAGE = 10
+LIMIT_PAGE = 100
 
 
 @retry(stop=stop_after_attempt(3))

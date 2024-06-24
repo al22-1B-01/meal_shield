@@ -1,11 +1,7 @@
-import logging
 from multiprocessing import Pool, cpu_count
-from typing import Final, Union
+from typing import Final, Optional, Union
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-logger.debug('ranking_count.py was imported!')
+from tqdm.auto import tqdm
 
 WORDS: Final[dict[str, list[str]]] = {
     'えび': ['えび', 'エビ', '海老'],
@@ -45,34 +41,56 @@ def extract_allergy_words(
 ) -> list[str]:
     extracted_allergies_list = []
     for key in allergies_list:
-        extracted_allergies_list.extend(words[key])
+        extracted_allergies_list.extend(words.get(key, []))
 
     return extracted_allergies_list
 
 
-def score_recipe(
-    recipe: dict[str, Union[str, list[str], float]], extracted_allergies_list: list[str]
+def scoring_recipe(
+    recipe: dict[str, Union[str, list[str], float]],
+    extracted_allergies_list: list[str],
+    score_column: Optional[str] = 'recipe_score',
 ) -> dict[str, Union[str, list[str], float]]:
-    allergen_counts = 0
+    allergen_count = 0
     ingredients = recipe['recipe_ingredients']
 
     for allergen in extracted_allergies_list:
-        allergen_counts += ingredients.count(allergen)
+        allergen_count += ingredients.count(allergen)
 
-    recipe['recipe_score'] = allergen_counts
+    recipe[score_column] = allergen_count
     return recipe
+
+
+def scoring_recipe_wrapper(
+    args: dict[str, Union[dict[str, Union[str, list[str], float]], list[str]]]
+) -> dict[str, Union[str, list[str], float]]:
+    return scoring_recipe(**args)
 
 
 def scoring_count(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
+    score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     extracted_allergies_list = extract_allergy_words(WORDS, allergies_list)
 
     with Pool(cpu_count()) as pool:
-        results = pool.starmap(
-            score_recipe,
-            [(recipe, extracted_allergies_list) for recipe in excluded_recipes_list],
+        results = list(
+            tqdm(
+                pool.imap(
+                    scoring_recipe_wrapper,
+                    [
+                        {
+                            'recipe': recipe,
+                            'extracted_allergies_list': extracted_allergies_list,
+                            'score_column': score_column,
+                        }
+                        for recipe in excluded_recipes_list
+                    ],
+                ),
+                total=len(excluded_recipes_list),
+                desc="Processing recipes by counting",
+            )
         )
 
     return results
