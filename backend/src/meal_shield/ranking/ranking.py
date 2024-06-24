@@ -12,8 +12,10 @@ def calc_normalized_score(
     max_score = max([recipe[score_column] for recipe in recipes_list])
 
     for recipe in recipes_list:
-        recipe[score_column] = recipe[score_column] / max_score
-
+        try:
+            recipe[score_column] = recipe[score_column] / max_score
+        except:
+            recipe[score_column] = 0
     return recipes_list
 
 
@@ -34,7 +36,7 @@ def calc_hybrid_score(
     return scored_recipes_list
 
 
-def ranking_recipe(
+async def ranking_recipe(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     ranking_method: Optional[str] = 'hybrid',
@@ -46,13 +48,13 @@ def ranking_recipe(
     elif ranking_method == 'chatgpt':
         scored_recipes_list = scoring_chatgpt(allergies_list, excluded_recipes_list)
     elif ranking_method == 'hybrid':
-        scored_recipes_list = scoring_chatgpt(
+        scored_recipes_list = await scoring_chatgpt(
             allergies_list,
             excluded_recipes_list,
             model_name='gpt-3.5-turbo',
             score_column='chatgpt_score',
         )
-        scored_recipes_list = scoring_embedding(
+        scored_recipes_list = await scoring_embedding(
             allergies_list,
             excluded_recipes_list,
             model_name='text-embedding-3-small',
