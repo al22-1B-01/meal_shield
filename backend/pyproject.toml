@@ -50,6 +50,7 @@ mypy = ">=0.971"
 tox = ">=3.25.1"
 pre-commit = ">=3.3.3"
 nbstripout = "0.6.1"
+pytest-asyncio = "^0.23.7"
 
 [tool.isort]
 profile = "black"
