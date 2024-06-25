@@ -1,15 +1,14 @@
-import os
-from typing import Union, List
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+import nest_asyncio
+from fastapi import FastAPI, Query
 
-from meal_shield.env import OPENAI_API_KEY
 from meal_shield.ranking.ranking import ranking_recipe
 from meal_shield.scrape.scraping_and_excluding import scraping_and_excluding
 
+nest_asyncio.apply()
+
 app = FastAPI()
-
-
 WORDS = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],
@@ -42,62 +41,27 @@ WORDS = {
 }
 
 
-async def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
+def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
     allergu_search = []
     for item in allergy_list:
         if item in WORDS:
-            allergu_search.append(WORDS[item])
+            allergu_search.extend(WORDS[item])
     return allergu_search
 
 
 @app.get("/")
 async def get_recipi(
-    recipi: str = None, allergy_list: list[str] = None
-) -> list[dict[str, Union[str, list[str]]]]:
-    try:
-        if recipi is None:
-            raise HTTPException(status_code=400, detail="No recipi provided")
-
-        if allergy_list is None:
-            allergy_list = []
-
-        allergy_found = await serch_allergy(allergy_list)
-        allergy_remove = await scraping_and_excluding(allergy_found , recipi )
-        rank_recipi = await ranking_recipe(allergy_found, allergy_remove)
-
-        if not isinstance(rank_recipi, list):
-            raise HTTPException(status_code=500, detail="Unexpected response format")
-        
-        return rank_recipi
-
-    except Exception as e:
-        print("Error:", str(e))  # エラー内容のログ
-        raise HTTPException(status_code=500, detail="Internal server error")
-    # try: 
-    #     if recipi is None:
-    #         raise HTTPException(
-    #             status_code=400,
-    #             detail="No recipi provided"
-    #         )
-    #     allergy_found = await serch_allergy(allergy_list)
-    #     allergy_remove = scraping_and_excluding(recipi, allergy_found)
-    #     # rank_recipi = ranking_recipe(allergy_found, allergy_remove)
-        
-    # # allergy_found = serch_allergy(allergy_list)
-    #     if not isinstance(allergy_remove, list):
-    #         raise HTTPException(status_code=500, detail="Unexpected response format")
-    
-    #     return allergy_remove
-
-    # except Exception as e:
-    #     print("Error",str(e))
-    #     raise HTTPException(status_code=500, detail="Internal server error")
-
-    # if recipi is None:
-    #     return [{'status': 'error', 'message': 'No recipi', 'data': []}]
-
-    # allergy_remove = scraping_and_excluding(recipi, allergy_found)
-    # # rank_recipi = ranking_recipe(allergy_found, allergy_remove)
-
-    # # return rank_recipi
-    # return allergy_remove
+    recipi: str, allergy_list: Optional[list[str]] = Query(default=None)
+) -> list:
+    if allergy_list is None:
+        return [{'status': 'error', 'message': 'No allergy list', 'data': []}]
+    allergy_found = serch_allergy(allergy_list)
+    if recipi is None:
+        return [{'status': 'error', 'message': 'No recipi', 'data': []}]
+    allergy_remove = scraping_and_excluding(
+        recipe_name=recipi, allergy_list=allergy_found
+    )
+    rank_recipi = await ranking_recipe(
+        allergy_found, excluded_recipes_list=allergy_remove
+    )
+    return rank_recipi
