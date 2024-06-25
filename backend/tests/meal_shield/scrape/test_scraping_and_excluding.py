@@ -115,7 +115,6 @@ def test_scraping_and_excluding_normal():
 def test_scraping_and_excluding_connection_rror():
     recipe_name = 'ココナッツカレー'
     allergy_list = ['いか']
-
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
         assert scraping_and_excluding(allergy_list, recipe_name) is None

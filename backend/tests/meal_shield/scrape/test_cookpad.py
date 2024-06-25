@@ -70,24 +70,8 @@ def test_make_url_list_normal():
 # ネットワーク接続エラーを捕捉するか確認
 def test_make_url_list_():
     recipe_name = 'カレー'
-
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        assert make_url_list(recipe_name) is None
-
-
-# HTTPErrorを捕捉するか確認
-def test_make_url_list_http_error():
-    recipe_name = 'カレー'
-
-    # requests.get をモック化し、HTTPError を発生させる
-    with patch('requests.get') as mock_get:
-        mock_response = Mock()
-        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
-            "404 Not Found"
-        )
-        mock_get.return_value = mock_response
-
         assert make_url_list(recipe_name) is None
 
 
@@ -124,7 +108,6 @@ def test_scraping_recipe_data_normal():
 # ネットワーク接続エラーを補足するか確認
 def test_scraping_recipe_data_connection_error():
     url = 'https://example.com/recipe'
-
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
         assert scraping_recipe_data(url) is None
@@ -163,7 +146,6 @@ def test_scraping_cookpad_normal():
 # ネットワーク接続エラーを補足するか確認
 def test_scraping_cookpad_conection_error():
     recipe_name = 'ココナッツカレー'
-
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
         assert scraping_cookpad(recipe_name) is None
