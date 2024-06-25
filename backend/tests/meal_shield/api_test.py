@@ -8,7 +8,6 @@ allergy_list = ["卵", "乳", "小麦"]
 # パラメータをクエリに変換
 params = {
     "recipi": recipi,
-    # allergy_list をリストとして送る場合、同じパラメータ名を複数回使用する必要がある
     "allergy_list": allergy_list,
 }
 
@@ -25,4 +24,3 @@ if response.status_code == 200:
     print(response.json())
 else:
     print("Failed to get a response")
-    
