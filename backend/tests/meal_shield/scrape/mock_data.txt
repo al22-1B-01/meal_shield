@@ -1,0 +1,48 @@
+# mock_data.txt
+# レスポンス1
+<html>
+<body>
+<div class='number_of_pages'>
+1 / 2
+</div>
+<a class='recipe-title' id='recipe_title_7836445' href='/recipe/7836445'>ホットクックで簡単ココナッツカレー</a>
+</body>
+</html>
+
+# レスポンス2
+<html>
+<body>
+<div class='number_of_pages'>
+2 / 2
+</div>
+<a class='recipe-title' id='recipe_title_7850799' href='/recipe/7850799'>絶品！シーフードココナッツカレー</a>
+</body>
+</html>
+
+# レスポンス3
+<html>
+<body>
+<h1 class='recipe-title'>
+ホットクックで簡単ココナッツカレー
+</h1>
+<div class='ingredient_name'><span class='name'><a class='cookdict_ingredient_link' href='/search/%E7%8E%89%E3%81%AD%E3%81%8E'>玉ねぎ</a></span></div>
+<div class='ingredient_name'><span class='name'><a class='cookdict_ingredient_link' href='/search/%E3%81%AB%E3%82%93%E3%81%98%E3%82%93'>にんじん</a></span></div>
+<section id='main-photo'>
+<img alt='ホットクックで簡単ココナッツカレーの画像' class='photo large_photo_clickable' data-large-photo='https://img.cpcdn.com/recipes/7836445/m/test_img_1' src='https://img.cpcdn.com/recipes/7836445/test_img_1' />
+</section>
+</body>
+</html>
+
+# レスポンス4
+<html>
+<body>
+<h1 class='recipe-title'>
+絶品！シーフードココナッツカレー
+</h1>
+<div class='ingredient_name'><span class='name'><a class='cookdict_ingredient_link' href='/search/%E3%81%84%E3%81%8B'>いか</a></span></div>
+<div class='ingredient_name'><span class='name'><a class='cookdict_ingredient_link' href='/search/%E6%B5%B7%E8%80%81'>海老</a></span></div>
+<section id='main-photo'>
+<img alt='絶品！シーフードココナッツカレーの画像' class='photo large_photo_clickable' data-large-photo='https://img.cpcdn.com/recipes/7850799/m/test_img_2' src='https://img.cpcdn.com/recipes/7850799/test_img_2' />
+</section>
+</body>
+</html>
