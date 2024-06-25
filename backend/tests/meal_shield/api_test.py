@@ -1,4 +1,9 @@
+import logging
+
 import requests
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 base_url = "http://localhost:8000"
 
@@ -12,15 +17,13 @@ params = {
 }
 
 
-# GETリクエストを送信
-print(params)
-response = requests.get(base_url, params=params)
+def maim():
+    response = requests.get(base_url, params=params)
 
+    logger.info(f"Status code: {response.status_code}")
 
-print(f"Status code: {response.status_code}")
-
-if response.status_code == 200:
-    print("Response JSON:")
-    print(response.json())
-else:
-    print("Failed to get a response")
+    if response.status_code == 200:
+        logger.info("Response JSON:")
+        logger.info(response.json())
+    else:
+        logger.info("Failed to get a response")
