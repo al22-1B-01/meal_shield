@@ -1,29 +1,14 @@
-import os
-from typing import Union
+from typing import Optional
 
-from dotenv import load_dotenv
-from fastapi import FastAPI
+import nest_asyncio
+from fastapi import FastAPI, Query
 
-from meal_shield.env import OPENAI_API_KEY
-from meal_shield.ranking import ranking
+from meal_shield.ranking.ranking import ranking_recipe
 from meal_shield.scrape.scraping_and_excluding import scraping_and_excluding
 
-load_dotenv()
-
-# 環境変数からAPIキーを取得
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
-# APIキーが設定されていることを確認
-if OPENAI_API_KEY is None:
-    raise ValueError("OPENAI_API_KEY is not set")
-
-# 環境変数を設定
-os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
-
+nest_asyncio.apply()
 
 app = FastAPI()
-
-
 WORDS = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],
@@ -56,24 +41,27 @@ WORDS = {
 }
 
 
-async def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
+def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
     allergu_search = []
     for item in allergy_list:
         if item in WORDS:
-            allergu_search.append(WORDS[item])
+            allergu_search.extend(WORDS[item])
     return allergu_search
 
 
 @app.get("/")
 async def get_recipi(
-    recipi: str = None, allergy_list: list[str] = None
-) -> list[dict[str, Union[str, list[str]]]]:
+    recipi: str, allergy_list: Optional[list[str]] = Query(default=None)
+) -> list:
+    if allergy_list is None:
+        return [{'status': 'error', 'message': 'No allergy list', 'data': []}]
     allergy_found = serch_allergy(allergy_list)
-
     if recipi is None:
         return [{'status': 'error', 'message': 'No recipi', 'data': []}]
-
-    allergy_remove = scraping_and_excluding(recipi, allergy_found)
-    rank_recipi = ranking.ranking_recipi(allergy_found, allergy_remove)
-
+    allergy_remove = scraping_and_excluding(
+        recipe_name=recipi, allergy_list=allergy_found
+    )
+    rank_recipi = await ranking_recipe(
+        allergy_found, excluded_recipes_list=allergy_remove
+    )
     return rank_recipi
