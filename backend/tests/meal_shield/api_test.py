@@ -17,7 +17,7 @@ params = {
 }
 
 
-def maim():
+def main():
     response = requests.get(base_url, params=params)
 
     logger.info(f"Status code: {response.status_code}")
@@ -27,3 +27,7 @@ def maim():
         logger.info(response.json())
     else:
         logger.info("Failed to get a response")
+
+
+if __name__ == "__main__":
+    main()
