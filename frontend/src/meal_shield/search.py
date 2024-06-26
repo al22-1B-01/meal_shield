@@ -1,30 +1,27 @@
-from pathlib import Path
-
 import requests
 import streamlit as st
 from PIL import Image
 
-from meal_shield.display_recipi import display_recipi
 from meal_shield.env import PACKAGE_DIR
 
-API_URL = 'https://api.cookpad.com/search/recipes'
+base_url = 'http://backend:8000'
 
 
-def fetch_recipes(recipe_name, allergies: list[str]) -> list[dict[str, any]]:
-    params = {'name': recipe_name, 'allergies': allergies}
-    response = requests.post(API_URL, json=params)
+def fetch_recipes(recipe_name, allergies: list[str]) -> list:
+    params = {'recipi': recipe_name, 'allergy_list': allergies}
+    response = requests.get(base_url, params=params)
 
     if response.status_code == 200:
         return response.json()
     else:
-        st.error(f"エラーが発生しました: {response.status_code}")
+        st.error(f'エラーが発生しました: {response.status_code}')
         return None
 
 
 # アレルギー品目の選択肢
 ALLERGY_OPTION = [
     {'name': 'たまご', 'file': 'egg.png'},
-    {'name': '牛乳', 'file': 'milk.png'},
+    {'name': '乳', 'file': 'milk.png'},
     {'name': '小麦', 'file': 'mugi.png'},
     {'name': 'そば', 'file': 'soba.png'},
     {'name': 'えび', 'file': 'ebi.png'},
@@ -78,7 +75,7 @@ def search_recipe_entrypoint() -> None:
         col = cols[index % 7]
         image = Image.open(PACKAGE_DIR / f'data/images/{item["file"]}')
 
-        if col.button(item["name"]):
+        if col.button(item['name']):
             if item['name'] in st.session_state.allergy_list:
                 st.session_state.allergy_list.remove(item['name'])
             else:
@@ -89,7 +86,10 @@ def search_recipe_entrypoint() -> None:
     st.subheader('選択されたアレルギー品目')
     for allergy in st.session_state.allergy_list:
         st.markdown(
-            f'<span style="background-color: red; padding: 5px; font-size: 14px;">{allergy}</span>',
+            f'<span style="background-color: red;padding: 5px;font-size: 14px;'
+            f'">'
+            f'{allergy}'
+            f'</span>',
             unsafe_allow_html=True,
         )
 
@@ -101,5 +101,5 @@ def search_recipe_entrypoint() -> None:
         st.session_state.recipes = recipes
         st.session_state.page = '検索結果'
         st.session_state.recipe_name = recipe_name
-        st.experimental_rerun()
+        st.rerun()
         return st.session_state.allergy_list, recipe_name, recipes
