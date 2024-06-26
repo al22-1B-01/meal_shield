@@ -84,7 +84,7 @@ def scraping_recipe_url(url: str) -> Optional[list[str]]:
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
-def scraping_recipe_data(url: str) -> Optional[list[dict[str, Union[str, list[str]]]]]:
+def scraping_recipe_data(url: str) -> Optional[dict[str, Union[str, list[str]]]]:
     try:
         response = requests.get(url)
         response.raise_for_status()
