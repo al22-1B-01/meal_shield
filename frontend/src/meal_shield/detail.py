@@ -5,9 +5,7 @@ def show_details() -> None:
     selected_item = st.session_state.selected_item
     if selected_item:
         st.image(selected_item['recipe_image_url'], width=300)
-        st.write(
-            f"### [{selected_item['recipe_title']}]({selected_item['url']})"
-            )
+        st.write(f"### [{selected_item['recipe_title']}]({selected_item['url']})")
         st.write(f"材料: {', '.join(selected_item['recipe_ingredients'])}")
         if st.button('検索結果画面に戻る'):
             st.session_state.page = 'main'
