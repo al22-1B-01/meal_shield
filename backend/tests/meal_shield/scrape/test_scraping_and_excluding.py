@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
@@ -20,7 +21,8 @@ def load_mock_data(file_path):
     return [resp.strip() for resp in responses if resp.strip()]
 
 
-mock_data_file_path = os.path.join(os.path.dirname(__file__), 'mock_data.txt')
+script_dir = Path(__file__).resolve().parent
+mock_data_file_path = script_dir / 'test_case' / 'mock_data.txt'
 mock_data = load_mock_data(mock_data_file_path)
 # モックHTMLデータ
 mock_response_recipe_page_1 = Mock()
