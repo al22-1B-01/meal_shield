@@ -1,11 +1,14 @@
 # test_fetch_recipes.py
+from unittest.mock import patch
+
 import pytest
 import requests
-from unittest.mock import patch
-import streamlit as st 
+import streamlit as st
+
 from meal_shield.env import PACKAGE_DIR
 
 base_url = 'http://backend:8000'
+
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list:
     params = {'recipi': recipe_name, 'allergy_list': allergies}
@@ -41,9 +44,11 @@ def mock_response_success():
         ]
     }
 
+
 @pytest.fixture
 def mock_response_failure():
     return {"error": "Not Found"}
+
 
 @patch("requests.get")
 def test_fetch_recipes_success(mock_get, mock_response_success):
@@ -55,6 +60,7 @@ def test_fetch_recipes_success(mock_get, mock_response_success):
     result = fetch_recipes(recipe_name, allergies)
 
     assert result == mock_response_success
+
 
 @patch("requests.get")
 def test_fetch_recipes_failure(mock_get, mock_response_failure):
