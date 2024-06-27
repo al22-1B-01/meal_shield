@@ -114,7 +114,7 @@ def test_scraping_and_excluding_normal():
 
 
 # ネットワーク接続エラーを補足するか確認
-def test_scraping_and_excluding_connection_rror():
+def test_scraping_and_excluding_connection_error():
     recipe_name = 'ココナッツカレー'
     allergy_list = ['いか']
     # requests.get をモック化し、ConnectionError を発生させる
