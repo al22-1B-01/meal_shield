@@ -27,30 +27,6 @@ RUN apt-get update && apt-get install -y \
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US
 
-
-# install MeCab
-RUN apt-get update && apt-get -yV upgrade && apt-get -yV install \
-  mecab \
-  libmecab-dev \
-  mecab-utils \
-  mecab-ipadic-utf8 \
-  fontconfig \
-  libjpeg-dev \
-  zlib1g-dev \
-  python3-webencodings \
-  libopencv-dev \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
-## install Neologism dictionary for MeCab
-RUN git clone https://github.com/neologd/mecab-ipadic-neologd.git \
-  && mecab-ipadic-neologd/bin/install-mecab-ipadic-neologd -y -u \
-  && rm -r mecab-ipadic-neologd
-## compile IPA dic
-RUN cp -r /usr/share/mecab/dic/ipadic/ `mecab-config --dicdir`/ \
-  && cd `mecab-config --dicdir`/ipadic/ \
-  && `mecab-config --libexecdir`/mecab-dict-index -f euc-jp -t utf8 \
-  && cp /etc/mecabrc /usr/local/etc/mecabrc
-
 # install Python
 RUN apt-get update && apt-get -yV upgrade && DEBIAN_FRONTEND=noninteractive apt-get -yV install \
   build-essential libssl-dev libffi-dev \
