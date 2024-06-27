@@ -98,6 +98,7 @@ def search_recipe_entrypoint() -> None:
 
     if st.button('検索'):
         #recipes = fetch_recipes(recipe_name, st.session_state.allergy_list)
+        #テストようのrecipesの作成
         recipes = [
         {
             'recipe_title': 'イチゴケーキ',
