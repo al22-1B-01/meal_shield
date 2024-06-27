@@ -1,11 +1,11 @@
+# test_fetch_recipes.py
+import pytest
 import requests
-import streamlit as st
-from PIL import Image
-
+from unittest.mock import patch
+import streamlit as st 
 from meal_shield.env import PACKAGE_DIR
 
 base_url = 'http://backend:8000'
-
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list:
     params = {'recipi': recipe_name, 'allergy_list': allergies}
@@ -18,108 +18,51 @@ def fetch_recipes(recipe_name, allergies: list[str]) -> list:
         return None
 
 
-# アレルギー品目の選択肢
-ALLERGY_OPTION = [
-    {'name': 'えび', 'file': 'ebi.png'},
-    {'name': 'かに', 'file': 'kani.png'},
-    {'name': 'いか', 'file': 'ika.png'},
-    {'name': '小麦', 'file': 'mugi.png'},
-    {'name': 'たまご', 'file': 'egg.png'},
-    {'name': '乳', 'file': 'milk.png'},
-    {'name': 'アーモンド', 'file': 'almond.png'},
-    {'name': '落花生', 'file': 'rakkasei.png'},
-    {'name': 'そば', 'file': 'soba.png'},
-    {'name': 'あわび', 'file': 'awabi.png'},
-    {'name': '大豆', 'file': 'daizu.png'},
-    {'name': 'くるみ', 'file': 'kurumi.png'},
-    {'name': 'ごま', 'file': 'goma.png'},
-    {'name': 'カシューナッツ', 'file': 'cashew.png'},
-    {'name': '牛肉', 'file': 'gyuniku.png'},
-    {'name': '鶏肉', 'file': 'toriniku.png'},
-    {'name': '豚肉', 'file': 'pig.png'},
-    {'name': 'さけ', 'file': 'sake.png'},
-    {'name': 'さば', 'file': 'saba.png'},
-    {'name': 'まつたけ', 'file': 'matsutake.png'},
-    {'name': 'やまいも', 'file': 'yamaimo.png'},
-    {'name': 'ゼラチン', 'file': 'gelatine.png'},
-    {'name': 'オレンジ', 'file': 'mikan.png'},
-    {'name': 'バナナ', 'file': 'banana.png'},
-    {'name': 'いくら', 'file': 'ikura.png'},
-    {'name': 'もも', 'file': 'momo.png'},
-    {'name': 'りんご', 'file': 'ringo.png'},
-    {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
-]
-
-
-def search_recipe_entrypoint() -> None:
-    st.subheader('除去したい品目を選択してください')
-
-    if 'allergy_list' not in st.session_state:
-        st.session_state.allergy_list = []
-
-    cols = st.columns(7)
-    for index, item in enumerate(ALLERGY_OPTION):
-        st.markdown(
-            """
-            <style>
-            .stButton button {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        col = cols[index % 7]
-        image = Image.open(PACKAGE_DIR / f'data/images/{item["file"]}')
-
-        if col.button(item['name']):
-            if item['name'] in st.session_state.allergy_list:
-                st.session_state.allergy_list.remove(item['name'])
-            else:
-                st.session_state.allergy_list.append(item['name'])
-
-        col.image(image, use_column_width=True, width=100)
-
-    st.subheader('選択されたアレルギー品目')
-    for allergy in st.session_state.allergy_list:
-        st.markdown(
-            f'<span style="background-color: red;padding: 5px;font-size: 14px;'
-            f'">'
-            f'{allergy}'
-            f'</span>',
-            unsafe_allow_html=True,
-        )
-
-    st.subheader('レシピ検索')
-    recipe_name = st.text_input('レシピ名を入力してください')
-
-    if st.button('検索'):
-        # recipes = fetch_recipes(recipe_name, st.session_state.allergy_list)
-        # テストようのrecipesの作成
-        recipes = [
+@pytest.fixture
+def mock_response_success():
+    return {
+        "recipes": [
             {
-                'recipe_title': 'イチゴケーキ',
-                'recipe_image_url': 'https://img.cpcdn.com/recipes/7813040/'
-                '894x1461s/952f6a9105c7b1d250853791cc4b08fd?u=117'
-                '56033&p=1714165191',
-                'recipe_ingredients': ['卵', '砂糖', 'バター'],
-                'recipe_url': 'https://cookpad.com/recipe/7813040',
+                "recipe_title": "イチゴケーキ",
+                "recipe_image_url": "https://img.cpcdn.com/recipes/7813040/"
+                "894x1461s/952f6a9105c7b1d250853791cc4b08fd?u=117"
+                "56033&p=1714165191",
+                "recipe_ingredients": ["卵", "砂糖", "バター"],
+                "recipe_url": "https://cookpad.com/recipe/7813040",
             },
             {
-                'recipe_title': 'いちごけーき',
-                'recipe_image_url': 'https://img.cpcdn.com/recipes/7781284/'
-                '894x1461s/9b37148a4668a565830b9514d3af1a74?u=9240495'
-                '&p=1711003018',
-                'recipe_ingredients': ['卵', '牛乳', 'バニラ'],
-                'recipe_url': 'https://cookpad.com/recipe/7781284',
+                "recipe_title": "いちごけーき",
+                "recipe_image_url": "https://img.cpcdn.com/recipes/7781284/"
+                "894x1461s/9b37148a4668a565830b9514d3af1a74?u=9240495"
+                "&p=1711003018",
+                "recipe_ingredients": ["卵", "牛乳", "バニラ"],
+                "recipe_url": "https://cookpad.com/recipe/7781284",
             },
         ]
+    }
 
-        st.session_state.recipes = recipes
-        st.session_state.page = '検索結果'
-        st.session_state.recipe_name = recipe_name
-        st.rerun()
-        return st.session_state.allergy_list, recipe_name, recipes
+@pytest.fixture
+def mock_response_failure():
+    return {"error": "Not Found"}
+
+@patch("requests.get")
+def test_fetch_recipes_success(mock_get, mock_response_success):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = mock_response_success
+
+    recipe_name = "ケーキ"
+    allergies = ["卵", "乳"]
+    result = fetch_recipes(recipe_name, allergies)
+
+    assert result == mock_response_success
+
+@patch("requests.get")
+def test_fetch_recipes_failure(mock_get, mock_response_failure):
+    mock_get.return_value.status_code = 404
+    mock_get.return_value.json.return_value = mock_response_failure
+
+    recipe_name = "ケーキ"
+    allergies = ["卵", "乳"]
+    result = fetch_recipes(recipe_name, allergies)
+
+    assert result is None
