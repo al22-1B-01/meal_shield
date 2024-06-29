@@ -88,11 +88,15 @@ def test_initial_state(mock_session_state):
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
-def test_search_results_with_recipes(mock_session_state, setup_session_state):
+@patch('requests.get')
+def test_search_results_with_recipes(mock_get, mock_session_state):
     mock_session_state.page = ''
     mock_session_state.recipe_name = 'ケーキ'
     mock_session_state.allergy_list = ['卵', '牛乳']
     print('Session state before running:', mock_session_state)
+
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"result": "success"}
 
     with patch('streamlit.button', return_value=True):
         search_recipe_entrypoint()
@@ -101,10 +105,14 @@ def test_search_results_with_recipes(mock_session_state, setup_session_state):
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
-def test_search_result_without_recipe_name(mock_session_state, setup_session_state):
+@patch('requests.get')
+def test_search_result_without_recipe_name(mock_get, mock_session_state):
     mock_session_state.page = ''
     mock_session_state.recipe_name = ''
     mock_session_state.allergy_list = []
+
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"result": "success"}
 
     with patch('streamlit.button', return_value=True) as mock_details:
         search_recipe_entrypoint()
@@ -113,7 +121,8 @@ def test_search_result_without_recipe_name(mock_session_state, setup_session_sta
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
-def test_show_details_page(mock_session_state, setup_session_state):
+@patch('requests.get')
+def test_show_details_page(mock_get, mock_session_state):
     mock_session_state.session_state.page = 'details'
     mock_session_state.recipe_name = 'ケーキ'
     mock_session_state.recipe_url = 'https://cookpad.com/recipe/7813040'
@@ -123,6 +132,9 @@ def test_show_details_page(mock_session_state, setup_session_state):
         'recipe_url': 'https://cookpad.com/recipe/7813040',
         'recipe_ingredients': ['砂糖', '小麦粉', '卵'],
     }
+
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"recipes": []}
     with patch('streamlit.button', return_value=True) as mock_details:
         show_details()
 
