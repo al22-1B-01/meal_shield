@@ -3,8 +3,8 @@ import pytest
 from meal_shield.ranking.ranking_count import (
     WORDS,
     extract_allergy_words,
-    score_recipe,
     scoring_count,
+    scoring_recipe,
 )
 
 # テスト用のアレルギー品目とレシピ
@@ -67,8 +67,8 @@ def test_scoring_count():
     assert result_without_optional == expected_result
 
 
-# score_recipe関数の単体テストに関する関数群
-def test_score_recipe_no_allergens():
+# scoring_recipe関数の単体テストに関する関数群
+def test_scoring_recipe_no_allergens():
     allergies = ['卵', '牛乳']
     recipe = {
         'recipe_title': 'アレルギー該当なし',
@@ -76,8 +76,10 @@ def test_score_recipe_no_allergens():
         'recipe_url': 'http://example.com/recipe1',
         'recipe_image_url': 'http://example.com/recipe1.jpg',
     }
-    result_with_optional = score_recipe(recipe, allergies, score_column='recipe_score')
-    result_without_optional = score_recipe(recipe, allergies)
+    result_with_optional = scoring_recipe(
+        recipe, allergies, score_column='recipe_score'
+    )
+    result_without_optional = scoring_recipe(recipe, allergies)
     expected_result = {
         'recipe_title': 'アレルギー該当なし',
         'recipe_ingredients': ['小麦', '水', '砂糖'],
@@ -93,7 +95,7 @@ def test_score_recipe_no_allergens():
     ), f'Expected {expected_result}, got {result_without_optional}'
 
 
-def test_score_recipe_some_allergens():
+def test_scoring_recipe_some_allergens():
     allergies = ['卵', '牛乳']
     recipe = {
         'recipe_title': 'アレルギー一つ',
@@ -101,8 +103,10 @@ def test_score_recipe_some_allergens():
         'recipe_url': 'http://example.com/recipe1',
         'recipe_image_url': 'http://example.com/recipe1.jpg',
     }
-    result_with_optional = score_recipe(recipe, allergies, score_column='recipe_score')
-    result_without_optional = score_recipe(recipe, allergies)
+    result_with_optional = scoring_recipe(
+        recipe, allergies, score_column='recipe_score'
+    )
+    result_without_optional = scoring_recipe(recipe, allergies)
     expected_result = {
         'recipe_title': 'アレルギー一つ',
         'recipe_ingredients': ['小麦', '水', '卵'],
@@ -118,7 +122,7 @@ def test_score_recipe_some_allergens():
     ), f'Expected {expected_result}, got {result_without_optional}'
 
 
-def test_score_recipe_all_allergens():
+def test_scoring_recipe_all_allergens():
     allergies = ['卵', '牛乳']
     recipe = {
         'recipe_title': 'アレルギー全該当',
@@ -126,8 +130,10 @@ def test_score_recipe_all_allergens():
         'recipe_url': 'http://example.com/recipe1',
         'recipe_image_url': 'http://example.com/recipe1.jpg',
     }
-    result_with_optional = score_recipe(recipe, allergies, score_column='recipe_score')
-    result_without_optional = score_recipe(recipe, allergies)
+    result_with_optional = scoring_recipe(
+        recipe, allergies, score_column='recipe_score'
+    )
+    result_without_optional = scoring_recipe(recipe, allergies)
     expected_result = {
         'recipe_title': 'アレルギー全該当',
         'recipe_ingredients': ['卵', '水', '牛乳'],
@@ -143,7 +149,7 @@ def test_score_recipe_all_allergens():
     ), f'Expected {expected_result}, got {result_without_optional}'
 
 
-def test_score_recipe_no_ingredients():
+def test_scoring_recipe_no_ingredients():
     allergies = ['卵', '牛乳']
     recipe = {
         'recipe_title': '材料なし',
@@ -151,8 +157,10 @@ def test_score_recipe_no_ingredients():
         'recipe_url': 'http://example.com/recipe1',
         'recipe_image_url': 'http://example.com/recipe1.jpg',
     }
-    result_with_optional = score_recipe(recipe, allergies, score_column='recipe_score')
-    result_without_optional = score_recipe(recipe, allergies)
+    result_with_optional = scoring_recipe(
+        recipe, allergies, score_column='recipe_score'
+    )
+    result_without_optional = scoring_recipe(recipe, allergies)
     expected_result = {
         'recipe_title': '材料なし',
         'recipe_ingredients': [],
@@ -168,7 +176,7 @@ def test_score_recipe_no_ingredients():
     ), f'Expected {expected_result}, got {result_without_optional}'
 
 
-def test_score_recipe_no_allergies():
+def test_scoring_recipe_no_allergies():
     allergies = []
     recipe = {
         'recipe_title': 'アレルギーなし',
@@ -176,8 +184,10 @@ def test_score_recipe_no_allergies():
         'recipe_url': 'http://example.com/recipe1',
         'recipe_image_url': 'http://example.com/recipe1.jpg',
     }
-    result_with_optional = score_recipe(recipe, allergies, score_column='recipe_score')
-    result_without_optional = score_recipe(recipe, allergies)
+    result_with_optional = scoring_recipe(
+        recipe, allergies, score_column='recipe_score'
+    )
+    result_without_optional = scoring_recipe(recipe, allergies)
     expected_result = {
         'recipe_title': 'アレルギーなし',
         'recipe_ingredients': ['小麦', '水', '砂糖'],

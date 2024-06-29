@@ -1,7 +1,10 @@
 from unittest.mock import AsyncMock, patch
 
+import nest_asyncio
 import numpy as np
 import pytest
+
+nest_asyncio.apply()
 
 from meal_shield.ranking.ranking_embedding import (
     calc_allergens_include_score_by_embedding,
@@ -32,25 +35,26 @@ RECIPES = [
 ]
 
 
+@pytest.mark.asyncio
 @patch(
     'meal_shield.ranking.ranking_embedding.calc_allergens_include_score_by_embedding'
 )
-def test_scoring_embedding(mock_calc_allergens_include_score_by_embedding):
+async def test_scoring_embedding(mock_calc_allergens_include_score_by_embedding):
     mock_calc_allergens_include_score_by_embedding.return_value = 0.5
 
-    result_with_model_name = scoring_embedding(
+    result_with_model_name = await scoring_embedding(
         ALLERGIES, RECIPES, model_name='text-embedding-3-small'
     )
-    result_with_score_column = scoring_embedding(
+    result_with_score_column = await scoring_embedding(
         ALLERGIES, RECIPES, score_column='recipe_score'
     )
-    result_with_optional = scoring_embedding(
+    result_with_optional = await scoring_embedding(
         ALLERGIES,
         RECIPES,
         model_name='text-embedding-3-small',
         score_column='recipe_score',
     )
-    result_without_optional = scoring_embedding(ALLERGIES, RECIPES)
+    result_without_optional = await scoring_embedding(ALLERGIES, RECIPES)
 
     expected_result = [
         {

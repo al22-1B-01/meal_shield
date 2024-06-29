@@ -1,6 +1,9 @@
 from unittest.mock import AsyncMock, patch
 
+import nest_asyncio
 import pytest
+
+nest_asyncio.apply()
 
 from meal_shield.ranking.ranking_chatgpt import fetch_score, scoring_chatgpt
 
@@ -27,20 +30,21 @@ RECIPES = [
 ]
 
 
+@pytest.mark.asyncio
 @patch('meal_shield.ranking.ranking_chatgpt.fetch_score')
-def test_scoring_chatgpt(mock_fetch_score):
+async def test_scoring_chatgpt(mock_fetch_score):
     mock_fetch_score.return_value = 50.0
 
-    result_with_model_name = scoring_chatgpt(
+    result_with_model_name = await scoring_chatgpt(
         ALLERGIES, RECIPES, model_name='gpt-3.5-turbo'
     )
-    result_with_score_column = scoring_chatgpt(
+    result_with_score_column = await scoring_chatgpt(
         ALLERGIES, RECIPES, score_column='recipe_score'
     )
-    result_with_optional = scoring_chatgpt(
+    result_with_optional = await scoring_chatgpt(
         ALLERGIES, RECIPES, model_name='gpt-3.5-turbo', score_column='recipe_score'
     )
-    result_without_optional = scoring_chatgpt(ALLERGIES, RECIPES)
+    result_without_optional = await scoring_chatgpt(ALLERGIES, RECIPES)
 
     expected_result = [
         {

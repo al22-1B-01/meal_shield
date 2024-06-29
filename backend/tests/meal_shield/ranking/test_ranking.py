@@ -1,6 +1,9 @@
 from unittest.mock import patch
 
+import nest_asyncio
 import pytest
+
+nest_asyncio.apply()
 
 from meal_shield.ranking.ranking import (
     calc_hybrid_score,
@@ -91,11 +94,12 @@ SCORED_RECIPES_FOR_HYBRID = [
 SCORE_COLUMS_FOR_HYBRID = ['chatgpt_score', 'embedding_score', 'count_score']
 
 
+@pytest.mark.asyncio
 @patch('meal_shield.ranking.ranking.calc_hybrid_score')
 @patch('meal_shield.ranking.ranking.scoring_chatgpt')
 @patch('meal_shield.ranking.ranking.scoring_embedding')
 @patch('meal_shield.ranking.ranking.scoring_count')
-def test_ranking_recipe(
+async def test_ranking_recipe(
     mock_scoring_count,
     mock_scoring_embedding,
     mock_scoring_chatgpt,
@@ -194,10 +198,12 @@ def test_ranking_recipe(
         },
     ]
 
-    result_chatgpt = ranking_recipe(ALLERGIES, RECIPES, ranking_method='chatgpt')
-    result_embedding = ranking_recipe(ALLERGIES, RECIPES, ranking_method='embedding')
-    result_count = ranking_recipe(ALLERGIES, RECIPES, ranking_method='default')
-    result_hybrid = ranking_recipe(ALLERGIES, RECIPES, ranking_method='hybrid')
+    result_chatgpt = await ranking_recipe(ALLERGIES, RECIPES, ranking_method='chatgpt')
+    result_embedding = await ranking_recipe(
+        ALLERGIES, RECIPES, ranking_method='embedding'
+    )
+    result_count = await ranking_recipe(ALLERGIES, RECIPES, ranking_method='default')
+    result_hybrid = await ranking_recipe(ALLERGIES, RECIPES, ranking_method='hybrid')
 
     expected_result_chatgpt = [
         {
