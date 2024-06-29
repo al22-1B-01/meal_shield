@@ -94,9 +94,8 @@ def test_search_button_trigger(setup_session_state):
     st.session_state.allergy_list = ['卵', '牛乳']
     print("Session state before running:", st.session_state)
 
-    # with patch('streamlit.button', return_value=True):
-    # main()
-    # search_recipe_entrypoint()
+    with patch('streamlit.button', return_value=True):
+        main()
+        search_recipe_entrypoint()
     # 画面が遷移するかを確認
-    # assert st.session_state.page == '検索結果'
-    # print("Session state after running:", st.session_state)
+    assert st.session_state.page == '検索結果'
