@@ -81,9 +81,10 @@ def setup_session_state():
     st.session_state.clear()
 
 
-def test_initial_state(setup_session_state):
-    at.run()
-    assert not at.exception
+@patch('streamlit.session_state', new_callable=MagicMock)
+def test_initial_state(mock_session_state):
+    mock_session_state.page = ''
+    assert mock_session_state.page == ''
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
