@@ -1,20 +1,14 @@
-import logging
 from multiprocessing import Pool, cpu_count
 from typing import Final, Optional, Union
 
 from tqdm.auto import tqdm
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-logger.debug('ranking_count.py was imported!')
 
 WORDS: Final[dict[str, list[str]]] = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],
     '小麦': ['小麦', '醤油', 'しょうゆ', '小麦粉'],
     'そば': ['そば', 'ソバ', '蕎麦', 'そば粉', '蕎麦粉'],
-    '卵': ['卵', '卵白', 'マヨネーズ'],
+    'たまご': ['卵', '卵白', 'マヨネーズ', 'たまご', 'タマゴ'],
     '乳': ['牛乳', 'チーズ', 'ヨーグルト', 'バター', '生クリーム', 'マーガリン'],
     '落花生': ['落花生'],
     'アーモンド': ['アーモンド'],
@@ -47,24 +41,30 @@ def extract_allergy_words(
 ) -> list[str]:
     extracted_allergies_list = []
     for key in allergies_list:
-        extracted_allergies_list.extend(words[key])
+        extracted_allergies_list.extend(words.get(key, []))
 
     return extracted_allergies_list
 
 
-def score_recipe(
+def scoring_recipe(
     recipe: dict[str, Union[str, list[str], float]],
     extracted_allergies_list: list[str],
     score_column: Optional[str] = 'recipe_score',
 ) -> dict[str, Union[str, list[str], float]]:
-    allergen_counts = 0
+    allergen_count = 0
     ingredients = recipe['recipe_ingredients']
 
     for allergen in extracted_allergies_list:
-        allergen_counts += ingredients.count(allergen)
+        allergen_count += ingredients.count(allergen)
 
-    recipe[score_column] = allergen_counts
+    recipe[score_column] = allergen_count
     return recipe
+
+
+def scoring_recipe_wrapper(
+    args: dict[str, Union[dict[str, Union[str, list[str], float]], list[str]]]
+) -> dict[str, Union[str, list[str], float]]:
+    return scoring_recipe(**args)
 
 
 def scoring_count(
@@ -77,10 +77,14 @@ def scoring_count(
     with Pool(cpu_count()) as pool:
         results = list(
             tqdm(
-                pool.starmap(
-                    score_recipe,
+                pool.imap(
+                    scoring_recipe_wrapper,
                     [
-                        (recipe, extracted_allergies_list, score_column)
+                        {
+                            'recipe': recipe,
+                            'extracted_allergies_list': extracted_allergies_list,
+                            'score_column': score_column,
+                        }
                         for recipe in excluded_recipes_list
                     ],
                 ),

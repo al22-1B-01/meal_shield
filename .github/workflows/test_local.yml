@@ -1,4 +1,4 @@
-name: Tests
+name: test-local
 
 on:
   pull_request:
@@ -28,11 +28,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install MeCab dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8
 
       - name: Install Poetry
         run: |
