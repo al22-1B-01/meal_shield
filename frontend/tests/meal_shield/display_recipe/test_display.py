@@ -1,6 +1,6 @@
 from streamlit.testing.v1 import AppTest
 
-from meal_shield.display_recipi import display_recipi
+from meal_shield.display_recipe import display_recipi
 
 
 def test_display():
