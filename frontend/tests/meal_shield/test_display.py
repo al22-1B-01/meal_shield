@@ -4,11 +4,12 @@ from meal_shield.display_recipi import display_recipi
 
 
 def test_display():
-    at = AppTest.from_file('tests/meal_shield/show.py').run()
+    at = AppTest.from_file('src/meal_shield/show_wrapper.py').run()
     at.secrets['WORD'] = 'Foobar'
     at.run()
+    # テスト実行ちゅに例外が発生しないか確認
     assert not at.exception
-
+    # テスト用データ
     selected_allergies = ['卵', 'ピーナッツ']
     recipi_name = 'ケーキ'
     result = [
@@ -33,12 +34,15 @@ def test_display():
             'recipe_url': 'https://cookpad.com/recipe/7781284',
         },
     ]
-
+    
+    # display_recipi関数を呼び出し
     display_recipi(selected_allergies, recipi_name, result)
-
+    # 生成されたボタンを押す
     button_key = f'{recipi_name}_0'
     at.button(key=button_key).click().run()
-
+    # ページがdetailsであることを確認する
     assert at.session_state.page == 'details'
+    # 選択されたアイテムがあることを確認
     assert at.session_state.selected_item is not None
+    # タイトルがイチゴケーキか確認
     assert at.session_state.selected_item['recipe_title'] == 'イチゴケーキ'
