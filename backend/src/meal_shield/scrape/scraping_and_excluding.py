@@ -1,17 +1,20 @@
-from typing import Union
+import logging
+from typing import Optional, Union
+
+import requests
 
 from meal_shield.scrape.cookpad import scraping_cookpad
 
 
 def scraping_and_excluding(
-    allergy_list, recipe_name: str
-) -> list[dict[str, Union[str, list[str]]]]:
+    allergy_list: list[str], recipe_name: str
+) -> Optional[list[dict[str, Union[str, list[str]]]]]:
     recipes_list = scraping_cookpad(recipe_name)
     if recipes_list is not None:
         excluded_recipes_list = excluding_recipe(allergy_list, recipes_list)
+        return excluded_recipes_list
     else:
-        return recipes_list
-    return excluded_recipes_list
+        return None
 
 
 # 文字列がリストに含まれる文字列を含むか判別

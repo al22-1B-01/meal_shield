@@ -44,9 +44,13 @@ async def ranking_recipe(
     if ranking_method == 'default':
         scored_recipes_list = scoring_count(allergies_list, excluded_recipes_list)
     elif ranking_method == 'embedding':
-        scored_recipes_list = scoring_embedding(allergies_list, excluded_recipes_list)
+        scored_recipes_list = await scoring_embedding(
+            allergies_list, excluded_recipes_list
+        )
     elif ranking_method == 'chatgpt':
-        scored_recipes_list = scoring_chatgpt(allergies_list, excluded_recipes_list)
+        scored_recipes_list = await scoring_chatgpt(
+            allergies_list, excluded_recipes_list
+        )
     elif ranking_method == 'hybrid':
         scored_recipes_list = await scoring_chatgpt(
             allergies_list,
