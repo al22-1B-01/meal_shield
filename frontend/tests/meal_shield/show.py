@@ -1,7 +1,7 @@
 import streamlit as st
 
 from meal_shield.detail import show_details
-from meal_shield.display_recipi import display_recipi
+from meal_shield.display_recipe import display_recipe
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
 
     # テスト用データ
     selected_allergies = ['卵', 'ピーナッツ']
-    recipi_name = 'ケーキ'
+    recipe_name = 'ケーキ'
     result = [
         {
             'title': 'イチゴケーキ',
@@ -35,7 +35,7 @@ def main():
 
     # ページ切り替え
     if st.session_state.page == 'main':
-        display_recipi(selected_allergies, recipi_name, result)
+        display_recipe(selected_allergies, recipe_name, result)
     elif st.session_state.page == 'details':
         show_details()
 
