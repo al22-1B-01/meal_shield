@@ -92,7 +92,7 @@ def test_initial_state(mock_session_state):
 def test_search_results_with_recipes(mock_get, mock_session_state):
     mock_session_state.page = ''
     mock_session_state.recipe_name = 'ケーキ'
-    mock_session_state.allergy_list = ['卵', '牛乳']
+    mock_session_state.input_allergy_recipe_info = ['卵', '牛乳']
     print('Session state before running:', mock_session_state)
 
     mock_get.return_value.status_code = 200
@@ -109,7 +109,7 @@ def test_search_results_with_recipes(mock_get, mock_session_state):
 def test_search_result_without_recipe_name(mock_get, mock_session_state):
     mock_session_state.page = ''
     mock_session_state.recipe_name = ''
-    mock_session_state.allergy_list = []
+    mock_session_state.input_allergy_recipe_info = []
 
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {"result": "success"}
