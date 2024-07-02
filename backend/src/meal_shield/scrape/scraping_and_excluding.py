@@ -6,10 +6,10 @@ import requests
 from meal_shield.scrape.cookpad import scraping_cookpad
 
 
-def scraping_and_excluding(
+async def scraping_and_excluding(
     allergy_list: list[str], recipe_name: str
 ) -> Optional[list[dict[str, Union[str, list[str]]]]]:
-    recipes_list = scraping_cookpad(recipe_name)
+    recipes_list = await scraping_cookpad(recipe_name)
     if recipes_list is not None:
         excluded_recipes_list = excluding_recipe(allergy_list, recipes_list)
         return excluded_recipes_list
