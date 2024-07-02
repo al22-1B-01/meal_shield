@@ -9,7 +9,7 @@ from meal_shield.app import main
 from meal_shield.detail import show_details
 from meal_shield.display_recipe import display_recipe
 from meal_shield.env import PACKAGE_DIR
-from meal_shield.search import base_url, fetch_recipes, search_recipe_entrypoint
+from meal_shield.search import base_url, fetch_recipe_detail, search_recipe_entrypoint
 
 
 @pytest.fixture
@@ -43,13 +43,13 @@ def mock_response_failure():
 
 @patch('requests.get')
 @patch('streamlit.error')
-def test_fetch_recipes_success(mock_st_error, mock_get, mock_response_success):
+def test_fetch_recipe_detail_success(mock_st_error, mock_get, mock_response_success):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = mock_response_success
 
     recipe_name = 'ケーキ'
     allergies = ['卵', '乳']
-    result = fetch_recipes(recipe_name, allergies)
+    result = fetch_recipe_detail(recipe_name, allergies)
 
     assert result == mock_response_success
     mock_st_error.assert_not_called()
@@ -57,13 +57,13 @@ def test_fetch_recipes_success(mock_st_error, mock_get, mock_response_success):
 
 @patch('requests.get')
 @patch('streamlit.error')
-def test_fetch_recipes_failure(mock_st_error, mock_get, mock_response_failure):
+def test_fetch_recipe_detail_failure(mock_st_error, mock_get, mock_response_failure):
     mock_get.return_value.status_code = 404
     mock_get.return_value.json.return_value = mock_response_failure
 
     recipe_name = 'ケーキ'
     allergies = ['卵', '乳']
-    result = fetch_recipes(recipe_name, allergies)
+    result = fetch_recipe_detail(recipe_name, allergies)
 
     assert result is None
     mock_st_error.assert_called_once_with('エラーが発生しました: 404')

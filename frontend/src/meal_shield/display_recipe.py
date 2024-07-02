@@ -4,12 +4,12 @@ import streamlit as st
 
 
 def display_recipe(
-    allergy_list: list[str],
+    input_allergy_recipe_info: list[str],
     recipe_name: str,
     recipes: list[dict[str, Union[str, list[str]]]],
 ) -> None:
     st.title('選択されたアレルギー品目')
-    selected_list = ', '.join(allergy_list)
+    selected_list = ', '.join(input_allergy_recipe_info)
 
     box_style = """
     <div
