@@ -94,8 +94,3 @@ def test_display_recipi(setup_session_state):
         assert st.session_state.selected_item == recipes[0]
 
         mock_rerun.assert_called_once()
-
-
-# メイン関数として実行
-if __name__ == '__main__':
-    pytest.main()
