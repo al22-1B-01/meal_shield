@@ -45,7 +45,7 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     command:
-      poetry run uvicorn src.app:app --reload --host 0.0.0.0 --port 8000
+      poetry run uvicorn src.meal_shield.app:app --reload --host 0.0.0.0 --port 8000
     environment:
       PYTHONPATH: "/app/src"
       PYTHONUNBUFFERED: 1
