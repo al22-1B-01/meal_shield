@@ -34,7 +34,7 @@ def test_display():
             'recipe_url': 'https://cookpad.com/recipe/7781284',
         },
     ]
-    
+
     # display_recipi関数を呼び出し
     display_recipi(selected_allergies, recipi_name, result)
     # 生成されたボタンを押す
