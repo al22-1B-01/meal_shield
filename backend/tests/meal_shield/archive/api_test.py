@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 
 base_url = "http://localhost:8000"
 
-recipi = "チョコレートケーキ"
+recipe = "チョコレートケーキ"
 allergy_list = ["卵", "乳", "小麦"]
 
 # パラメータをクエリに変換
 params = {
-    "recipi": recipi,
+    "recipe": recipe,
     "allergy_list": allergy_list,
 }
 

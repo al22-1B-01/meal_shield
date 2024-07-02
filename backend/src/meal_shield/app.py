@@ -55,12 +55,15 @@ async def get_recipe(
 ) -> list:
     if allergy_list is None:
         return [{'status': 'error', 'message': 'No allergy list', 'data': []}]
+
     allergy_found = serch_allergy(allergy_list)
-    if recipe is None:
-        return [{'status': 'error', 'message': 'No recipe', 'data': []}]
+
     allergy_remove = scraping_and_excluding(
         recipe_name=recipe, allergy_list=allergy_found
     )
+    if allergy_remove is None:
+        return [{'status': 'error', 'message': 'No recipe', 'data': []}]
+
     rank_recipe = await ranking_recipe(
         allergy_found, excluded_recipes_list=allergy_remove
     )
