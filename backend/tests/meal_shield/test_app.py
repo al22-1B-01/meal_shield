@@ -2,12 +2,11 @@ from unittest.mock import patch
 
 import nest_asyncio
 import pytest
-
-nest_asyncio.apply()
-
 from fastapi.testclient import TestClient
 
-from meal_shield.app import app  # APIのエントリーポイントをインポートします
+from meal_shield.app import app
+
+nest_asyncio.apply()
 
 ALLERGIES = ['えび', 'かに', '小麦']
 RECIPES = [
@@ -39,6 +38,7 @@ RECIPES = [
 @patch('meal_shield.app.scraping_and_excluding')
 @patch('meal_shield.app.ranking_recipe')
 async def test_get_recipe(mock_ranking_recipe, mock_scraping_and_excluding):
+    # 正常パターン
     mock_scraping_and_excluding.return_value = RECIPES
     mock_ranking_recipe.return_value = [
         {
@@ -93,3 +93,18 @@ async def test_get_recipe(mock_ranking_recipe, mock_scraping_and_excluding):
             'recipe_score': 50.0,
         },
     ]
+
+    # エラーパターン: アレルギーリストが空
+    response = client.get("/?recipe=sample_recipe")
+    assert response.status_code == 200
+    assert response.json() == [
+        {'status': 'error', 'message': 'No allergy list', 'data': []}
+    ]
+
+    # エラーパターン: レシピが見つからない
+    mock_scraping_and_excluding.return_value = None
+    response = client.get(
+        "/?recipe=sample_recipe&allergy_list=えび&allergy_list=かに&allergy_list=小麦"
+    )
+    assert response.status_code == 200
+    assert response.json() == [{'status': 'error', 'message': 'No recipe', 'data': []}]
