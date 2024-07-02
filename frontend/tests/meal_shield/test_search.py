@@ -7,7 +7,7 @@ from streamlit.testing.v1 import AppTest
 
 from meal_shield.app import main
 from meal_shield.detail import show_details
-from meal_shield.display_recipi import display_recipi
+from meal_shield.display_recipe import display_recipe
 from meal_shield.env import PACKAGE_DIR
 from meal_shield.search import base_url, fetch_recipes, search_recipe_entrypoint
 

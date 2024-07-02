@@ -3,7 +3,7 @@ from typing import Union
 import streamlit as st
 
 
-def display_recipi(
+def display_recipe(
     allergy_list: list[str],
     recipe_name: str,
     recipes: list[dict[str, Union[str, list[str]]]],

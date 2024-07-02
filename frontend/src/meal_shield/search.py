@@ -8,7 +8,7 @@ base_url = 'http://backend:8000'
 
 
 def fetch_recipes(recipe_name, allergies: list[str]) -> list:
-    params = {'recipi': recipe_name, 'allergy_list': allergies}
+    params = {'recipe': recipe_name, 'allergy_list': allergies}
     response = requests.get(base_url, params=params)
 
     if response.status_code == 200:

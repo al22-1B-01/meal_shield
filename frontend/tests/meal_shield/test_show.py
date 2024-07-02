@@ -10,14 +10,14 @@
 # from streamlit.testing.v1 import AppTest
 # import streamlit as st
 # from typing import Union
-# from meal_shield.display_recipi import display_recipi
+# from meal_shield.display_recipe import display_recipe
 
 
-# def test_display_recipi():
+# def test_display_recipe():
 
 #     # テストデータの準備
 #     selected_allergies = ['卵', '乳製品']
-#     recipi_name = 'ケーキ'
+#     recipe_name = 'ケーキ'
 #     result = [
 #         {
 #             'title': 'イチゴケーキ',
@@ -39,9 +39,9 @@
 
 #     # Streamlit AppTestをセットアップ
 #     at = AppTest.from_function(
-#         display_recipi,
+#         display_recipe,
 #         selected_allergies=selected_allergies,
-#         recipi_name=recipi_name,
+#         recipe_name=recipe_name,
 #         result=result,
 #     )
 
@@ -71,4 +71,4 @@
 
 
 # if __name__ == "__main__":
-#     test_display_recipi()
+#     test_display_recipe()
