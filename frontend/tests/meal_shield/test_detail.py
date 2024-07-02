@@ -1,6 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 import streamlit as st
-from unittest.mock import MagicMock, patch
+
 from meal_shield.detail import show_details
 
 
