@@ -97,7 +97,9 @@ def search_recipe_entrypoint() -> None:
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
-        recipes = fetch_recipe_detail(recipe_name, st.session_state.input_allergy_recipe_info)
+        recipes = fetch_recipe_detail(
+            recipe_name, st.session_state.input_allergy_recipe_info
+        )
         st.session_state.recipes = recipes
         st.session_state.page = '検索結果'
         st.session_state.recipe_name = recipe_name
