@@ -3,7 +3,7 @@ from typing import Union
 import streamlit as st
 
 
-def display_recipe(
+def get_recipe_summary(
     allergy_list: list[str],
     recipe_name: str,
     recipes: list[dict[str, Union[str, list[str]]]],
@@ -24,6 +24,14 @@ def display_recipe(
     st.title('料理名')
     st.markdown(box_style.format(content=recipe_name), unsafe_allow_html=True)
 
+    make_recipe_summary(allergy_list, recipe_name, recipes)
+
+
+def make_recipe_summary(
+    allergy_list: list[str],
+    recipe_name: str,
+    recipes: list[dict[str, Union[str, list[str]]]],
+) -> None:
     button_css = """
     <style>
     dic.stButton > button:first-child  {{
@@ -33,7 +41,6 @@ def display_recipe(
     }}
     </style>
     """
-
     for idex, item in enumerate(recipes):
         button_key = f'{recipe_name}_{idex}'
         st.write(f"{idex + 1}位  {item['recipe_title']}")

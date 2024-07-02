@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import streamlit as st
 
-from meal_shield.detail import show_details
+from meal_shield.detail import display_recipe_detail_entrypoint
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def test_show_details_with_selected_item(setup_session_state):
         # ボタンがクリックされない状態を設定
         mock_button.return_value = False
         # show_details関数を実行
-        show_details()
+        display_recipe_detail_entrypoint()
         # 画像が正しいURLで表示されていることを確認
         mock_image.assert_called_once_with(
             'https://img.cpcdn.com/recipes/7813040/'
@@ -56,7 +56,7 @@ def test_show_details_without_selected_item(setup_session_state):
         # ボタンがクリックされない状態を設定
         mock_button.return_value = False
         # show_details関数を実行
-        show_details()
+        display_recipe_detail_entrypoint()
 
         # エラーメッセージが表示されていることを確認
         mock_write.assert_any_call('詳細を表示するレシピが選択されていません。')

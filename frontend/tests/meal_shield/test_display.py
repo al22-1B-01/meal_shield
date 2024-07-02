@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import streamlit as st
 
-from meal_shield.display_recipe import display_recipe
+from meal_shield.display_recipe import get_recipe_summary
 
 
 # pytestのフィクスチャを定義
@@ -56,7 +56,7 @@ def test_display_recipe(setup_session_state):
         mock_button.side_effect = lambda label, key=None: key == f'{recipe_name}_0'
 
         # 関数を呼び出し
-        display_recipe(selected_allergies, recipe_name, recipes)
+        get_recipe_summary(selected_allergies, recipe_name, recipes)
 
         # 関数の動作を検証
         mock_title.assert_any_call('選択されたアレルギー品目')
