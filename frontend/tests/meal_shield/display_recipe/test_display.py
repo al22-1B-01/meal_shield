@@ -4,7 +4,7 @@ from meal_shield.display_recipi import display_recipi
 
 
 def test_display():
-    at = AppTest.from_file('src/meal_shield/show_wrapper.py').run()
+    at = AppTest.from_file('tests/meal_shield/show_wrapper.py').run()
     at.secrets['WORD'] = 'Foobar'
     at.run()
     # テスト実行ちゅに例外が発生しないか確認
