@@ -8,17 +8,6 @@ from meal_shield.display_recipe import get_recipe_summary
 base_url = 'http://backend:8000'
 
 
-def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
-    params = {'recipe': recipe_name, 'allergy_list': allergies}
-    response = requests.get(base_url, params=params)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f'エラーが発生しました: {response.status_code}')
-        return None
-
-
 # アレルギー品目の選択肢
 ALLERGY_OPTION = [
     {'name': 'えび', 'file': 'ebi.png'},
@@ -50,6 +39,16 @@ ALLERGY_OPTION = [
     {'name': 'りんご', 'file': 'ringo.png'},
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
+
+def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
+    params = {'recipe': recipe_name, 'allergy_list': allergies}
+    response = requests.get(base_url, params=params)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f'エラーが発生しました: {response.status_code}')
+        return None
 
 def search_recipe_entrypoint() -> None:
     st.subheader('除去したい品目を選択してください')
@@ -117,6 +116,7 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     elif not recipe_name:
         is_valid = False
         st.error('レシピが入力されていません.')
+
     if not st.session_state.recipes:
         is_valid = False
         st.error('検索結果が存在しません.')
