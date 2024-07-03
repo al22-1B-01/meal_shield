@@ -118,8 +118,9 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     elif not recipe_name:
         show_error_and_reset_session('レシピが入力されていません.')
 
-    recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
-    st.session_state.recipes = recipes
+    if not st.session_state.get('recipes'):
+        recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
+        st.session_state.recipes = recipes
 
     # Check if recipes are present and valid
     if (
