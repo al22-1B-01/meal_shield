@@ -19,7 +19,7 @@ def get_recipe_summary(
     {content}
     </div>
     """
-
+    st.session_state.page = 'details'
     st.markdown(box_style.format(content=selected_list), unsafe_allow_html=True)
     st.title('料理名')
     st.markdown(box_style.format(content=recipe_name), unsafe_allow_html=True)
@@ -42,7 +42,6 @@ def get_recipe_summary(
         st.image(recipe_img_url, width=300)
 
         if st.button(f"{new_recipe['recipe_title']}", key=button_key):
-            st.session_state.page = 'details'
             st.session_state.selected_item = new_recipe
             st.rerun()  # ページをリロードして変更を反映
 
