@@ -145,7 +145,7 @@ def test_show_details_page(mock_get, mock_session_state):
 def setup_session_state():
     # Mock the session_state with necessary initial values
     with patch('streamlit.session_state', new_callable=MagicMock) as mock_state:
-        mock_state.page = 'initial'  # Initialize page to prevent AttributeError on delete
+        mock_state.page = '検索結果'  # Initialize page to prevent AttributeError on delete
         mock_state.recipes = [{'status': 'error'}]
         mock_state.allergy_list = []
         yield mock_state
@@ -161,7 +161,7 @@ def test_validate_input_data_recipe_name_empty(mock_fetch, setup_session_state):
 @pytest.mark.usefixtures("setup_session_state")
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_fetch_error(mock_fetch, setup_session_state):
-    mock_fetch.return_value = {'status': 'error'}
+    mock_fetch.return_value = [{'status': 'error'}]
     with patch('streamlit.error') as mock_error, patch('streamlit.experimental_rerun') as mock_rerun:
         validate_input_data('Some Recipe', ['nuts'])
         mock_error.assert_called_once_with('検索結果が存在しません.')
