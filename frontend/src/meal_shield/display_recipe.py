@@ -23,22 +23,24 @@ def get_recipe_summary(
     st.markdown(box_style.format(content=selected_list), unsafe_allow_html=True)
     st.title('料理名')
     st.markdown(box_style.format(content=recipe_name), unsafe_allow_html=True)
+
     button_css = """
     <style>
-    dic.stButton > button:first-child  {{
-        front.weight : bold;
-        width : 800px;
-        height : 50px;
+    div.stButton > button:first-child {{
+        font-weight: bold;
+        width: 800px;
+        height: 50px;
     }}
     </style>
     """
-    for idex, item in enumerate(recipes):
+    st.markdown(button_css, unsafe_allow_html=True)
+
+    for index, item in enumerate(recipes):
         new_recipe, recipe_img_url = make_recipe_summary(
             allergy_list, recipe_name, item
         )
-        button_key = f'{recipe_name}_{idex}'
-        st.write(f"{idex + 1}位  {new_recipe['recipe_title']}")
-        st.markdown(button_css, unsafe_allow_html=True)
+        button_key = f'{recipe_name}_{index}'
+        st.write(f"{index + 1}位  {new_recipe['recipe_title']}")
         st.image(recipe_img_url, width=300)
 
         if st.button(f"{new_recipe['recipe_title']}", key=button_key):
