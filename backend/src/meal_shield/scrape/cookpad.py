@@ -7,7 +7,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm.asyncio import tqdm
 
 # 検索上限(page数)
-LIMIT_PAGE = 50
+LIMIT_PAGE = 35
 MAX_RECIPE_SIZE = 100
 
 
