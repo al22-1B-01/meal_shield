@@ -114,17 +114,20 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     if not allergies_list:
         is_valid = False
         st.error('アレルギー品目が入力されていません.')
-    if not recipe_name:
+    elif not recipe_name:
         is_valid = False
         st.error('レシピが入力されていません.')
     if not st.session_state.recipes:
+        is_valid = False
+        st.error('検索結果が存在しません.')
+    elif st.session_state.recipes[0].get('status') == 'error':
         is_valid = False
         st.error('検索結果が存在しません.')
 
     if not is_valid:
         del st.session_state.page
         time.sleep(3)
-        st.experimental_rerun()
+        st.rerun()
 
     get_recipe_summary(
         allergy_list=st.session_state.allergy_list,
