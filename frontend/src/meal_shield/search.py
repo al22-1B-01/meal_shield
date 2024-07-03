@@ -104,26 +104,23 @@ def search_recipe_entrypoint() -> None:
 
 import time
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
-    is_valid = True
-    if not allergies_list:
-        is_valid = False
-        st.error('アレルギー品目が入力されていません.')
-    elif not recipe_name:
-        is_valid = False
-        st.error('レシピが入力されていません.')
-
-    if not st.session_state.recipes:
-        is_valid = False
-        st.error('検索結果が存在しません.')
-    elif st.session_state.recipes[0].get('status') == 'error':
-        is_valid = False
-        st.error('検索結果が存在しません.')
-
-    if not is_valid:
+    def show_error_and_reset_session(error_message: str):
+        st.error(error_message)
         del st.session_state.page
         time.sleep(3)
         st.rerun()
 
+    # Check if allergies list or recipe name is empty
+    if not allergies_list:
+        show_error_and_reset_session('アレルギー品目が入力されていません.')
+    elif not recipe_name:
+        show_error_and_reset_session('レシピが入力されていません.')
+
+    # Check if recipes are present and valid
+    if not st.session_state.recipes or st.session_state.recipes[0].get('status') == 'error':
+        show_error_and_reset_session('検索結果が存在しません.')
+
+    # If all validations pass, proceed with getting the recipe summary
     get_recipe_summary(
         allergy_list=st.session_state.allergy_list,
         recipe_name=st.session_state.recipe_name,
