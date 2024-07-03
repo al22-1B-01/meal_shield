@@ -108,17 +108,23 @@ def search_recipe_entrypoint() -> None:
             st.session_state.recipe_name = recipe_name
             st.rerun()
 
-
+import time
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     if not allergies_list:
         del st.session_state.page
         st.error('アレルギー品目が入力されていません.')
+        time.sleep(1)
+        st.rerun()
     if not recipe_name:
         del st.session_state.page
         st.error('レシピが入力されていません.')
+        time.sleep(1)
+        st.rerun()
     if not st.session_state.recipes:
         del st.session_state.page
         st.error('検索結果が存在しません.')
+        time.sleep(1)
+        st.rerun()
     get_recipe_summary(
         allergy_list=st.session_state.allergy_list,
         recipe_name=st.session_state.recipe_name,
