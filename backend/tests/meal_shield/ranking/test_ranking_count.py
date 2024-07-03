@@ -1,5 +1,3 @@
-import pytest
-
 from meal_shield.ranking.ranking_count import (
     WORDS,
     extract_allergy_words,

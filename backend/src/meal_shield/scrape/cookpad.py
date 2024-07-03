@@ -1,4 +1,3 @@
-import asyncio
 from typing import Optional, Union
 
 import aiohttp
@@ -8,10 +7,11 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm.asyncio import tqdm
 
 # 検索上限(page数)
-LIMIT_PAGE = 100
+LIMIT_PAGE = 35
+MAX_RECIPE_SIZE = 100
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_cookpad(
     recipe_name: str,
 ) -> Optional[list[dict[str, Union[str, list[str]]]]]:
@@ -34,7 +34,6 @@ async def scraping_cookpad(
     # それぞれのレシピのURLからデータを並列処理で取得
     async with aiohttp.ClientSession() as session:
         tasks = [scraping_recipe_data(session, url) for url in recipe_url_list]
-        # recipes_list =  await asyncio.gather(*tasks)
         recipes_list = []
         for f in tqdm.as_completed(tasks, desc="Fetching recipe_data"):
             result = await f
@@ -42,10 +41,10 @@ async def scraping_cookpad(
     if recipes_list is None:
         return None
     else:
-        return recipes_list
+        return recipes_list[:MAX_RECIPE_SIZE]
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
     try:
         # 検索結果の最初のページのURL
@@ -72,7 +71,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
         return None
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_recipe_url(
     session: aiohttp.ClientSession, url: str
 ) -> Optional[list[str]]:
@@ -96,7 +95,7 @@ async def scraping_recipe_url(
         return None
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_recipe_data(
     session: aiohttp.ClientSession, url: str
 ) -> Optional[dict[str, Union[str, list[str]]]]:

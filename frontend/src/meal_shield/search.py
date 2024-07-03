@@ -1,3 +1,5 @@
+import time
+
 import requests
 import streamlit as st
 from PIL import Image
@@ -5,17 +7,6 @@ from PIL import Image
 from meal_shield.env import PACKAGE_DIR
 
 base_url = 'http://backend:8000'
-
-
-def fetch_recipe_detail(recipe_name, allergies: list[str]) -> list:
-    params = {'recipe': recipe_name, 'allergy_list': allergies}
-    response = requests.get(base_url, params=params)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f'エラーが発生しました: {response.status_code}')
-        return None
 
 
 # アレルギー品目の選択肢
@@ -49,6 +40,17 @@ ALLERGY_OPTION = [
     {'name': 'りんご', 'file': 'ringo.png'},
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
+
+
+def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
+    params = {'recipe': recipe_name, 'allergy_list': allergies}
+    response = requests.get(base_url, params=params)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f'エラーが発生しました: {response.status_code}')
+        return None
 
 
 def search_recipe_entrypoint() -> None:
@@ -97,23 +99,30 @@ def search_recipe_entrypoint() -> None:
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
-        if not st.session_state.allergy_list:
-            st.session_state.page = ''
-            st.error('アレルギー品目が入力されていません.')
-
-        else:
-            recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
-            st.session_state.recipes = recipes
-            st.session_state.page = '検索結果'
-            st.session_state.recipe_name = recipe_name
-            st.rerun()
-            return st.session_state.allergy_list, recipe_name, recipes
+        st.session_state.page = '検索結果'
+        st.session_state.recipe_name = recipe_name
+        st.rerun()
 
 
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
-    if not recipe_name:
-        st.error('レシピが入力されていません.')
+    def show_error_and_reset_session(error_message: str):
+        st.error(error_message)
+        del st.session_state.page
+        time.sleep(3)
+        st.rerun()
+
+    # Check if allergies list or recipe name is empty
     if not allergies_list:
-        st.error('アレルギー品目が入力されていません.')
-    if not st.session_state.recipes:
-        st.error('検索結果が存在しません.')
+        show_error_and_reset_session('アレルギー品目が入力されていません.')
+    elif not recipe_name:
+        show_error_and_reset_session('レシピが入力されていません.')
+
+    if (
+        not st.session_state.get('recipes')
+        or st.session_state.recipes[0].get('status') == 'error'
+    ):
+        recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
+        st.session_state.recipes = recipes
+        if st.session_state.recipes[0].get('status') == 'error':
+            show_error_and_reset_session('検索結果が存在しません.')
+            del st.session_state.recipes

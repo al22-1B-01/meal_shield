@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import nest_asyncio
 import numpy as np
@@ -6,11 +6,7 @@ import pytest
 
 nest_asyncio.apply()
 
-from meal_shield.ranking.ranking_embedding import (
-    calc_allergens_include_score_by_embedding,
-    cosine_similarity,
-    scoring_embedding,
-)
+from meal_shield.ranking.ranking_embedding import cosine_similarity, scoring_embedding
 
 ALLERGIES = ['えび', 'かに', '小麦']
 RECIPES = [

@@ -1,12 +1,10 @@
-import asyncio
 from pathlib import Path
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import aiohttp
 import pytest
 import requests
 from aioresponses import aioresponses
-from bs4 import BeautifulSoup
 
 from meal_shield.scrape.cookpad import (
     make_url_list,
