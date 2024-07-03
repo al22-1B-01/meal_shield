@@ -1,9 +1,11 @@
-import os
+import asyncio
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
+import aiohttp
 import pytest
 import requests
+from aioresponses import aioresponses
 from bs4 import BeautifulSoup
 
 from meal_shield.scrape.cookpad import (
@@ -60,11 +62,21 @@ def mock_side_effect(url, *args, **kwargs):
         raise requests.exceptions.ConnectionError
 
 
+# 辞書型リストの特定の要素を持つインデックスを取得する関数
+def get_index(dict_list, key, value):
+    for index, dictionary in enumerate(dict_list):
+        if dictionary.get(key) == value:
+            return index
+
+
 # エラーがない場合正しくデータを取得しているか確認
 def test_make_url_list_normal():
     recipe_name = 'ココナッツカレー'
     search_url = f'https://cookpad.com/search/{recipe_name}'
-    with patch('requests.get', side_effect=mock_side_effect):
+    mock_response = Mock()
+    mock_response.text = mock_data[0]
+    mock_response.content = mock_response.text.encode('utf-8')
+    with patch('requests.get', return_value=mock_response):
         url_list = make_url_list(recipe_name)
         assert url_list == [f'{search_url}?page=1', f'{search_url}?page=2']
 
@@ -78,76 +90,107 @@ def test_make_url_list_():
 
 
 # エラーがない場合正しくデータを取得しているか確認
-def test_scraping_recipe_url_normal():
+@pytest.mark.asyncio
+async def test_scraping_recipe_url_normal():
     url = 'https://cookpad.com/search/ココナッツカレー?page=1'
-    with patch('requests.get', side_effect=mock_side_effect):
-        recipe_url_list = scraping_recipe_url(url)
-        assert recipe_url_list == ['https://cookpad.com/recipe/7836445']
+    async with aiohttp.ClientSession() as session:
+        with aioresponses() as m:
+            m.get(url, status=200, body=mock_data[0])
+            recipe_url_list = await scraping_recipe_url(session, url)
+            assert recipe_url_list == ['https://cookpad.com/recipe/7836445']
 
 
 # ネットワーク接続エラーを捕捉するか確認
-def test_scraping_recipe_url_connection_error():
+@pytest.mark.asyncio
+async def test_scraping_recipe_url_connection_error():
     url = 'https://cookpad.com/search/ココナッツカレー?page=1'
-    # requests.get をモック化し、ConnectionError を発生させる
-    with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        assert scraping_recipe_url(url) is None
+    # aiohttp をモック化し、ConnectionError を発生させる
+    with patch(
+        'aiohttp.ClientSession.get', side_effect=requests.exceptions.ConnectionError
+    ):
+        assert await scraping_recipe_url(aiohttp.ClientSession(), url) is None
 
 
 # エラーがない場合正しくデータを取得しているか確認
-def test_scraping_recipe_data_normal():
+@pytest.mark.asyncio
+async def test_scraping_recipe_data_normal():
     url = 'https://cookpad.com/recipe/7836445'
     recipe_image_url = 'https://img.cpcdn.com/recipes/7836445/test_img_1'
-    with patch('requests.get', side_effect=mock_side_effect):
-        recipe_data = scraping_recipe_data(url)
-        assert recipe_data == {
-            'recipe_title': 'ホットクックで簡単ココナッツカレー',
-            'recipe_ingredients': ['玉ねぎ', 'にんじん'],
-            'recipe_url': url,
-            'recipe_image_url': recipe_image_url,
-        }
+    async with aiohttp.ClientSession() as session:
+        with aioresponses() as m:
+            m.get(url, status=200, body=mock_data[2])
+            recipe_data = await scraping_recipe_data(session, url)
+            assert recipe_data == {
+                'recipe_title': 'ホットクックで簡単ココナッツカレー',
+                'recipe_ingredients': ['玉ねぎ', 'にんじん'],
+                'recipe_url': url,
+                'recipe_image_url': recipe_image_url,
+            }
 
 
 # ネットワーク接続エラーを補足するか確認
-def test_scraping_recipe_data_connection_error():
+@pytest.mark.asyncio
+async def test_scraping_recipe_data_connection_error():
     url = 'https://example.com/recipe'
-    # requests.get をモック化し、ConnectionError を発生させる
-    with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        assert scraping_recipe_data(url) is None
+    # aiohttp をモック化し、ConnectionError を発生させる
+    with patch(
+        'aiohttp.ClientSession.get', side_effect=requests.exceptions.ConnectionError
+    ):
+        assert await scraping_recipe_data(aiohttp.ClientSession(), url) is None
 
 
 # エラーがない場合正しくデータを取得しているか確認
-def test_scraping_cookpad_normal():
+@pytest.mark.asyncio
+async def test_scraping_cookpad_normal():
     recipe_name = 'ココナッツカレー'
     recipe_url_1 = 'https://cookpad.com/recipe/7836445'
     recipe_url_2 = 'https://cookpad.com/recipe/7850799'
     recipe_image_url_1 = 'https://img.cpcdn.com/recipes/7836445/test_img_1'
     recipe_image_url_2 = 'https://img.cpcdn.com/recipes/7850799/test_img_2'
-    with patch('requests.get', side_effect=mock_side_effect):
-        with patch('meal_shield.scrape.cookpad.Pool') as mock_pool:
-            mock_pool.return_value.__enter__.return_value.map.side_effect = (
-                lambda func, urls: [func(url) for url in urls]
-            )
-            recipes_list = scraping_cookpad(recipe_name)
-
-            assert recipes_list == [
-                {
+    mock_response = Mock()
+    mock_response.text = mock_data[0]
+    mock_response.content = mock_response.text.encode('utf-8')
+    with patch('requests.get', return_value=mock_response):
+        async with aiohttp.ClientSession() as session:
+            with aioresponses() as m:
+                m.get(
+                    'https://cookpad.com/search/ココナッツカレー', status=200, body=mock_data[0]
+                )
+                m.get(
+                    'https://cookpad.com/search/ココナッツカレー?page=1',
+                    status=200,
+                    body=mock_data[0],
+                )
+                m.get(
+                    'https://cookpad.com/search/ココナッツカレー?page=2',
+                    status=200,
+                    body=mock_data[1],
+                )
+                m.get(recipe_url_1, status=200, body=mock_data[2])
+                m.get(recipe_url_2, status=200, body=mock_data[3])
+                recipes_list = await scraping_cookpad(recipe_name)
+                assert recipes_list[
+                    get_index(recipes_list, 'recipe_url', recipe_url_1)
+                ] == {
                     'recipe_title': 'ホットクックで簡単ココナッツカレー',
                     'recipe_ingredients': ['玉ねぎ', 'にんじん'],
                     'recipe_url': recipe_url_1,
                     'recipe_image_url': recipe_image_url_1,
-                },
-                {
+                }
+                assert recipes_list[
+                    get_index(recipes_list, 'recipe_url', recipe_url_2)
+                ] == {
                     'recipe_title': '絶品！シーフードココナッツカレー',
                     'recipe_ingredients': ['いか', '海老'],
                     'recipe_url': recipe_url_2,
                     'recipe_image_url': recipe_image_url_2,
-                },
-            ]
+                }
 
 
 # ネットワーク接続エラーを補足するか確認
-def test_scraping_cookpad_conection_error():
+@pytest.mark.asyncio
+async def test_scraping_cookpad_conection_error():
     recipe_name = 'ココナッツカレー'
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        assert scraping_cookpad(recipe_name) is None
+        assert await scraping_cookpad(recipe_name) is None

@@ -1,6 +1,6 @@
 import streamlit as st
 
-from meal_shield.detail import show_details
+from meal_shield.detail import display_recipe_detail_entrypoint
 from meal_shield.display_recipe import display_recipe
 
 
@@ -37,7 +37,7 @@ def main():
     if st.session_state.page == '検索結果':
         display_recipe(selected_allergies, recipe_name, result)
     elif st.session_state.page == 'details':
-        show_details()
+        display_recipe_detail_entrypoint()
 
 
 if __name__ == '__main__':

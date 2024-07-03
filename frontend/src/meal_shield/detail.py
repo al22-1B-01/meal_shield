@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def show_details() -> None:
+def display_recipe_detail_entrypoint() -> None:
     selected_item = st.session_state.selected_item
     if selected_item:
         st.image(selected_item['recipe_image_url'], width=300)
