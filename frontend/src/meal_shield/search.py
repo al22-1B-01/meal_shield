@@ -3,6 +3,7 @@ import streamlit as st
 from PIL import Image
 
 from meal_shield.env import PACKAGE_DIR
+from meal_shield.display_recipe import get_recipe_summary
 
 base_url = 'http://backend:8000'
 
@@ -113,10 +114,15 @@ def search_recipe_entrypoint() -> None:
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     if not allergies_list:
         st.error('アレルギー品目が入力されていません.')
-        search_recipe_entrypoint()
+        # search_recipe_entrypoint()
     if not recipe_name:
         st.error('レシピが入力されていません.')
-        search_recipe_entrypoint()
+        # search_recipe_entrypoint()
     if not st.session_state.recipes:
         st.error('検索結果が存在しません.')
-        search_recipe_entrypoint()
+        # search_recipe_entrypoint()
+    get_recipe_summary(
+        allergy_list=st.session_state.allergy_list,
+        recipe_name=st.session_state.recipe_name,
+        recipes=st.session_state.recipes,
+    )

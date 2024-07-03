@@ -14,12 +14,6 @@ def app() -> None:
             recipe_name=st.session_state.recipe_name,
             allergies_list=st.session_state.allergy_list,
         )
-        get_recipe_summary(
-            allergy_list=st.session_state.allergy_list,
-            recipe_name=st.session_state.recipe_name,
-            recipes=st.session_state.recipes,
-        )
-
     elif st.session_state.page == 'details':
         display_recipe_detail_entrypoint()
 
