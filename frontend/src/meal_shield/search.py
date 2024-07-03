@@ -105,8 +105,8 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     def show_error_and_reset_session(error_message: str):
         st.error(error_message)
         del st.session_state.page
-        time.sleep(3)
-        st.rerun()
+        # time.sleep(3)
+        # st.rerun()
 
     # Check if allergies list or recipe name is empty
     if not allergies_list:
