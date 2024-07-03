@@ -7,7 +7,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm.asyncio import tqdm
 
 # 検索上限(page数)
-LIMIT_PAGE = 100
+LIMIT_PAGE = 50
 
 
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
