@@ -96,15 +96,11 @@ def search_recipe_entrypoint() -> None:
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
-        if not st.session_state.allergy_list:
-            st.error('アレルギー品目が入力されていません.')
-
-        else:
-            recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
-            st.session_state.recipes = recipes
-            st.session_state.page = '検索結果'
-            st.session_state.recipe_name = recipe_name
-            st.rerun()
+        recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
+        st.session_state.recipes = recipes
+        st.session_state.page = '検索結果'
+        st.session_state.recipe_name = recipe_name
+        st.rerun()
 
 import time
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
