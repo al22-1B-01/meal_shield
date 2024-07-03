@@ -97,7 +97,6 @@ def search_recipe_entrypoint() -> None:
 
     if st.button('検索'):
         if not st.session_state.allergy_list:
-            st.session_state.page = ''
             st.error('アレルギー品目が入力されていません.')
 
         else:
