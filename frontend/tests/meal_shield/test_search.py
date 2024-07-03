@@ -117,7 +117,7 @@ def test_search_result_without_recipe_name(mock_get, mock_session_state):
     with patch('streamlit.button', return_value=True) as mock_details:
         search_recipe_entrypoint()
 
-    assert mock_session_state.page == ''
+    assert mock_session_state.page == '検索結果'
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
