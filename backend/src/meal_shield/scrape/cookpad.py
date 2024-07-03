@@ -1,5 +1,4 @@
 import asyncio
-from multiprocessing import Pool, cpu_count
 from typing import Optional, Union
 
 import aiohttp
@@ -141,11 +140,3 @@ async def scraping_recipe_data(
             return recipe_data
     except Exception as e:
         return None
-
-
-async def main():
-    recipes_data = await scraping_cookpad('カレーライス')
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
