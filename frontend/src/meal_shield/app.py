@@ -5,7 +5,6 @@ from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.search import search_recipe_entrypoint, validate_input_data
 
 
-
 def main():
     if 'page' not in st.session_state:
         search_recipe_entrypoint()
@@ -20,7 +19,6 @@ def main():
             recipe_name=st.session_state.recipe_name,
             recipes=st.session_state.recipes,
         )
-
 
     elif st.session_state.page == 'details':
         display_recipe_detail_entrypoint()
