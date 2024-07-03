@@ -150,22 +150,29 @@ def setup_session_state():
         mock_state.allergy_list = []
         yield mock_state
 
+
 @pytest.mark.usefixtures("setup_session_state")
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_recipe_name_empty(mock_fetch, setup_session_state):
-    with patch('streamlit.error') as mock_error, patch('streamlit.experimental_rerun') as mock_rerun:
+    with patch('streamlit.error') as mock_error, patch(
+        'streamlit.experimental_rerun'
+    ) as mock_rerun:
         validate_input_data('', ['nuts'])
         mock_error.assert_called_once_with('レシピが入力されていません.')
         assert 'page' not in setup_session_state  # Check if page was deleted
+
 
 @pytest.mark.usefixtures("setup_session_state")
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_fetch_error(mock_fetch, setup_session_state):
     mock_fetch.return_value = [{'status': 'error'}]
-    with patch('streamlit.error') as mock_error, patch('streamlit.experimental_rerun') as mock_rerun:
+    with patch('streamlit.error') as mock_error, patch(
+        'streamlit.experimental_rerun'
+    ) as mock_rerun:
         validate_input_data('Some Recipe', ['nuts'])
         mock_error.assert_called_once_with('検索結果が存在しません.')
         assert 'page' not in setup_session_state  # Check if page was deleted
+
 
 @pytest.mark.usefixtures("setup_session_state")
 @patch('meal_shield.search.fetch_recipe_detail')
