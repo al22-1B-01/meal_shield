@@ -10,7 +10,7 @@ from tqdm.asyncio import tqdm
 LIMIT_PAGE = 100
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_cookpad(
     recipe_name: str,
 ) -> Optional[list[dict[str, Union[str, list[str]]]]]:
@@ -43,7 +43,7 @@ async def scraping_cookpad(
         return recipes_list
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
     try:
         # 検索結果の最初のページのURL
@@ -70,7 +70,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
         return None
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_recipe_url(
     session: aiohttp.ClientSession, url: str
 ) -> Optional[list[str]]:
@@ -94,7 +94,7 @@ async def scraping_recipe_url(
         return None
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_recipe_data(
     session: aiohttp.ClientSession, url: str
 ) -> Optional[dict[str, Union[str, list[str]]]]:
