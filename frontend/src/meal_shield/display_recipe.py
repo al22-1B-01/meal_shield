@@ -53,5 +53,6 @@ def make_recipe_summary(
     recipes: dict[str, Union[str, list[str]]],
 ) -> tuple[dict[str, Union[str, list[str]]], str]:
     recipe_img_url = recipes.get('recipe_image_url')
-    recipes['allergy_list'] = [allergy_list]
+    search_result = recipes
+    search_result['allergy_list'] = [allergy_list]
     return recipes, recipe_img_url
