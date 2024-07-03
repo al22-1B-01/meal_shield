@@ -6,10 +6,7 @@ import pytest
 
 nest_asyncio.apply()
 
-from meal_shield.ranking.ranking_embedding import (
-    cosine_similarity,
-    scoring_embedding,
-)
+from meal_shield.ranking.ranking_embedding import cosine_similarity, scoring_embedding
 
 ALLERGIES = ['えび', 'かに', '小麦']
 RECIPES = [
