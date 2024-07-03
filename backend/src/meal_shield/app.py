@@ -58,7 +58,7 @@ async def get_recipe(
 
     allergy_found = serch_allergy(allergy_list)
 
-    allergy_remove = scraping_and_excluding(
+    allergy_remove = await scraping_and_excluding(
         recipe_name=recipe, allergy_list=allergy_found
     )
     if allergy_remove is None:

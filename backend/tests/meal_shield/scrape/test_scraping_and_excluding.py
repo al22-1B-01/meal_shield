@@ -1,9 +1,11 @@
-import os
+import asyncio
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import aiohttp
 import pytest
 import requests
+from aioresponses import aioresponses
 from bs4 import BeautifulSoup
 
 from meal_shield.scrape.scraping_and_excluding import (
@@ -87,7 +89,8 @@ def test_excluding_recipe_normal():
 
 
 # エラーがない場合正しくデータを取得しているか確認
-def test_scraping_and_excluding_normal():
+@pytest.mark.asyncio
+async def test_scraping_and_excluding_normal():
     recipe_name = 'ココナッツカレー'
     recipe_url_1 = 'https://cookpad.com/recipe/7836445'
     recipe_url_2 = 'https://cookpad.com/recipe/7850799'
@@ -95,28 +98,42 @@ def test_scraping_and_excluding_normal():
     recipe_image_url_2 = 'https://img.cpcdn.com/recipes/7850799/test_img_2'
     allergy_list = ['いか']
     with patch('requests.get', side_effect=mock_side_effect):
-        with patch('meal_shield.scrape.cookpad.Pool') as mock_pool:
-            mock_pool.return_value.__enter__.return_value.map.side_effect = (
-                lambda func, urls: [func(url) for url in urls]
-            )
-            excluded_recipe_data_list = scraping_and_excluding(
-                allergy_list, recipe_name
-            )
+        async with aiohttp.ClientSession() as session:
+            with aioresponses() as m:
+                m.get(
+                    'https://cookpad.com/search/ココナッツカレー', status=200, body=mock_data[0]
+                )
+                m.get(
+                    'https://cookpad.com/search/ココナッツカレー?page=1',
+                    status=200,
+                    body=mock_data[0],
+                )
+                m.get(
+                    'https://cookpad.com/search/ココナッツカレー?page=2',
+                    status=200,
+                    body=mock_data[1],
+                )
+                m.get(recipe_url_1, status=200, body=mock_data[2])
+                m.get(recipe_url_2, status=200, body=mock_data[3])
+                excluded_recipe_data_list = await scraping_and_excluding(
+                    allergy_list, recipe_name
+                )
 
-            assert excluded_recipe_data_list == [
-                {
-                    'recipe_title': 'ホットクックで簡単ココナッツカレー',
-                    'recipe_ingredients': ['玉ねぎ', 'にんじん'],
-                    'recipe_url': recipe_url_1,
-                    'recipe_image_url': recipe_image_url_1,
-                }
-            ]
+                assert excluded_recipe_data_list == [
+                    {
+                        'recipe_title': 'ホットクックで簡単ココナッツカレー',
+                        'recipe_ingredients': ['玉ねぎ', 'にんじん'],
+                        'recipe_url': recipe_url_1,
+                        'recipe_image_url': recipe_image_url_1,
+                    }
+                ]
 
 
 # ネットワーク接続エラーを補足するか確認
-def test_scraping_and_excluding_connection_error():
+@pytest.mark.asyncio
+async def test_scraping_and_excluding_connection_error():
     recipe_name = 'ココナッツカレー'
     allergy_list = ['いか']
     # requests.get をモック化し、ConnectionError を発生させる
     with patch('requests.get', side_effect=requests.exceptions.ConnectionError):
-        assert scraping_and_excluding(allergy_list, recipe_name) is None
+        assert await scraping_and_excluding(allergy_list, recipe_name) is None
