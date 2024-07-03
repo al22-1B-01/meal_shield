@@ -128,3 +128,4 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
         or st.session_state.recipes[0].get('status') == 'error'
     ):
         show_error_and_reset_session('検索結果が存在しません.')
+        del st.session_state.recipes
