@@ -9,7 +9,12 @@ from meal_shield.app import main
 from meal_shield.detail import display_recipe_detail_entrypoint
 from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.env import PACKAGE_DIR
-from meal_shield.search import base_url, fetch_recipes, search_recipe_entrypoint
+from meal_shield.search import (
+    base_url,
+    fetch_recipe_detail,
+    search_recipe_entrypoint,
+    validate_input_data,
+)
 
 
 @pytest.fixture
@@ -43,13 +48,13 @@ def mock_response_failure():
 
 @patch('requests.get')
 @patch('streamlit.error')
-def test_fetch_recipes_success(mock_st_error, mock_get, mock_response_success):
+def test_fetch_recipe_detail_success(mock_st_error, mock_get, mock_response_success):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = mock_response_success
 
     recipe_name = 'ケーキ'
     allergies = ['卵', '乳']
-    result = fetch_recipes(recipe_name, allergies)
+    result = fetch_recipe_detail(recipe_name, allergies)
 
     assert result == mock_response_success
     mock_st_error.assert_not_called()
@@ -57,13 +62,13 @@ def test_fetch_recipes_success(mock_st_error, mock_get, mock_response_success):
 
 @patch('requests.get')
 @patch('streamlit.error')
-def test_fetch_recipes_failure(mock_st_error, mock_get, mock_response_failure):
+def test_fetch_recipe_detail_failure(mock_st_error, mock_get, mock_response_failure):
     mock_get.return_value.status_code = 404
     mock_get.return_value.json.return_value = mock_response_failure
 
     recipe_name = 'ケーキ'
     allergies = ['卵', '乳']
-    result = fetch_recipes(recipe_name, allergies)
+    result = fetch_recipe_detail(recipe_name, allergies)
 
     assert result is None
     mock_st_error.assert_called_once_with('エラーが発生しました: 404')
@@ -101,7 +106,7 @@ def test_search_results_with_recipes(mock_get, mock_session_state):
     with patch('streamlit.button', return_value=True):
         search_recipe_entrypoint()
         print('Session state after running:', mock_session_state)
-        assert mock_session_state.page == '検索結果'
+    assert mock_session_state.page == ''
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
@@ -117,7 +122,7 @@ def test_search_result_without_recipe_name(mock_get, mock_session_state):
     with patch('streamlit.button', return_value=True) as mock_details:
         search_recipe_entrypoint()
 
-    assert mock_session_state.page == '検索結果'
+    assert mock_session_state.page == ''
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
@@ -139,3 +144,35 @@ def test_show_details_page(mock_get, mock_session_state):
         display_recipe_detail_entrypoint()
 
     assert mock_session_state.page == '検索結果'
+
+
+@patch('streamlit.error')
+@patch('streamlit.session_state', new_callable=MagicMock)
+def test_validate_input_data_no_recipe_name(mock_session_state, mock_error):
+    mock_session_state.recipes = True
+    validate_input_data('', ['卵', '牛乳'])
+    mock_error.assert_any_call('レシピが入力されていません.')
+
+
+@patch('streamlit.error')
+@patch('streamlit.session_state', new_callable=MagicMock)
+def test_validate_input_data_no_allergies_list(mock_session_state, mock_error):
+    mock_session_state.recipes = True
+    validate_input_data('ケーキ', [])
+    mock_error.assert_any_call('アレルギー品目が入力されていません.')
+
+
+@patch('streamlit.error')
+@patch('streamlit.session_state', new_callable=MagicMock)
+def test_validate_input_data_no_recipes(mock_session_state, mock_error):
+    mock_session_state.recipes = False
+    validate_input_data('ケーキ', ['卵', '牛乳'])
+    mock_error.assert_any_call('検索結果が存在しません.')
+
+
+@patch('streamlit.error')
+@patch('streamlit.session_state', new_callable=MagicMock)
+def test_validate_input_data_valid_input(mock_session_state, mock_error):
+    mock_session_state.recipes = True
+    validate_input_data('ケーキ', ['卵', '牛乳'])
+    mock_error.assert_not_called()

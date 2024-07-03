@@ -2,7 +2,7 @@ import streamlit as st
 
 from meal_shield.detail import display_recipe_detail_entrypoint
 from meal_shield.display_recipe import get_recipe_summary
-from meal_shield.search import search_recipe_entrypoint
+from meal_shield.search import search_recipe_entrypoint, validate_input_data
 
 
 def main():
@@ -10,17 +10,15 @@ def main():
         search_recipe_entrypoint()
 
     elif st.session_state.page == '検索結果':
-        if not st.session_state.recipe_name:
-            st.warning('レシピ名を入力してください。')
-            search_recipe_entrypoint()
-        elif not st.session_state.recipes:
-            st.write('レシピが見つかりませんでした。')
-        else:
-            get_recipe_summary(
-                allergy_list=st.session_state.allergy_list,
-                recipe_name=st.session_state.recipe_name,
-                recipes=st.session_state.recipes,
-            )
+        validate_input_data(
+            recipe_name=st.session_state.recipe_name,
+            allergies_list=st.session_state.allergy_list,
+        )
+        get_recipe_summary(
+            allergy_list=st.session_state.allergy_list,
+            recipe_name=st.session_state.recipe_name,
+            recipes=st.session_state.recipes,
+        )
 
     elif st.session_state.page == 'details':
         display_recipe_detail_entrypoint()
