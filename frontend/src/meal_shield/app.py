@@ -1,7 +1,7 @@
 import streamlit as st
 
-from meal_shield.detail import show_details
-from meal_shield.display_recipi import display_recipi
+from meal_shield.detail import display_recipe_detail_entrypoint
+from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.search import search_recipe_entrypoint
 
 
@@ -16,14 +16,14 @@ def main():
         elif not st.session_state.recipes:
             st.write('レシピが見つかりませんでした。')
         else:
-            display_recipi(
+            get_recipe_summary(
                 allergy_list=st.session_state.allergy_list,
                 recipe_name=st.session_state.recipe_name,
                 recipes=st.session_state.recipes,
             )
 
     elif st.session_state.page == 'details':
-        show_details()
+        display_recipe_detail_entrypoint()
 
 
 if __name__ == '__main__':

@@ -50,18 +50,21 @@ def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
 
 
 @app.get("/")
-async def get_recipi(
-    recipi: str, allergy_list: Optional[list[str]] = Query(default=None)
+async def get_recipe(
+    recipe: str, allergy_list: Optional[list[str]] = Query(default=None)
 ) -> list:
     if allergy_list is None:
         return [{'status': 'error', 'message': 'No allergy list', 'data': []}]
+
     allergy_found = serch_allergy(allergy_list)
-    if recipi is None:
-        return [{'status': 'error', 'message': 'No recipi', 'data': []}]
+
     allergy_remove = scraping_and_excluding(
-        recipe_name=recipi, allergy_list=allergy_found
+        recipe_name=recipe, allergy_list=allergy_found
     )
-    rank_recipi = await ranking_recipe(
+    if allergy_remove is None:
+        return [{'status': 'error', 'message': 'No recipe', 'data': []}]
+
+    rank_recipe = await ranking_recipe(
         allergy_found, excluded_recipes_list=allergy_remove
     )
-    return rank_recipi
+    return rank_recipe

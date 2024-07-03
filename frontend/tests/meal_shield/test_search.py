@@ -6,8 +6,8 @@ import streamlit as st
 from streamlit.testing.v1 import AppTest
 
 from meal_shield.app import main
-from meal_shield.detail import show_details
-from meal_shield.display_recipi import display_recipi
+from meal_shield.detail import display_recipe_detail_entrypoint
+from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.env import PACKAGE_DIR
 from meal_shield.search import base_url, fetch_recipes, search_recipe_entrypoint
 
@@ -136,6 +136,6 @@ def test_show_details_page(mock_get, mock_session_state):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {"recipes": []}
     with patch('streamlit.button', return_value=True) as mock_details:
-        show_details()
+        display_recipe_detail_entrypoint()
 
     assert mock_session_state.page == '検索結果'
