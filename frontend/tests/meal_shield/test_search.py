@@ -146,7 +146,7 @@ def setup_session_state():
     # Mock the session_state with necessary initial values
     with patch('streamlit.session_state', new_callable=MagicMock) as mock_state:
         mock_state.page = 'initial'  # Initialize page to prevent AttributeError on delete
-        mock_state.recipes = []
+        mock_state.recipes = [{'status': 'error'}]
         mock_state.allergy_list = []
         yield mock_state
 
