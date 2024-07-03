@@ -146,44 +146,50 @@ def test_show_details_page(mock_get, mock_session_state):
 @patch('requests.get')
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_no_recipe_name(mock_fetch, mock_get, mock_session_state, mock_error):
-    mock_session_state.recipes = [{'status': 'error'}]
+    mock_session_state.__delitem__ = MagicMock()  # モックオブジェクトに__delitem__メソッドを追加
     mock_session_state.page = '検索結果'
+    mock_session_state.recipes = [{'status': 'error'}]
     mock_session_state.allergy_list = ['卵', '牛乳']
     mock_fetch.return_value = [{'status': 'error'}]
     validate_input_data('', ['卵', '牛乳'])
     mock_error.assert_any_call('レシピが入力されていません.')
+    mock_session_state.__delitem__.assert_called_with('page')  # pageが削除されたことを確認
 
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_no_allergies_list(mock_fetch, mock_get, mock_session_state, mock_error):
-    mock_session_state.recipes = [{'status': 'error'}]
+    mock_session_state.__delitem__ = MagicMock()  # モックオブジェクトに__delitem__メソッドを追加
     mock_session_state.page = '検索結果'
+    mock_session_state.recipes = [{'status': 'error'}]
     mock_session_state.allergy_list = []
     mock_fetch.return_value = [{'status': 'error'}]
     validate_input_data('ケーキ', [])
     mock_error.assert_any_call('アレルギー品目が入力されていません.')
+    mock_session_state.__delitem__.assert_called_with('page')  # pageが削除されたことを確認
 
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_no_recipes(mock_fetch, mock_get, mock_session_state, mock_error):
-    mock_session_state.recipes = [{'status': 'error'}]
+    mock_session_state.__delitem__ = MagicMock()  # モックオブジェクトに__delitem__メソッドを追加
     mock_session_state.page = '検索結果'
+    mock_session_state.recipes = [{'status': 'error'}]
     mock_session_state.allergy_list = ['卵', '牛乳']
     mock_fetch.return_value = [{'status': 'error'}]
     validate_input_data('ケーキ', ['卵', '牛乳'])
     mock_error.assert_any_call('検索結果が存在しません.')
+    mock_session_state.__delitem__.assert_called_with('page')  # pageが削除されたことを確認
 
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_valid_input(mock_fetch, mock_get, mock_session_state, mock_error):
-    mock_session_state.recipes = [{'status': 'success'}]
     mock_session_state.page = '検索結果'
+    mock_session_state.recipes = [{'status': 'success'}]
     mock_session_state.allergy_list = ['卵', '牛乳']
     mock_fetch.return_value = [{'status': 'success'}]
     validate_input_data('ケーキ', ['卵', '牛乳'])
