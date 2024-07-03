@@ -1,7 +1,7 @@
 import streamlit as st
 
 from meal_shield.detail import display_recipe_detail_entrypoint
-from meal_shield.display_recipe import display_recipe
+from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.search import search_recipe_entrypoint, validate_input_data
 
 
@@ -15,7 +15,7 @@ def main():
             recipe_name=st.session_state.recipe_name,
             allergies_list=st.session_state.allergy_list,
         )
-        display_recipe(
+        get_recipe_summary(
             allergy_list=st.session_state.allergy_list,
             recipe_name=st.session_state.recipe_name,
             recipes=st.session_state.recipes,
