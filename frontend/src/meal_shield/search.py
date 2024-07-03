@@ -51,7 +51,7 @@ ALLERGY_OPTION = [
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
 
-
+@st.cache(suppress_st_warning=True)
 def search_recipe_entrypoint() -> None:
     st.subheader('除去したい品目を選択してください')
 
