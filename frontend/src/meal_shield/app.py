@@ -12,7 +12,7 @@ def main():
     elif st.session_state.page == '検索結果':
         validate_input_data(
             recipe_name=st.session_state.recipe_name,
-            allergies_list=st.session_state.allergy_list
+            allergies_list=st.session_state.allergy_list,
         )
         display_recipe(
             allergy_list=st.session_state.allergy_list,

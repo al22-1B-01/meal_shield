@@ -8,7 +8,7 @@ base_url = 'http://backend:8000'
 
 
 def fetch_recipe_detail(recipe_name, allergies: list[str]) -> list:
-    params = {'recipe': recipe_name, 'input_allergy_recipe_info': allergies}
+    params = {'recipe': recipe_name, 'allergy_list': allergies}
     response = requests.get(base_url, params=params)
 
     if response.status_code == 200:
@@ -54,8 +54,8 @@ ALLERGY_OPTION = [
 def search_recipe_entrypoint() -> None:
     st.subheader('除去したい品目を選択してください')
 
-    if 'input_allergy_recipe_info' not in st.session_state:
-        st.session_state.input_allergy_recipe_info = []
+    if 'allergy_list' not in st.session_state:
+        st.session_state.allergy_list = []
 
     cols = st.columns(7)
     for index, item in enumerate(ALLERGY_OPTION):
@@ -76,15 +76,15 @@ def search_recipe_entrypoint() -> None:
         image = Image.open(PACKAGE_DIR / f'data/images/{item["file"]}')
 
         if col.button(item['name']):
-            if item['name'] in st.session_state.input_allergy_recipe_info:
-                st.session_state.input_allergy_recipe_info.remove(item['name'])
+            if item['name'] in st.session_state.allergy_list:
+                st.session_state.allergy_list.remove(item['name'])
             else:
-                st.session_state.input_allergy_recipe_info.append(item['name'])
+                st.session_state.allergy_list.append(item['name'])
 
         col.image(image, use_column_width=True, width=100)
 
     st.subheader('選択されたアレルギー品目')
-    for allergy in st.session_state.input_allergy_recipe_info:
+    for allergy in st.session_state.allergy_list:
         st.markdown(
             f'<span style="background-color: red;padding: 5px;font-size: 14px;'
             f'">'
@@ -97,11 +97,23 @@ def search_recipe_entrypoint() -> None:
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
-        recipes = fetch_recipe_detail(
-            recipe_name, st.session_state.input_allergy_recipe_info
-        )
-        st.session_state.recipes = recipes
-        st.session_state.page = '検索結果'
-        st.session_state.recipe_name = recipe_name
-        st.rerun()
-        return st.session_state.input_allergy_recipe_info, recipe_name, recipes
+        if not st.session_state.allergy_list:
+            st.session_state.page = ''
+            st.error('アレルギー品目が入力されていません.')
+
+        else:
+            recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
+            st.session_state.recipes = recipes
+            st.session_state.page = '検索結果'
+            st.session_state.recipe_name = recipe_name
+            st.rerun()
+            return st.session_state.allergy_list, recipe_name, recipes
+
+
+def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
+    if not recipe_name:
+        st.error('レシピが入力されていません.')
+    if not allergies_list:
+        st.error('アレルギー品目が入力されていません.')
+    if not st.session_state.recipes:
+        st.error('検索結果が存在しません.')
