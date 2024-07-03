@@ -120,6 +120,6 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     if not st.session_state.get('recipes') or st.session_state.recipes[0].get('status') == 'error':
         recipes = fetch_recipe_detail(recipe_name, st.session_state.allergy_list)
         st.session_state.recipes = recipes
-        if st.session_state.recipes[0].get('status', '___') == 'error':
+        if st.session_state.recipes[0].get('status') == 'error':
             show_error_and_reset_session('検索結果が存在しません.')
             del st.session_state.recipes
