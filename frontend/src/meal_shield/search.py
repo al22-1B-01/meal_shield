@@ -1,9 +1,11 @@
+import time
+
 import requests
 import streamlit as st
 from PIL import Image
 
-from meal_shield.env import PACKAGE_DIR
 from meal_shield.display_recipe import get_recipe_summary
+from meal_shield.env import PACKAGE_DIR
 
 base_url = 'http://backend:8000'
 
@@ -40,6 +42,7 @@ ALLERGY_OPTION = [
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
 
+
 def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
     params = {'recipe': recipe_name, 'allergy_list': allergies}
     response = requests.get(base_url, params=params)
@@ -49,6 +52,7 @@ def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
     else:
         st.error(f'エラーが発生しました: {response.status_code}')
         return None
+
 
 def search_recipe_entrypoint() -> None:
     st.subheader('除去したい品目を選択してください')
@@ -100,13 +104,13 @@ def search_recipe_entrypoint() -> None:
         st.session_state.recipe_name = recipe_name
         st.rerun()
 
-import time
+
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     def show_error_and_reset_session(error_message: str):
         st.error(error_message)
         del st.session_state.page
-        # time.sleep(3)
-        # st.rerun()
+        time.sleep(3)
+        st.rerun()
 
     # Check if allergies list or recipe name is empty
     if not allergies_list:
@@ -118,7 +122,10 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     st.session_state.recipes = recipes
 
     # Check if recipes are present and valid
-    if not st.session_state.recipes or st.session_state.recipes[0].get('status') == 'error':
+    if (
+        not st.session_state.recipes
+        or st.session_state.recipes[0].get('status') == 'error'
+    ):
         show_error_and_reset_session('検索結果が存在しません.')
 
     # If all validations pass, proceed with getting the recipe summary
