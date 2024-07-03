@@ -108,7 +108,6 @@ def search_recipe_entrypoint() -> None:
             st.session_state.page = '検索結果'
             st.session_state.recipe_name = recipe_name
             st.rerun()
-            return st.session_state.allergy_list, recipe_name, recipes
 
 
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
