@@ -113,12 +113,18 @@ def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
     if not allergies_list:
         st.error('アレルギー品目が入力されていません.')
         # search_recipe_entrypoint()
+        del st.session_state.page
+        st.rerun()  # ページをリロードして変更を反映
     if not recipe_name:
         st.error('レシピが入力されていません.')
         # search_recipe_entrypoint()
+        del st.session_state.page
+        st.rerun()  # ページをリロードして変更を反映
     if not st.session_state.recipes:
         st.error('検索結果が存在しません.')
         # search_recipe_entrypoint()
+        del st.session_state.page
+        st.rerun()  # ページをリロードして変更を反映
     get_recipe_summary(
         allergy_list=st.session_state.allergy_list,
         recipe_name=st.session_state.recipe_name,
