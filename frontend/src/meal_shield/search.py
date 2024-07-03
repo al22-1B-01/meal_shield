@@ -4,7 +4,6 @@ import requests
 import streamlit as st
 from PIL import Image
 
-from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.env import PACKAGE_DIR
 
 base_url = 'http://backend:8000'
