@@ -5,7 +5,7 @@ from PIL import Image
 from meal_shield.env import PACKAGE_DIR
 from meal_shield.display_recipe import get_recipe_summary
 
-base_url = 'http://backend:8000'
+base_url = 'http://localhost:8000'
 
 
 def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
