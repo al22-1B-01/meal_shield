@@ -3,7 +3,6 @@ from typing import Union
 import streamlit as st
 
 
-@st.cache(suppress_st_warning=True)
 def get_recipe_summary(
     allergy_list: list[str],
     recipe_name: str,

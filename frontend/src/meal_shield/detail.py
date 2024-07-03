@@ -1,7 +1,6 @@
 import streamlit as st
 
 
-@st.cache(suppress_st_warning=True)
 def display_recipe_detail_entrypoint() -> None:
     selected_item = st.session_state.selected_item
     if selected_item:
