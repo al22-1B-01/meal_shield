@@ -50,7 +50,7 @@ def get_recipe_summary(
 def make_recipe_summary(
     allergy_list: list[str],
     recipe_name: str,
-    recipes: list[dict[str, Union[str, list[str]]]],
+    recipes: dict[str, Union[str, list[str]]],
 ) -> tuple[dict[str, Union[str, list[str]]], str]:
     recipe_img_url = recipes.get('recipe_image_url')
     recipes['allergy_list'] = [allergy_list]
