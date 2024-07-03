@@ -31,8 +31,13 @@ def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     dot_product = np.dot(vec1, vec2)
     norm_vec1 = np.linalg.norm(vec1)
     norm_vec2 = np.linalg.norm(vec2)
-    similarity = dot_product / (norm_vec1 * norm_vec2)
-    return similarity
+
+    # 0除算対策
+    if norm_vec1 * norm_vec2 != 0:
+        similarity = dot_product / (norm_vec1 * norm_vec2)
+        return similarity
+    else:
+        return 0.0
 
 
 async def calc_allergens_include_score_by_embedding(
@@ -76,7 +81,7 @@ async def scoring_embedding_async(
     return excluded_recipes_list
 
 
-def scoring_embedding(
+async def scoring_embedding(
     allergies_list: list[str],
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     model_name: Optional[str] = 'text-embedding-3-small',
