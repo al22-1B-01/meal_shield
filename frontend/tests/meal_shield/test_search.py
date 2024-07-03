@@ -144,7 +144,7 @@ def test_show_details_page(mock_get, mock_session_state):
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
-def test_validate_input_data_no_recipe_name(mock_session_state, mock_error):
+def test_validate_input_data_no_recipe_name(mock_get, mock_session_state, mock_error):
     mock_session_state.recipes = [{'status':  'error'}]
     mock_session_state.page = '検索結果'
     validate_input_data('', ['卵', '牛乳'])
@@ -154,7 +154,7 @@ def test_validate_input_data_no_recipe_name(mock_session_state, mock_error):
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
-def test_validate_input_data_no_allergies_list(mock_session_state, mock_error):
+def test_validate_input_data_no_allergies_list(mock_get, mock_session_state, mock_error):
     mock_session_state.recipes = [{'status':  'error'}]
     mock_session_state.page = '検索結果'
     validate_input_data('ケーキ', [])
@@ -164,7 +164,7 @@ def test_validate_input_data_no_allergies_list(mock_session_state, mock_error):
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
-def test_validate_input_data_no_recipes(mock_session_state, mock_error):
+def test_validate_input_data_no_recipes(mock_get, mock_session_state, mock_error):
     mock_session_state.recipes = [{'status':  'error'}]
     mock_session_state.page = '検索結果'
     validate_input_data('ケーキ', ['卵', '牛乳'])
@@ -174,7 +174,7 @@ def test_validate_input_data_no_recipes(mock_session_state, mock_error):
 @patch('streamlit.error')
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
-def test_validate_input_data_valid_input(mock_session_state, mock_error):
+def test_validate_input_data_valid_input(mock_get, mock_session_state, mock_error):
     mock_session_state.recipes = [{'status':  'success'}]
     mock_session_state.page = '検索結果'
     validate_input_data('ケーキ', ['卵', '牛乳'])
