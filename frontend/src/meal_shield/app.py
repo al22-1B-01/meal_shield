@@ -1,6 +1,6 @@
 import streamlit as st
 
-from meal_shield.detail import show_details
+from meal_shield.detail import display_recipe_detail_entrypoint
 from meal_shield.display_recipe import display_recipe
 from meal_shield.search import search_recipe_entrypoint, validate_input_data
 
