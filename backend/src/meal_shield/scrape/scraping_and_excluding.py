@@ -1,7 +1,5 @@
 from typing import Optional, Union
 
-import requests
-
 from meal_shield.scrape.cookpad import scraping_cookpad
 
 

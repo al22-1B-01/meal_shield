@@ -7,7 +7,7 @@ from meal_shield.env import PACKAGE_DIR
 base_url = 'http://backend:8000'
 
 
-def fetch_recipe_detail(recipe_name, allergies: list[str]) -> list:
+def fetch_recipe_detail(recipe_name:str, allergies: list[str]) -> list:
     params = {'recipe': recipe_name, 'allergy_list': allergies}
     response = requests.get(base_url, params=params)
 

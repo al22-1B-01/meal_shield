@@ -1,16 +1,11 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
-from meal_shield.app import main
 from meal_shield.detail import display_recipe_detail_entrypoint
-from meal_shield.display_recipe import get_recipe_summary
-from meal_shield.env import PACKAGE_DIR
 from meal_shield.search import (
-    base_url,
     fetch_recipe_detail,
     search_recipe_entrypoint,
     validate_input_data,

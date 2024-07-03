@@ -1,4 +1,3 @@
-import asyncio
 from typing import Optional, Union
 
 import aiohttp
@@ -34,7 +33,6 @@ async def scraping_cookpad(
     # それぞれのレシピのURLからデータを並列処理で取得
     async with aiohttp.ClientSession() as session:
         tasks = [scraping_recipe_data(session, url) for url in recipe_url_list]
-        # recipes_list =  await asyncio.gather(*tasks)
         recipes_list = []
         for f in tqdm.as_completed(tasks, desc="Fetching recipe_data"):
             result = await f
