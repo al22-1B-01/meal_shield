@@ -10,9 +10,6 @@ from meal_shield.ranking.ranking import (
     calc_normalized_score,
     ranking_recipe,
 )
-from meal_shield.ranking.ranking_chatgpt import scoring_chatgpt
-from meal_shield.ranking.ranking_count import scoring_count
-from meal_shield.ranking.ranking_embedding import scoring_embedding
 
 ALLERGIES = ['えび', 'かに', '小麦']
 RECIPES = [

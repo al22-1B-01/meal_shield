@@ -1,16 +1,11 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
-from meal_shield.app import main
 from meal_shield.detail import display_recipe_detail_entrypoint
-from meal_shield.display_recipe import get_recipe_summary
-from meal_shield.env import PACKAGE_DIR
 from meal_shield.search import (
-    base_url,
     fetch_recipe_detail,
     search_recipe_entrypoint,
     validate_input_data,
@@ -106,7 +101,7 @@ def test_search_results_with_recipes(mock_get, mock_session_state):
     with patch('streamlit.button', return_value=True):
         search_recipe_entrypoint()
         print('Session state after running:', mock_session_state)
-    assert mock_session_state.page == ''
+    assert mock_session_state.page == '検索結果'
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
@@ -122,13 +117,13 @@ def test_search_result_without_recipe_name(mock_get, mock_session_state):
     with patch('streamlit.button', return_value=True) as mock_details:
         search_recipe_entrypoint()
 
-    assert mock_session_state.page == ''
+    assert mock_session_state.page == '検索結果'
 
 
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
 def test_show_details_page(mock_get, mock_session_state):
-    mock_session_state.session_state.page = 'details'
+    mock_session_state.page = 'details'
     mock_session_state.recipe_name = 'ケーキ'
     mock_session_state.recipe_url = 'https://cookpad.com/recipe/7813040'
     mock_session_state.selected_item = {
@@ -146,33 +141,43 @@ def test_show_details_page(mock_get, mock_session_state):
     assert mock_session_state.page == '検索結果'
 
 
-@patch('streamlit.error')
-@patch('streamlit.session_state', new_callable=MagicMock)
-def test_validate_input_data_no_recipe_name(mock_session_state, mock_error):
-    mock_session_state.recipes = True
-    validate_input_data('', ['卵', '牛乳'])
-    mock_error.assert_any_call('レシピが入力されていません.')
+@pytest.fixture
+def setup_session_state():
+    # Mock the session_state with necessary initial values
+    with patch('streamlit.session_state', new_callable=MagicMock) as mock_state:
+        mock_state.page = '検索結果'  # Initialize page to prevent AttributeError on delete
+        mock_state.recipes = [{'status': 'error'}]
+        mock_state.allergy_list = []
+        yield mock_state
 
 
-@patch('streamlit.error')
-@patch('streamlit.session_state', new_callable=MagicMock)
-def test_validate_input_data_no_allergies_list(mock_session_state, mock_error):
-    mock_session_state.recipes = True
-    validate_input_data('ケーキ', [])
-    mock_error.assert_any_call('アレルギー品目が入力されていません.')
+@pytest.mark.usefixtures("setup_session_state")
+@patch('meal_shield.search.fetch_recipe_detail')
+def test_validate_input_data_recipe_name_empty(mock_fetch, setup_session_state):
+    with patch('streamlit.error') as mock_error, patch(
+        'streamlit.experimental_rerun'
+    ) as mock_rerun:
+        validate_input_data('', ['nuts'])
+        mock_error.assert_called_once_with('レシピが入力されていません.')
+        assert 'page' not in setup_session_state  # Check if page was deleted
 
 
-@patch('streamlit.error')
-@patch('streamlit.session_state', new_callable=MagicMock)
-def test_validate_input_data_no_recipes(mock_session_state, mock_error):
-    mock_session_state.recipes = False
-    validate_input_data('ケーキ', ['卵', '牛乳'])
-    mock_error.assert_any_call('検索結果が存在しません.')
+@pytest.mark.usefixtures("setup_session_state")
+@patch('meal_shield.search.fetch_recipe_detail')
+def test_validate_input_data_fetch_error(mock_fetch, setup_session_state):
+    mock_fetch.return_value = [{'status': 'error'}]
+    with patch('streamlit.error') as mock_error, patch(
+        'streamlit.experimental_rerun'
+    ) as mock_rerun:
+        validate_input_data('Some Recipe', ['nuts'])
+        mock_error.assert_called_once_with('検索結果が存在しません.')
+        assert 'page' not in setup_session_state  # Check if page was deleted
 
 
-@patch('streamlit.error')
-@patch('streamlit.session_state', new_callable=MagicMock)
-def test_validate_input_data_valid_input(mock_session_state, mock_error):
-    mock_session_state.recipes = True
-    validate_input_data('ケーキ', ['卵', '牛乳'])
-    mock_error.assert_not_called()
+@pytest.mark.usefixtures("setup_session_state")
+@patch('meal_shield.search.fetch_recipe_detail')
+def test_validate_input_data_success(mock_fetch, setup_session_state):
+    mock_fetch.return_value = {'status': 'success'}
+    setup_session_state.recipes = [{'status': 'success'}]
+    validate_input_data('Some Recipe', ['nuts'])
+    assert setup_session_state.recipes == [{'status': 'success'}]

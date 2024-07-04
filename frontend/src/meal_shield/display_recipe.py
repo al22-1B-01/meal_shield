@@ -19,7 +19,6 @@ def get_recipe_summary(
     {content}
     </div>
     """
-
     st.markdown(box_style.format(content=selected_list), unsafe_allow_html=True)
     st.title('料理名')
     st.markdown(box_style.format(content=recipe_name), unsafe_allow_html=True)
