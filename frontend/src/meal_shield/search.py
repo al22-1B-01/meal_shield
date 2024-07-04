@@ -97,6 +97,10 @@ def search_recipe_entrypoint() -> None:
     recipe_name = st.text_input('レシピ名を入力してください')
 
     if st.button('検索'):
+        if not recipe_name:
+            st.session_state.page = ''
+            st.error('レシピ名が入力してください.')
+
         if not st.session_state.allergy_list:
             st.session_state.page = ''
             st.error('アレルギー品目が入力されていません.')
