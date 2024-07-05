@@ -1,6 +1,7 @@
-from typing import Optional, Union, Final
-import aiohttp
 import asyncio
+from typing import Final, Optional, Union
+
+import aiohttp
 import requests
 from bs4 import BeautifulSoup
 from tenacity import retry, stop_after_attempt, wait_fixed
@@ -12,6 +13,7 @@ MAX_RECIPE_SIZE: Final[int] = 100
 SEMAPHORE_LIMIT: Final[int] = 10
 
 semaphore: asyncio.Semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
+
 
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_cookpad(
@@ -45,6 +47,7 @@ async def scraping_cookpad(
     else:
         return recipes_list[:MAX_RECIPE_SIZE]
 
+
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
     try:
@@ -71,6 +74,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
     except Exception as e:
         return None
 
+
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_recipe_url(
     session: aiohttp.ClientSession, url: str
@@ -95,6 +99,7 @@ async def scraping_recipe_url(
         except Exception as e:
             return None
 
+
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 async def scraping_recipe_data(
     session: aiohttp.ClientSession, url: str
@@ -108,7 +113,9 @@ async def scraping_recipe_data(
                 soup = BeautifulSoup(content, 'lxml')
 
                 # レシピのタイトルである<h1>タグのテキストを取得
-                recipe_title = soup.find('h1', class_='recipe-title').get_text(strip=True)
+                recipe_title = soup.find('h1', class_='recipe-title').get_text(
+                    strip=True
+                )
                 # 全角スペースを半角スペースに置き換える
                 recipe_title = recipe_title.replace('\u3000', ' ')
 

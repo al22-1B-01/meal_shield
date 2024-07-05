@@ -1,4 +1,4 @@
-from typing import Optional, Final
+from typing import Final, Optional
 
 import nest_asyncio
 from fastapi import FastAPI, Query
