@@ -77,7 +77,6 @@ def search_recipe_entrypoint() -> None:
         )
 
         col = cols[index % 7]
-        # image = Image.open(PACKAGE_DIR / f'data/images/{item["file"]}')
 
         if col.button(item['name']):
             if item['name'] in st.session_state.allergy_list:
@@ -85,7 +84,6 @@ def search_recipe_entrypoint() -> None:
             else:
                 st.session_state.allergy_list.append(item['name'])
 
-        # col.image(image, use_column_width=True, width=100)
         col.image(item['file'], use_column_width=True, width=100)
 
     st.subheader('選択されたアレルギー品目')
