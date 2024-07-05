@@ -4,8 +4,7 @@ from typing import Final
 import requests
 import streamlit as st
 
-# BASE_URL = 'http://backend:8000'
-BASE_URL: Final[str] = 'http://localhost:8000'
+BASE_URL: Final[str] = 'http://backend:8000'
 
 
 BASE_IMAGE_URL: Final[
