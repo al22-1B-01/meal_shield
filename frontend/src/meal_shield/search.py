@@ -1,17 +1,17 @@
+from typing import Final
 import time
 
 import requests
 import streamlit as st
-from PIL import Image
 
-from meal_shield.env import PACKAGE_DIR
-
-base_url = 'http://backend:8000'
+# BASE_URL = 'http://backend:8000'
+BASE_URL: Final[str] = 'http://localhost:8000'
 
 
-BASE_IMAGE_URL = 'https://raw.githubusercontent.com/al22-1B-01/meal_shield/main/frontend/data/images/'
+
+BASE_IMAGE_URL: Final[str] = 'https://raw.githubusercontent.com/al22-1B-01/meal_shield/main/frontend/data/images/'
 # アレルギー品目の選択肢
-_ALLERGY_OPTION = [
+_ALLERGY_OPTION: Final[list[dict[str, str]]] = [
     {'name': 'えび', 'file': 'ebi.png'},
     {'name': 'かに', 'file': 'kani.png'},
     {'name': 'いか', 'file': 'ika.png'},
@@ -41,12 +41,12 @@ _ALLERGY_OPTION = [
     {'name': 'りんご', 'file': 'ringo.png'},
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
-ALLERGY_OPTION = [{'name': item['name'], 'file': BASE_IMAGE_URL + item['file']} for item in _ALLERGY_OPTION]
+ALLERGY_OPTION: Final[list[dict[str, str]]] = [{'name': item['name'], 'file': BASE_IMAGE_URL + item['file']} for item in _ALLERGY_OPTION]
 
 
 def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
     params = {'recipe': recipe_name, 'allergy_list': allergies}
-    response = requests.get(base_url, params=params)
+    response = requests.get(BASE_URL, params=params)
 
     if response.status_code == 200:
         return response.json()
