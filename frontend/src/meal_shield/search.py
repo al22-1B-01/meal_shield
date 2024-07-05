@@ -1,5 +1,5 @@
-from typing import Final
 import time
+from typing import Final
 
 import requests
 import streamlit as st
@@ -8,8 +8,9 @@ import streamlit as st
 BASE_URL: Final[str] = 'http://localhost:8000'
 
 
-
-BASE_IMAGE_URL: Final[str] = 'https://raw.githubusercontent.com/al22-1B-01/meal_shield/main/frontend/data/images/'
+BASE_IMAGE_URL: Final[
+    str
+] = 'https://raw.githubusercontent.com/al22-1B-01/meal_shield/main/frontend/data/images/'
 # アレルギー品目の選択肢
 _ALLERGY_OPTION: Final[list[dict[str, str]]] = [
     {'name': 'えび', 'file': 'ebi.png'},
@@ -41,7 +42,10 @@ _ALLERGY_OPTION: Final[list[dict[str, str]]] = [
     {'name': 'りんご', 'file': 'ringo.png'},
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
-ALLERGY_OPTION: Final[list[dict[str, str]]] = [{'name': item['name'], 'file': BASE_IMAGE_URL + item['file']} for item in _ALLERGY_OPTION]
+ALLERGY_OPTION: Final[list[dict[str, str]]] = [
+    {'name': item['name'], 'file': BASE_IMAGE_URL + item['file']}
+    for item in _ALLERGY_OPTION
+]
 
 
 def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
