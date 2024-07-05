@@ -61,7 +61,7 @@ async def ranking_recipe(
         scored_recipes_list = await scoring_embedding(
             allergies_list,
             excluded_recipes_list,
-            model_name='text-embedding-3-small',
+            model_name='text-embedding-3-large',
             score_column='embedding_score',
         )
         scored_recipes_list = scoring_count(
