@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Final
 
 import nest_asyncio
 from fastapi import FastAPI, Query
@@ -9,7 +9,7 @@ from meal_shield.scrape.scraping_and_excluding import scraping_and_excluding
 nest_asyncio.apply()
 
 app = FastAPI()
-WORDS = {
+WORDS: Final[dict[str, list[str]]] = {
     'えび': ['えび', 'エビ', '海老'],
     'かに': ['かに', 'カニ', '蟹'],
     '小麦': ['小麦'],
