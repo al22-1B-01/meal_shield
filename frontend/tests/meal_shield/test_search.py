@@ -184,7 +184,6 @@ def test_validate_input_data_success(mock_fetch, setup_session_state):
     assert setup_session_state.recipes == [{'status': 'success'}]
 
 
-
 @pytest.mark.usefixtures("setup_session_state")
 @patch('meal_shield.search.fetch_recipe_detail')
 def test_validate_input_data_allergy_list_empty(mock_fetch, setup_session_state):
@@ -196,14 +195,12 @@ def test_validate_input_data_allergy_list_empty(mock_fetch, setup_session_state)
         assert 'page' not in setup_session_state  # Check if page was deleted
 
 
-
 @patch('streamlit.session_state', new_callable=MagicMock)
 @patch('requests.get')
 def test_search_results_with_recipes(mock_get, mock_session_state):
     mock_session_state.page = ''
     mock_session_state.recipe_name = 'ケーキ'
     mock_session_state.allergy_list = ['卵', '牛乳']
-
 
     mock_session_state.page = 'details'
     mock_session_state.recipe_name = 'ケーキ'
