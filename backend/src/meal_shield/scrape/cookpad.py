@@ -55,7 +55,7 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
         url = f'https://cookpad.com/search/{recipe_name}'
         response = requests.get(url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'lxml')
+        soup = BeautifulSoup(response.content, 'lxml', from_encoding="utf-8")
         # 1 / 1,000のような現在のページを表す文字列を取得
         number_of_pages = soup.find(class_='number_of_pages').text
         page_parts = number_of_pages.split(' / ')
@@ -84,7 +84,7 @@ async def scraping_recipe_url(
             async with session.get(url) as response:
                 response.raise_for_status()
                 content = await response.text()
-                soup = BeautifulSoup(content, 'lxml')
+                soup = BeautifulSoup(content, 'lxml', from_encoding="utf-8")
 
                 recipe_url_list = []
                 # レシピのURLを属性に持つ<a>タグをすべて取得
