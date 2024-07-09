@@ -10,7 +10,7 @@ def calc_normalized_score(
     score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
     '''各レシピのメソッドに対応するスコアを整理する関数。
-    
+
     指定されたメソッド（次元埋め込み or ChatGPT or カウントベース）に対応する各レシピのスコアを、最大スコアに対する割合に変換する。
 
     :param recipes_list: スコアリング済みの、アレルギー除去処理を行ったレシピのデータをもったリスト
@@ -70,7 +70,7 @@ async def ranking_recipe(
     :type excluded_recipes_list: list[dict[str, Union[str, list[str], float]]]
     :param Optional[str] ranking_method: ランキングアルゴリズムを設定する引数
     :return: ソート済みの、アレルギー除去処理を行ったレシピのデータをもったリスト
-    :rtype: list[dict[str, Union[str, list[str]]]] 
+    :rtype: list[dict[str, Union[str, list[str]]]]
     '''
     if ranking_method == 'default':
         scored_recipes_list = scoring_count(allergies_list, excluded_recipes_list)

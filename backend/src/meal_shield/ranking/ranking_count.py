@@ -61,7 +61,7 @@ def scoring_recipe(
     score_column: Optional[str] = 'recipe_score',
 ) -> dict[str, Union[str, list[str], float]]:
     '''各レシピに対して実際にスコアリングを行う関数。
-    
+
     指定されたアレルギー品目が材料の中に含まれる回数に基づいてスコアリングする。
 
     :param dict[str, Union[str, list[str], float]] recipe: スコアリング対象となるレシピ単体
@@ -85,7 +85,7 @@ def scoring_recipe_wrapper(
 ) -> dict[str, Union[str, list[str], float]]:
     '''並列処理のための補助関数。
 
-    :param args: 
+    :param args:
     :type args: dict[str, Union[dict[str, Union[str, list[str], float]], list[str]]]
     :return: スコアリング済みのレシピ
     :rtype: dict[str, Union[str, list[str], float]]
