@@ -48,6 +48,15 @@ ALLERGY_OPTION: Final[list[dict[str, str]]] = [
 
 
 def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
+    """
+    指定されたレシピ名とアレルギーリストに基づいてレシピの詳細を取得します。
+
+    :param str recipe_name: 検索するレシピの名前
+    :param list[str] allergies: 除去したいアレルギー品目のリスト
+    :return: レシピの詳細を含む辞書のリスト。エラーが発生した場合はNoneを返します。
+    :rtype: Optional[list]
+    :raises requests.exceptions.RequestException: リクエスト中にエラーが発生した場合
+    """
     params = {'recipe': recipe_name, 'allergy_list': allergies}
     response = requests.get(BASE_URL, params=params)
 
@@ -59,6 +68,12 @@ def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
 
 
 def search_recipe_entrypoint() -> None:
+    """
+    ユーザーにアレルギー品目を選択させ、レシピ名を入力させるためのエントリーポイントを提供します。
+
+    この関数は、各アレルギー品目のチェックボックスとレシピ名の入力フィールドを表示します。
+    検索ボタンがクリックされると、選択されたアレルギー品目とレシピ名をセッション状態に保存します。
+    """
     st.subheader('除去したい品目を選択してください')
 
     if 'allergy_list' not in st.session_state:
@@ -109,7 +124,22 @@ def search_recipe_entrypoint() -> None:
 
 
 def validate_input_data(recipe_name: str, allergies_list: list[str]) -> None:
+    """
+    入力データ（レシピ名とアレルギーリスト）を検証し、不正なデータがある場合にエラーメッセージを表示してリセットします。
+
+    :param str recipe_name: 検索するレシピの名前
+    :param list[str] allergies_list: 除去したいアレルギー品目のリスト
+    :return: None
+    :raises ValueError: アレルギー品目リストまたはレシピ名が空の場合
+    """
+
     def show_error_and_reset_session(error_message: str):
+        """
+        エラーメッセージを表示し、セッションをリセットします。
+
+        :param str error_message: 表示するエラーメッセージ
+        :return: None
+        """
         st.error(error_message)
         del st.session_state.page
         time.sleep(3)
