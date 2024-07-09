@@ -1,16 +1,17 @@
 import time
+from typing import Final
 
 import requests
 import streamlit as st
-from PIL import Image
 
-from meal_shield.env import PACKAGE_DIR
-
-base_url = 'http://backend:8000'
+BASE_URL: Final[str] = 'http://backend:8000'
 
 
+BASE_IMAGE_URL: Final[
+    str
+] = 'https://raw.githubusercontent.com/al22-1B-01/meal_shield/main/frontend/data/images/'
 # アレルギー品目の選択肢
-ALLERGY_OPTION = [
+_ALLERGY_OPTION: Final[list[dict[str, str]]] = [
     {'name': 'えび', 'file': 'ebi.png'},
     {'name': 'かに', 'file': 'kani.png'},
     {'name': 'いか', 'file': 'ika.png'},
@@ -25,9 +26,9 @@ ALLERGY_OPTION = [
     {'name': 'くるみ', 'file': 'kurumi.png'},
     {'name': 'ごま', 'file': 'goma.png'},
     {'name': 'カシューナッツ', 'file': 'cashew.png'},
-    {'name': '牛肉', 'file': 'gyuniku.png'},
-    {'name': '鶏肉', 'file': 'toriniku.png'},
-    {'name': '豚肉', 'file': 'pig.png'},
+    {'name': '牛', 'file': 'gyuniku.png'},
+    {'name': '鶏', 'file': 'toriniku.png'},
+    {'name': '豚', 'file': 'pig.png'},
     {'name': 'さけ', 'file': 'sake.png'},
     {'name': 'さば', 'file': 'saba.png'},
     {'name': 'まつたけ', 'file': 'matsutake.png'},
@@ -40,11 +41,15 @@ ALLERGY_OPTION = [
     {'name': 'りんご', 'file': 'ringo.png'},
     {'name': 'キウイフルーツ', 'file': 'kiwi.png'},
 ]
+ALLERGY_OPTION: Final[list[dict[str, str]]] = [
+    {'name': item['name'], 'file': BASE_IMAGE_URL + item['file']}
+    for item in _ALLERGY_OPTION
+]
 
 
 def fetch_recipe_detail(recipe_name: str, allergies: list[str]) -> list:
     params = {'recipe': recipe_name, 'allergy_list': allergies}
-    response = requests.get(base_url, params=params)
+    response = requests.get(BASE_URL, params=params)
 
     if response.status_code == 200:
         return response.json()
@@ -75,7 +80,6 @@ def search_recipe_entrypoint() -> None:
         )
 
         col = cols[index % 7]
-        image = Image.open(PACKAGE_DIR / f'data/images/{item["file"]}')
 
         if col.button(item['name']):
             if item['name'] in st.session_state.allergy_list:
@@ -83,7 +87,7 @@ def search_recipe_entrypoint() -> None:
             else:
                 st.session_state.allergy_list.append(item['name'])
 
-        col.image(image, use_column_width=True, width=100)
+        col.image(item['file'], use_column_width=True, width=100)
 
     st.subheader('選択されたアレルギー品目')
     for allergy in st.session_state.allergy_list:

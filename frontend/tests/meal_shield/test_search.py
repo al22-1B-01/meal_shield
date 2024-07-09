@@ -5,6 +5,7 @@ import streamlit as st
 from streamlit.testing.v1 import AppTest
 
 from meal_shield.detail import display_recipe_detail_entrypoint
+from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.search import (
     fetch_recipe_detail,
     search_recipe_entrypoint,
@@ -181,3 +182,41 @@ def test_validate_input_data_success(mock_fetch, setup_session_state):
     setup_session_state.recipes = [{'status': 'success'}]
     validate_input_data('Some Recipe', ['nuts'])
     assert setup_session_state.recipes == [{'status': 'success'}]
+
+
+@pytest.mark.usefixtures("setup_session_state")
+@patch('meal_shield.search.fetch_recipe_detail')
+def test_validate_input_data_allergy_list_empty(mock_fetch, setup_session_state):
+    with patch('streamlit.error') as mock_error, patch(
+        'streamlit.experimental_rerun'
+    ) as mock_rerun:
+        validate_input_data('Pancakes', [])
+        mock_error.assert_called_once_with('アレルギー品目が入力されていません.')
+        assert 'page' not in setup_session_state  # Check if page was deleted
+
+
+@patch('streamlit.session_state', new_callable=MagicMock)
+@patch('requests.get')
+def test_search_results_with_recipes(mock_get, mock_session_state):
+    mock_session_state.page = ''
+    mock_session_state.recipe_name = 'ケーキ'
+    mock_session_state.allergy_list = ['卵', '牛乳']
+
+    mock_session_state.page = 'details'
+    mock_session_state.recipe_name = 'ケーキ'
+    mock_session_state.recipe_url = 'https://cookpad.com/recipe/7813040'
+    mock_session_state.selected_item = {
+        'recipe_image_url': 'https://img.cpcdn.com/recipes/7813040/894x1461s/952f6a9105c7b1d250853791cc4b08fd?u=11756033&p=1714165191',
+        'recipe_title': 'Delicious Cake',
+        'recipe_url': 'https://cookpad.com/recipe/7813040',
+        'recipe_ingredients': ['砂糖', '小麦粉', '卵'],
+    }
+
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"recipes": []}
+    with patch('streamlit.button', return_value=True) as mock_details:
+        display_recipe_detail_entrypoint()
+
+    assert mock_session_state.page == '検索結果'
+    assert mock_session_state.allergy_list == ['卵', '牛乳']
+    assert mock_session_state.recipe_name == 'ケーキ'
