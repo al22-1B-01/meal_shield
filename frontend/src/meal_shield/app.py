@@ -4,8 +4,21 @@ from meal_shield.detail import display_recipe_detail_entrypoint
 from meal_shield.display_recipe import get_recipe_summary
 from meal_shield.search import search_recipe_entrypoint, validate_input_data
 
+# インポートしたモジュールの説明
+# display_recipe_detail_entrypoint: レシピの詳細を表示する関数
+# get_recipe_summary: レシピの概要を表示する関数
+# search_recipe_entrypoint: ユーザーにアレルギー品目とレシピ名を入力させる関数
+# validate_input_data: 入力されたレシピ名とアレルギー品目を検証する関数
+
 
 def app() -> None:
+    """
+    Streamlitアプリケーションのエントリーポイント。
+
+    この関数は、アプリケーションの現在の状態に応じて異なるページを表示します。
+    初期状態ではレシピ検索ページを表示し、検索結果が存在する場合は結果の概要を表示します。
+    詳細ページが要求された場合は、レシピの詳細を表示します。
+    """
     if 'page' not in st.session_state:
         search_recipe_entrypoint()
 
