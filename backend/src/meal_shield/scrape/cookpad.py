@@ -1,5 +1,5 @@
 import asyncio
-from typing import Optional, Union
+from typing import Final, Optional, Union
 
 import aiohttp
 import requests
@@ -8,7 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm.asyncio import tqdm
 
 # 検索上限(page数)
-LIMIT_PAGE: Final[int] = 40
+LIMIT_PAGE: Final[int] = 100
 SEMAPHORE_LIMIT: Final[int] = 1000
 
 semaphore: asyncio.Semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
