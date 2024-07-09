@@ -39,6 +39,15 @@ def extract_allergy_words(
     words: dict[str, list[str]],
     allergies_list: list[str],
 ) -> list[str]:
+    '''指定されたアレルギー品目に対応する文字列を抽出する関数。
+
+    指定されたアレルギー品目をもとに、それに分類される材料の文字列を抽出する。
+
+    :param dict[str, list[str]] words: アレルギー品目に関するデータをキーとしてもつ辞書型のデータ
+    :param list[str] allergies_list: 指定されたアレルギー品目のデータをもったリスト
+    :return: 指定されたアレルギー品目に対応する文字列が含まれたリスト
+    :rtype: list[str]
+    '''
     extracted_allergies_list = []
     for key in allergies_list:
         extracted_allergies_list.extend(words.get(key, []))
@@ -51,6 +60,16 @@ def scoring_recipe(
     extracted_allergies_list: list[str],
     score_column: Optional[str] = 'recipe_score',
 ) -> dict[str, Union[str, list[str], float]]:
+    '''各レシピに対して実際にスコアリングを行う関数。
+    
+    指定されたアレルギー品目が材料の中に含まれる回数に基づいてスコアリングする。
+
+    :param dict[str, Union[str, list[str], float]] recipe: スコアリング対象となるレシピ単体
+    :param list[str] extracted_allergies_list: 指定されたアレルギー品目に対応する文字列が含まれたリスト
+    :param Optional[str] score_column: 出力の辞書キー名を設定する変数
+    :return: スコアリング済みのレシピ
+    :rtype: dict[str, Union[str, list[str], float]]
+    '''
     allergen_count = 0
     ingredients = recipe['recipe_ingredients']
 
@@ -64,6 +83,13 @@ def scoring_recipe(
 def scoring_recipe_wrapper(
     args: dict[str, Union[dict[str, Union[str, list[str], float]], list[str]]]
 ) -> dict[str, Union[str, list[str], float]]:
+    '''並列処理のための補助関数。
+
+    :param args: 
+    :type args: dict[str, Union[dict[str, Union[str, list[str], float]], list[str]]]
+    :return: スコアリング済みのレシピ
+    :rtype: dict[str, Union[str, list[str], float]]
+    '''
     return scoring_recipe(**args)
 
 
@@ -72,6 +98,17 @@ def scoring_count(
     excluded_recipes_list: list[dict[str, Union[str, list[str], float]]],
     score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
+    '''カウントベースによるスコアリングを行う関数。
+
+    アレルギー除去処理を行ったレシピに対し、カウントベースによるスコアリングを行う。
+
+    :param list[str] allergies_list: 指定されたアレルギー品目のデータをもったリスト
+    :param excluded_recipes_list: アレルギー除去処理を行ったレシピのデータをもったリスト
+    :type excluded_recipes_list: list[dict[str, Union[str, list[str], float]]]
+    :param Optional[str] score_column: 出力の辞書キー名を設定する変数
+    :return: スコアリング済みの、アレルギー除去処理を行ったレシピのデータをもったリスト
+    :rtype: list[dict[str, Union[str, list[str], float]]]
+    '''
     extracted_allergies_list = extract_allergy_words(WORDS, allergies_list)
 
     with Pool(cpu_count()) as pool:
