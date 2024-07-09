@@ -74,7 +74,7 @@ def make_recipe_summary(
 ) -> tuple[dict[str, Union[str, list[str]]], str]:
     """概要
 
-    書斎説明
+    説明
 
     param:allergy_list:前ページで選択されたアレルギー
     type:allergy_list:list[str]:
