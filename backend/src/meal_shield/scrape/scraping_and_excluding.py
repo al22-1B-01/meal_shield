@@ -41,7 +41,6 @@ def contains_any(string: str, substrings: list[str]) -> bool:
     return any(substring in string for substring in substrings)
 
 
-# 文字列リストにリストの文字列が含まれるか判別
 def contains_any_in_list(strings: list[str], substrings: list[str]) -> bool:
     """文字列リストの要素がリストに含まれる文字列を含むか判別
 
