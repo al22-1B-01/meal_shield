@@ -1,3 +1,11 @@
+"""概要
+
+説明
+ランク付けされたレシピを表示する
+関数get_recipe_summaryでレシピの取得と表示する
+関数make_recipe_summaryでレシピ表示時に必要な情報作成
+    
+"""
 from typing import Union
 
 import streamlit as st
@@ -10,9 +18,9 @@ def get_recipe_summary(
 ) -> None:
     """概要
     
-    書斎説明
+    説明
     
-    param:allergy_list:前ページで選択されたアレルギー
+    param:allergy_list:前頁で選択されたアレルギー
     type:allergy_list:list[str]:
     param:recipe_name;入力されたレシピ名
     type:recipe_name:str
