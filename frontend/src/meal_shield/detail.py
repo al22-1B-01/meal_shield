@@ -6,8 +6,8 @@ def display_recipe_detail_entrypoint() -> None:
     引数なし
     返り値:None
     recipe_image_url:画像の表示
-    recipi_titile:クックパッドのレシピ名
-    recipi_url:クックパッドへのリンク
+    recipe_titile:クックパッドのレシピ名
+    recipe_url:クックパッドへのリンク
     詳細がない場合は”詳細を表示するレシピが選択されていません”を表示
     """
 

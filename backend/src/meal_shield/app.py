@@ -57,7 +57,7 @@ def serch_allergy(allergy_list: list[str]) -> list[list[str]]:
 
     説明
     param:allergy_list;選択されたアレルギー品目
-    type:a;;ergy_list:list[str]
+    type:allergy_list:list[str]
     return:WORDSからallergy_listから取得
     rtype:list[list[str]]
 
