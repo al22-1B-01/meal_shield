@@ -28,6 +28,17 @@ async def fetch_score(
     ingredient: list[str],
     model_name: Optional[str] = 'gpt-3.5-turbo',
 ) -> float:
+    '''ChatGPTからスコアを取得する関数。
+
+    指定されたアレルギー品目と材料に基づき、ChatGPTからスコアを取得する。
+
+    :param aiohttp.ClientSession session: HTTPセッションを管理するaiohttpクライアントセッション
+    :param list[str] allergies_list: 指定されたアレルギー品目のデータをもったリスト
+    :param list[str] ingredient: レシピの材料のリスト
+    :param Optional[str] model_name: ChatGPTのモデルを設定する引数
+    :return: スコア
+    :rtype: float
+    '''
     organized_prompt = PROMPT_TEMPLATE.format(
         ','.join(allergies_list), ','.join(ingredient)
     )
@@ -59,6 +70,18 @@ async def calc_allergens_include_score_by_chatgpt(
     model_name: Optional[str] = 'gpt-3.5-turbo',
     score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
+    '''非同期処理で各レシピに対してスコアリングを行う関数
+
+    各レシピに対してChatGPTを利用して非同期処理でスコアリングを行う。
+
+    :param list[str] allergies_list: 指定されたアレルギー品目のデータをもったリスト
+    :param excluded_recipes_list: アレルギー除去処理を行ったレシピのデータをもったリスト
+    :type excluded_recipes_list: list[dict[str, Union[str, list[str], float]]]
+    :param Optional[str] model_name: ChatGPTのモデルを設定する引数
+    :param Optional[str] score_column: 出力の辞書キー名を設定する変数
+    :return: スコアリング済みの、アレルギー除去処理を行ったレシピのデータをもったリスト
+    :rtype: list[dict[str, Union[str, list[str], float]]]
+    '''
     async with aiohttp.ClientSession() as session:
         tasks = [
             fetch_score(
@@ -80,6 +103,18 @@ async def scoring_chatgpt(
     model_name: Optional[str] = 'gpt-3.5-turbo',
     score_column: Optional[str] = 'recipe_score',
 ) -> list[dict[str, Union[str, list[str], float]]]:
+    '''ChatGPTによるスコアリングを行う関数。
+
+    アレルギー除去処理を行ったレシピに対し、ChatGPTによるスコアリングを行う。
+
+    :param list[str] allergies_list: 指定されたアレルギー品目のデータをもったリスト
+    :param excluded_recipes_list: アレルギー除去処理を行ったレシピのデータをもったリスト
+    :type excluded_recipes_list: list[dict[str, Union[str, list[str], float]]]
+    :param Optional[str] model_name: ChatGPTのモデルを設定する引数
+    :param Optional[str] score_column: 出力の辞書キー名を設定する変数
+    :return: スコアリング済みの、アレルギー除去処理を行ったレシピのデータをもったリスト
+    :rtype: list[dict[str, Union[str, list[str], float]]]
+    '''
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(
         calc_allergens_include_score_by_chatgpt(
