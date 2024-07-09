@@ -8,6 +8,19 @@ def get_recipe_summary(
     recipe_name: str,
     recipes: list[dict[str, Union[str, list[str]]]],
 ) -> None:
+    """概要
+    
+    書斎説明
+    
+    param:allergy_list:前ページで選択されたアレルギー
+    type:allergy_list:list[str]:
+    param:recipe_name;入力されたレシピ名
+    type:recipe_name:str
+    param:recipes:除外されたレシピが順位にソート
+    type:recipes:list[dict[str, Union[str, list[str]]]]
+    return:None
+    
+    """
     st.title('選択されたアレルギー品目')
     selected_list = ', '.join(allergy_list)
 
@@ -51,6 +64,20 @@ def make_recipe_summary(
     recipe_name: str,
     recipes: dict[str, Union[str, list[str]]],
 ) -> tuple[dict[str, Union[str, list[str]]], str]:
+    """概要
+    
+    書斎説明
+    
+    param:allergy_list:前ページで選択されたアレルギー
+    type:allergy_list:list[str]:
+    param:recipe_name;入力されたレシピ名
+    type:recipe_name:str
+    param:recipes:除外されたレシピ
+    type:recipes:dict[str, Union[str, list[str]]]
+    return:tuple[dict[str, Union[str, list[str]]], str]:
+    
+    """
+    
     recipe_img_url = recipes.get('recipe_image_url')
     search_result = recipes
     search_result['allergy_list'] = [allergy_list]
