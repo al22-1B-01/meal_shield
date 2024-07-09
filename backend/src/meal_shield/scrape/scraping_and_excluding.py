@@ -1,6 +1,10 @@
-from typing import Optional, Union
+from typing import Final, Optional, Union
+
+from tqdm.asyncio import tqdm
 
 from meal_shield.scrape.cookpad import scraping_cookpad
+
+MAX_RECIPE_SIZE: Final[int] = 100
 
 
 async def scraping_and_excluding(
@@ -28,7 +32,7 @@ def excluding_recipe(allergy_list: list[str], recipes_list: list[dict]) -> list[
     # 材料にアレルギーを含む要素を除外
     excluded_recipes_list = [
         recipe_data
-        for recipe_data in recipes_list
+        for recipe_data in tqdm(recipes_list, desc="Filtering recipes")
         if not contains_any_in_list(recipe_data['recipe_ingredients'], allergy_list)
     ]
-    return excluded_recipes_list
+    return excluded_recipes_list[:MAX_RECIPE_SIZE]

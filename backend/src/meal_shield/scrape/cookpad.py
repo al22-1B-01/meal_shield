@@ -8,8 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm.asyncio import tqdm
 
 # 検索上限(page数)
-LIMIT_PAGE: Final[int] = 40
-MAX_RECIPE_SIZE: Final[int] = 100
+LIMIT_PAGE: Final[int] = 100
 SEMAPHORE_LIMIT: Final[int] = 1000
 
 semaphore: asyncio.Semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
@@ -45,7 +44,7 @@ async def scraping_cookpad(
     if recipes_list is None:
         return None
     else:
-        return recipes_list[:MAX_RECIPE_SIZE]
+        return recipes_list
 
 
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
