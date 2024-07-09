@@ -18,6 +18,19 @@ semaphore: asyncio.Semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
 async def scraping_cookpad(
     recipe_name: str,
 ) -> Optional[list[dict[str, Union[str, list[str]]]]]:
+    """クックパッドの検索結果を辞書型リストで返す
+
+    recipe_nameで検索した結果の各ページからレシピのURLをスクレイプする。
+    そのURLからタイトル、材料、レシピ画像のURLをスクレイプして、
+    それらを辞書型リストに格納し値を返す。
+
+    それぞれのスクレイプ実行時に結果が見つからない場合はNoneを返す。
+
+    :param str recipe_name: 検索フィールドに入力されたレシピ名
+    :return: クックパッドの検索結果を辞書型のデータとしてで返す
+    :rtype: Optional[list[dict[str, Union[str, list[str]]]]]
+    """
+
     # 検索結果ページのURLリストを取得
     page_url_list = make_url_list(recipe_name)
     if page_url_list is None:
@@ -49,6 +62,15 @@ async def scraping_cookpad(
 
 @retry(stop=stop_after_attempt(1), wait=wait_fixed(1), reraise=True)
 def make_url_list(recipe_name: str) -> Optional[list[str]]:
+    """レシピ名で検索するURLを作成。
+
+    検索結果がない場合はNoneを返す。
+
+    :param str recipe_name: 入力されたレシピ名
+    :return: 検索結果表示ページのURLが格納されたリスト
+    :rtype: Optional[list[str]]
+    """
+
     try:
         # 検索結果の最初のページのURL
         url = f'https://cookpad.com/search/{recipe_name}'
@@ -78,6 +100,18 @@ def make_url_list(recipe_name: str) -> Optional[list[str]]:
 async def scraping_recipe_url(
     session: aiohttp.ClientSession, url: str
 ) -> Optional[list[str]]:
+    """検索結果からレシピのURLを取得
+
+    非同期で検索結果ページからレシピのURLを取得する。
+
+    エラーが起きたらNoneを返す。
+
+    :param session: リクエストを行うために使用するaiohttpセッション
+    :type session aiohttp.ClientSession
+    :return: レシピのURLが格納されたリスト
+    :rtype: Optional[list[str]]
+    """
+
     async with semaphore:
         try:
             async with session.get(url) as response:
@@ -103,6 +137,24 @@ async def scraping_recipe_url(
 async def scraping_recipe_data(
     session: aiohttp.ClientSession, url: str
 ) -> Optional[dict[str, Union[str, list[str]]]]:
+    """レシピのURLからレシピのデータを取得
+
+    非同期でレシピのURLからレシピのタイトル、材料のリスト、レシピ画像のURLを
+    スクレイプし辞書型のリストにこれらとレシピのURLを格納して返す。
+
+    辞書型のキー: {
+    'recipe_title': str,
+    'recipe_ingredients': list[str],
+    'recipe_url': str,
+    'recipe_image_url': str
+    }
+
+
+    :param session: リクエストを行うために使用するaiohttpセッション
+    :type session aiohttp.ClientSession
+    :param str url: レシピのURL
+    """
+
     async with semaphore:
         try:
             async with session.get(url) as response:
