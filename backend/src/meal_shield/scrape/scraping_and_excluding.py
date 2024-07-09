@@ -38,9 +38,11 @@ def excluding_recipe(allergy_list: list[str], recipes_list: list[dict]) -> list[
     ]
     return excluded_recipes_list[:MAX_RECIPE_SIZE]
 
+
 async def main():
     recipes = await scraping_and_excluding(['', '芋', 'チョコ', '鳥'], 'カレー')
     print(len(recipes))
+
 
 if __name__ == "__main__":
     asyncio.run(main())
