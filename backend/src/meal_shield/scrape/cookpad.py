@@ -8,7 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm.asyncio import tqdm
 
 # 検索上限(page数)
-LIMIT_PAGE: Final[int] = 100
+LIMIT_PAGE: Final[int] = 25
 SEMAPHORE_LIMIT: Final[int] = 1000
 
 semaphore: asyncio.Semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
