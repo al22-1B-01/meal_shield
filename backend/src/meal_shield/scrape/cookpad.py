@@ -171,16 +171,20 @@ async def scraping_recipe_data(
                 recipe_title = recipe_title.replace('\u3000', ' ')
 
                 recipe_ingredients = []
-                # 材料のデータを含む<span>タグの要素をすべて取得
-                spans = soup.find_all('span', class_='name')
-                for span in spans:
-                    # 材料は<span>タグかその中の<a>タグにあるので場合分け
-                    a_tag = span.find('a')
-                    if a_tag is None:
-                        ingredient_name = span.text
-                    else:
-                        ingredient_name = a_tag.text
-                    recipe_ingredients.append(ingredient_name)
+                ingredient_categories = soup.select('.ingredient_category')
+                ingredient_names = soup.select('.ingredient_name .name')
+
+                for name in ingredient_names:
+                    clean_text = name.text.replace('■', '').replace('☆', '').strip()
+                    recipe_ingredients.append(clean_text)
+
+                # NOTE: https://cookpad.com/recipe/5970809カテゴリしかないときはカテゴリを材料とみなす。
+                if not len(recipe_ingredients) > 0:
+                    for category in ingredient_categories:
+                        clean_text = (
+                            category.text.replace('■', '').replace('☆', '').strip()
+                        )
+                        recipe_ingredients.append(clean_text)
 
                 # レシピ画像のURLを属性に持つ<img>タグを含む<section>タグを取得
                 section_tag = soup.find('section', id='main-photo')
