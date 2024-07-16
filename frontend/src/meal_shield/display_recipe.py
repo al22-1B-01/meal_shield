@@ -4,7 +4,7 @@
 ランク付けされたレシピを表示する
 関数get_recipe_summaryでレシピの取得と表示する
 関数make_recipe_summaryでレシピ表示時に必要な情報作成
-    
+
 """
 from typing import Union
 
