@@ -1,5 +1,5 @@
 """概要
-    
+
     説明
     fastapiを利用してapi化を行う
     WORDSはアレルギー品目を詳細化したもの
@@ -7,7 +7,7 @@
     get_recipeでレシピを取得
     anking_recipeはレシピに順位付けしたもの
     scraping_and_excluding:cookpadからレシピをスクレイピング
-    
+
 """
 from typing import Final, Optional
 
