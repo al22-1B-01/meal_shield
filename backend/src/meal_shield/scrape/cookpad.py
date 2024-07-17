@@ -178,13 +178,9 @@ async def scraping_recipe_data(
                     clean_text = name.text.replace('■', '').replace('☆', '').strip()
                     recipe_ingredients.append(clean_text)
 
-                # NOTE: https://cookpad.com/recipe/5970809カテゴリしかないときはカテゴリを材料とみなす。
-                if not len(recipe_ingredients) > 0:
-                    for category in ingredient_categories:
-                        clean_text = (
-                            category.text.replace('■', '').replace('☆', '').strip()
-                        )
-                        recipe_ingredients.append(clean_text)
+                # カテゴリーを含む場合、材料に'カテゴリー'を追加(除外処理で弾くため)
+                if len(ingredient_categories) > 0:
+                    recipe_ingredients.append('カテゴリー')
 
                 # レシピ画像のURLを属性に持つ<img>タグを含む<section>タグを取得
                 section_tag = soup.find('section', id='main-photo')

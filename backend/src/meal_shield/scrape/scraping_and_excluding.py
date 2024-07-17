@@ -65,7 +65,8 @@ def excluding_recipe(allergy_list: list[str], recipes_list: list[dict]) -> list[
     :type recipe_list: Optional[list[dict[str, Union[str, list[str]]]]]
     """
 
-    # 材料にアレルギーを含む要素を除外
+    # 材料にアレルギーを含むレシピとカテゴリーを含むレシピを除外
+    allergy_list.append('カテゴリー')
     excluded_recipes_list = [
         recipe_data
         for recipe_data in tqdm(recipes_list, desc="Filtering recipes")
