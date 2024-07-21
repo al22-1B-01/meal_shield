@@ -23,7 +23,7 @@ async def scraping_and_excluding(
     recipes_list = await scraping_cookpad(recipe_name)
     if recipes_list is not None:
         excluded_recipes_list = excluding_recipe(allergy_list, recipes_list)
-        if excluded_recipes_list is not None:
+        if len(excluded_recipes_list) > 0:
             return excluded_recipes_list
         else:
             return None
